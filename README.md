@@ -6,3 +6,5 @@ Asset licences: see SOURCES.md — several character models have UNVERIFIED lice
 
 ## v4 写实版 (v4/)
 12 写实少女 NPC 版的公开精简版：只含 Microsoft Rocketbox (MIT) 的 6 个 NPC；Renderpeople 和许可未核实的模型不在公开版。手机默认低画质（?hiq 开阴影）。打开 v4/index.html。
+
+- [v6 唯美校园](./v6/) — 九十年代教室新场景 + 童年小游戏（2026-10-25）
