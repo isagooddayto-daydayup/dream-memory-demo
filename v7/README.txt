@@ -19,3 +19,8 @@ E：优先与阿澄交谈；否则进入地上发光圈小游戏
 
 【许可】
 公开版 NPC 仅 Microsoft Rocketbox（MIT）；教室 Grab3D CC0。无 YY 脸、无 Renderpeople。
+
+触屏（Windows 触屏显示器 / 平板）
+- 地址加 ?touch 强制触屏 UI；?notouch 强制键鼠
+- 左半屏拖走，右半屏拖转视角（无需锁定鼠标）
+- 大按钮：交谈、菜单、结束这局；顶部 1–6 切场景

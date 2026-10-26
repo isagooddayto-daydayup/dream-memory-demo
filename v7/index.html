@@ -39,7 +39,7 @@ import * as V7 from 'V7';
 
 const Q=new URLSearchParams(location.search);
 const TEST=Q.has('test');
-const TOUCH={on:(('ontouchstart' in window)||navigator.maxTouchPoints>0||Q.has('touch'))&&!Q.has('notouch')};
+const TOUCH={on:(('ontouchstart' in window)||(navigator.maxTouchPoints|0)>0||Q.has('touch')||Q.get('touch')==='1')&&!Q.has('notouch')};
 const $=id=>document.getElementById(id);
 const setSt=t=>{$('st').textContent=t;};
 const W=()=>innerWidth,H=()=>innerHeight;
@@ -579,32 +579,138 @@ function camHud(){setSt('镜头：'+CAMN[CAMS[P.cam]]);}
 // ---------------- touch controls (auto when touch device or ?touch) ----------------
 Object.assign(TOUCH,{jx:0,jy:0,jm:0,jid:null,lid:null,lx:0,ly:0,jcx:0,jcy:0});
 if(TOUCH.on){
- const css=document.createElement('style');css.textContent=`#hud{display:none}#tc{position:fixed;inset:0;z-index:30;touch-action:none;user-select:none;-webkit-user-select:none}
- #joy{position:absolute;left:28px;bottom:28px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.10);border:2px solid rgba(255,255,255,.35)}
- #knob{position:absolute;left:40px;top:40px;width:50px;height:50px;border-radius:50%;background:rgba(255,220,170,.55)}
- .tb{position:absolute;width:58px;height:58px;border-radius:50%;background:rgba(20,14,40,.55);border:2px solid rgba(255,220,170,.6);color:#ffe9c4;font-size:13px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.1}
- .tb.dn{background:rgba(255,190,120,.55)} .ts{width:46px;height:46px;font-size:12px}`;document.head.appendChild(css);
- const tc=document.createElement('div');tc.id='tc';tc.innerHTML='<div id="joy"><div id="knob"></div></div>';document.body.appendChild(tc);
- const B=[['b_p','梦境P',null,'right:24px;bottom:24px',()=>enterDream()],['b_up','上升','Space','right:94px;bottom:24px'],['b_dn','下降','KeyQ','right:24px;bottom:94px'],['b_fly','飞行',null,'right:94px;bottom:94px',()=>{P.fly=!P.fly;}],
-  ['b_t','溶解T',null,'right:164px;bottom:24px',()=>goScene(cur==='A'?'B':'A')],
-  ['b_c','镜头C',null,'right:12px;top:52px',()=>{P.cam=(P.cam+1)%CAMS.length;camHud();},1],['b_v','第一人称',null,'right:66px;top:52px',()=>{if(CAMS[P.cam]==='first')P.cam=P.camPrev||0;else{P.camPrev=P.cam;P.cam=CAMS.indexOf('first');}camHud();},1],
-  ['b_g','角色',null,'right:120px;top:52px',()=>setChar((PL.idx+1)%ROSTER.length),1],['b_m','场景',null,'right:174px;top:52px',()=>toggleMenu(),1]];
- for(const [id,lab,key,pos,fn,small] of B){const b=document.createElement('div');b.id=id;b.className='tb'+(small?' ts':'');b.textContent=lab;b.style.cssText=pos;tc.appendChild(b);
-  b.addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation();b.classList.add('dn');if(key)keys[key]=true;if(fn)fn();},{passive:false});
-  const up=e=>{e.preventDefault();e.stopPropagation();b.classList.remove('dn');if(key)keys[key]=false;};b.addEventListener('touchend',up,{passive:false});b.addEventListener('touchcancel',up,{passive:false});}
+ const css=document.createElement('style');css.textContent=`#hud{display:none!important}#cross{display:none!important}
+ #tc{position:fixed;inset:0;z-index:30;touch-action:none;user-select:none;-webkit-user-select:none;pointer-events:none}
+ #joy{position:absolute;left:22px;bottom:22px;width:148px;height:148px;border-radius:50%;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.4);pointer-events:auto}
+ #knob{position:absolute;left:49px;top:49px;width:50px;height:50px;border-radius:50%;background:rgba(255,220,170,.6);pointer-events:none}
+ .tb{position:absolute;min-width:64px;min-height:64px;padding:6px 8px;border-radius:18px;background:rgba(20,14,40,.72);border:2px solid rgba(255,220,170,.65);color:#ffe9c4;font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.15;pointer-events:auto;box-sizing:border-box}
+ .tb.dn{background:rgba(255,190,120,.62);color:#2a1830}
+ .tb.round{border-radius:50%;width:64px;height:64px;min-width:64px;min-height:64px;padding:0;font-size:14px}
+ .tb.wide{min-width:96px;padding:8px 14px;border-radius:16px}
+ .tb.chip{min-width:48px;min-height:48px;width:48px;height:48px;padding:0;border-radius:14px;font-size:16px;font-weight:700}
+ .tb.hi{border-color:rgba(255,210,140,.95);box-shadow:0 0 12px rgba(255,180,100,.35)}
+ #tchips{position:absolute;left:50%;top:10px;transform:translateX(-50%);display:flex;gap:8px;pointer-events:none;z-index:31}
+ #tchips .tb{pointer-events:auto}
+ #v7prompt{bottom:168px!important;font-size:16px!important;padding:12px 18px!important;border-radius:20px!important;pointer-events:auto!important}
+ #v7chat{width:min(560px,96vw)!important;bottom:12px!important}
+ #v7chat .hd b{font-size:17px!important}
+ #v7chat .x{font-size:28px!important;padding:8px 12px!important;min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+ #v7in{font-size:16px!important;padding:12px 14px!important;min-height:48px}
+ #v7send{font-size:16px!important;padding:12px 18px!important;min-height:48px;min-width:72px}
+ #v7card .acts button{font-size:16px!important;padding:12px 16px!important;min-height:48px}
+ #menu{z-index:60!important;min-width:0!important;max-width:92vw!important;max-height:82vh;overflow:auto;font-size:17px!important;line-height:2.05!important;padding:18px 20px!important}
+ #menu [data-s],#menu [data-c],#menu [data-end],#menu [data-resetmem]{display:block;padding:10px 8px;margin:2px 0;border-radius:12px;background:rgba(255,255,255,.04)}
+ #menu [data-end]{background:rgba(255,180,100,.18)!important;font-size:18px;font-weight:700;text-align:center;margin-top:12px!important}
+ `;document.head.appendChild(css);
+
+ const tc=document.createElement('div');tc.id='tc';
+ tc.innerHTML='<div id="joy"><div id="knob"></div></div><div id="tchips"></div>';
+ document.body.appendChild(tc);
+ const chips=$('tchips');
+ ORDER.forEach((k,i)=>{const b=document.createElement('div');b.className='tb chip';b.textContent=String(i+1);b.title=SC[k].name;b.dataset.scene=k;chips.appendChild(b);
+  const go=e=>{e.preventDefault();e.stopPropagation();goScene(k);};
+  b.addEventListener('pointerdown',go,{passive:false});
+  b.addEventListener('click',go);});
+
+ // helper: bind pressable control (pointer + touch + click)
+ function bindBtn(b,key,fn){
+  const down=e=>{e.preventDefault();e.stopPropagation();b.classList.add('dn');if(key)keys[key]=true;if(fn)fn();};
+  const up=e=>{e.preventDefault();e.stopPropagation();b.classList.remove('dn');if(key)keys[key]=false;};
+  b.addEventListener('pointerdown',down,{passive:false});
+  b.addEventListener('pointerup',up,{passive:false});
+  b.addEventListener('pointercancel',up,{passive:false});
+  b.addEventListener('pointerleave',e=>{if(b.classList.contains('dn'))up(e);});
+  b.addEventListener('touchstart',down,{passive:false});
+  b.addEventListener('touchend',up,{passive:false});
+  b.addEventListener('touchcancel',up,{passive:false});
+  b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();if(fn&&!key)fn();});
+ }
+ function mk(lab,pos,key,fn,extraClass){
+  const b=document.createElement('div');b.className='tb'+(extraClass?(' '+extraClass):'');b.textContent=lab;b.style.cssText=pos;tc.appendChild(b);bindBtn(b,key,fn);return b;
+ }
+
+ // big action row (bottom-right stack + mid actions)
+ mk('上升','right:24px;bottom:24px','Space',null,'round');
+ mk('下降','right:100px;bottom:24px','KeyQ',null,'round');
+ mk('飞行','right:24px;bottom:100px',null,()=>{P.fly=!P.fly;try{if(P.fly)V7.markFlight(V7SESS);}catch(_){}},'round');
+ mk('梦境','right:100px;bottom:100px',null,()=>enterDream(),'round');
+ mk('溶解','right:176px;bottom:24px',null,()=>goScene(cur==='A'?'B':'A'),'round');
+ mk('交谈','right:24px;bottom:176px',null,()=>{if(V7_NEAR)v7OpenChat();else if(MGX.near)mgEnter(MGX.near.userData.id);else setSt('走近阿澄金环或地上发光圈后再点交谈');},'wide hi');
+ mk('菜单','right:132px;bottom:176px',null,()=>toggleMenu(),'wide');
+ mk('结束这局','right:24px;bottom:248px',null,()=>v7EndSession(),'wide hi');
+ // top-right utility
+ mk('镜头','right:24px;top:68px',null,()=>{P.cam=(P.cam+1)%CAMS.length;camHud();},'round');
+ mk('第一人称','right:100px;top:68px',null,()=>{if(CAMS[P.cam]==='first')P.cam=P.camPrev||0;else{P.camPrev=P.cam;P.cam=CAMS.indexOf('first');}camHud();},'wide');
+ mk('角色','right:24px;top:144px',null,()=>setChar((PL.idx+1)%ROSTER.length),'round');
+ mk('场景','right:100px;top:144px',null,()=>toggleMenu(),'round');
+
  const joy=$('joy'),knob=$('knob');
- const setKnob=()=>{knob.style.left=(40+TOUCH.jx*42)+'px';knob.style.top=(40+TOUCH.jy*42)+'px';};
- tc.addEventListener('touchstart',e=>{e.preventDefault();for(const t of e.changedTouches){
-   if(t.clientX<innerWidth*0.45&&TOUCH.jid===null){TOUCH.jid=t.identifier;const r=joy.getBoundingClientRect();TOUCH.jcx=r.left+r.width/2;TOUCH.jcy=r.top+r.height/2;
-     if(Math.hypot(t.clientX-TOUCH.jcx,t.clientY-TOUCH.jcy)>90){TOUCH.jcx=t.clientX;TOUCH.jcy=t.clientY;}}
-   else if(TOUCH.lid===null){TOUCH.lid=t.identifier;TOUCH.lx=t.clientX;TOUCH.ly=t.clientY;}}},{passive:false});
- tc.addEventListener('touchmove',e=>{e.preventDefault();for(const t of e.changedTouches){
-   if(t.identifier===TOUCH.jid){let dx=(t.clientX-TOUCH.jcx)/55,dy=(t.clientY-TOUCH.jcy)/55;const m=Math.hypot(dx,dy);if(m>1){dx/=m;dy/=m;}TOUCH.jx=dx;TOUCH.jy=dy;TOUCH.jm=Math.min(1,m);setKnob();}
-   else if(t.identifier===TOUCH.lid){P.yaw-=(t.clientX-TOUCH.lx)*0.0065;P.pitch=Math.max(-1.2,Math.min(0.9,P.pitch-(t.clientY-TOUCH.ly)*0.005));TOUCH.lx=t.clientX;TOUCH.ly=t.clientY;}}},{passive:false});
- const end=e=>{for(const t of e.changedTouches){if(t.identifier===TOUCH.jid){TOUCH.jid=null;TOUCH.jx=TOUCH.jy=TOUCH.jm=0;setKnob();}if(t.identifier===TOUCH.lid)TOUCH.lid=null;}};
- tc.addEventListener('touchend',end);tc.addEventListener('touchcancel',end);
- menu.style.zIndex='60';menu.style.minWidth='0';menu.style.maxWidth='88vw';menu.style.fontSize='16px';
+ const setKnob=()=>{knob.style.left=(49+TOUCH.jx*44)+'px';knob.style.top=(49+TOUCH.jy*44)+'px';};
+ function isUITarget(el){return el&&(el.closest&&(el.closest('.tb')||el.closest('#v7chat')||el.closest('#menu')||el.closest('#v7card')||el.closest('#v7prompt')||el.closest('#tchips')));}
+ function beginStick(id,x,y){
+  TOUCH.jid=id;const r=joy.getBoundingClientRect();TOUCH.jcx=r.left+r.width/2;TOUCH.jcy=r.top+r.height/2;
+  if(Math.hypot(x-TOUCH.jcx,y-TOUCH.jcy)>100){TOUCH.jcx=x;TOUCH.jcy=y;}
+ }
+ function moveStick(x,y){let dx=(x-TOUCH.jcx)/60,dy=(y-TOUCH.jcy)/60;const m=Math.hypot(dx,dy);if(m>1){dx/=m;dy/=m;}TOUCH.jx=dx;TOUCH.jy=dy;TOUCH.jm=Math.min(1,m);setKnob();}
+ function endStick(){TOUCH.jid=null;TOUCH.jx=TOUCH.jy=TOUCH.jm=0;setKnob();}
+ function beginLook(id,x,y){TOUCH.lid=id;TOUCH.lx=x;TOUCH.ly=y;}
+ function moveLook(x,y){P.yaw-=(x-TOUCH.lx)*0.0065;P.pitch=Math.max(-1.2,Math.min(0.9,P.pitch-(y-TOUCH.ly)*0.005));TOUCH.lx=x;TOUCH.ly=y;}
+ function endLook(){TOUCH.lid=null;}
+ joy.addEventListener('pointerdown',e=>{if(TOUCH.jid!==null)return;e.preventDefault();e.stopPropagation();beginStick(e.pointerId,e.clientX,e.clientY);try{joy.setPointerCapture(e.pointerId);}catch(_){}});
+
+ // Pointer Events (Windows touchscreen / stylus) + touch* fallback
+ const onPtrDown=e=>{
+  if(!TOUCH.on)return;
+  if(e.pointerType==='mouse'&&e.button!==0)return;
+  if(V7_CHAT||menu.style.display==='block'||document.getElementById('v7card')?.style.display==='flex'||CS.on||(window.__MG&&window.__MG.active)||MGM.MG.active)return;
+  if(isUITarget(e.target))return;
+  // left half → stick; right half → look. No pointer lock required.
+  const left=e.clientX<innerWidth*0.46;
+  if(left&&TOUCH.jid===null){beginStick(e.pointerId,e.clientX,e.clientY);try{renderer.domElement.setPointerCapture?.(e.pointerId);}catch(_){}e.preventDefault();}
+  else if(!left&&TOUCH.lid===null){beginLook(e.pointerId,e.clientX,e.clientY);try{renderer.domElement.setPointerCapture?.(e.pointerId);}catch(_){}e.preventDefault();}
+ };
+ const onPtrMove=e=>{
+  if(e.pointerId===TOUCH.jid){moveStick(e.clientX,e.clientY);e.preventDefault();}
+  else if(e.pointerId===TOUCH.lid){moveLook(e.clientX,e.clientY);e.preventDefault();}
+ };
+ const onPtrUp=e=>{
+  if(e.pointerId===TOUCH.jid)endStick();
+  if(e.pointerId===TOUCH.lid)endLook();
+ };
+ addEventListener('pointerdown',onPtrDown,{passive:false});
+ addEventListener('pointermove',onPtrMove,{passive:false});
+ addEventListener('pointerup',onPtrUp,{passive:false});
+ addEventListener('pointercancel',onPtrUp,{passive:false});
+
+ // touch* fallback for older WebViews that skip pointer events
+ tc.style.pointerEvents='none';
+ joy.style.pointerEvents='auto';
+ tc.addEventListener('touchstart',e=>{
+  if(V7_CHAT||menu.style.display==='block')return;
+  for(const t of e.changedTouches){
+   if(isUITarget(document.elementFromPoint(t.clientX,t.clientY)))continue;
+   if(t.clientX<innerWidth*0.46&&TOUCH.jid===null){beginStick(t.identifier,t.clientX,t.clientY);e.preventDefault();}
+   else if(TOUCH.lid===null){beginLook(t.identifier,t.clientX,t.clientY);e.preventDefault();}
+  }
+ },{passive:false});
+ tc.addEventListener('touchmove',e=>{
+  for(const t of e.changedTouches){
+   if(t.identifier===TOUCH.jid){moveStick(t.clientX,t.clientY);e.preventDefault();}
+   else if(t.identifier===TOUCH.lid){moveLook(t.clientX,t.clientY);e.preventDefault();}
+  }
+ },{passive:false});
+ const tend=e=>{for(const t of e.changedTouches){if(t.identifier===TOUCH.jid)endStick();if(t.identifier===TOUCH.lid)endLook();}};
+ tc.addEventListener('touchend',tend);tc.addEventListener('touchcancel',tend);
+
+ // keep talk button highlight when near
+ const talkBtn=[...tc.querySelectorAll('.tb')].find(b=>b.textContent==='交谈');
+ const _v7NearPrev=v7NearUpdate;
+ v7NearUpdate=function(){_v7NearPrev();if(talkBtn){if(V7_NEAR||MGX.near)talkBtn.classList.add('hi');else talkBtn.classList.remove('hi');}};
+
+ // prevent accidental pointer-lock requirement: click canvas does not need lock on touch
+ renderer.domElement.addEventListener('click',e=>{if(TOUCH.on){e.preventDefault();document.exitPointerLock?.();}},true);
 }
+
 // ---------------- update loop ----------------
 const _f=new THREE.Vector3(),_r=new THREE.Vector3(),_mv=new THREE.Vector3(),_look=new THREE.Vector3(),_cam=new THREE.Vector3();
 function update(dt){

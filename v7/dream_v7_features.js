@@ -326,17 +326,17 @@ export function mountUI() {
   const css = document.createElement('style');
   css.id = 'v7css';
   css.textContent = `
-#v7prompt{position:fixed;left:50%;bottom:78px;transform:translateX(-50%);background:rgba(14,10,28,.78);color:#ffe9c4;padding:8px 16px;border-radius:18px;font-size:14px;z-index:35;display:none;pointer-events:none;text-shadow:0 0 4px #000;border:1px solid rgba(255,210,140,.35)}
+#v7prompt{position:fixed;left:50%;bottom:78px;transform:translateX(-50%);background:rgba(14,10,28,.78);color:#ffe9c4;padding:12px 18px;border-radius:20px;font-size:16px;z-index:35;display:none;pointer-events:auto;text-shadow:0 0 4px #000;border:1px solid rgba(255,210,140,.35)}
 #v7chat{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);width:min(520px,92vw);background:rgba(12,8,24,.94);color:#f3ecff;border-radius:16px;z-index:55;display:none;flex-direction:column;box-shadow:0 0 40px rgba(140,110,255,.4);border:1px solid rgba(255,210,160,.25);font-family:"Microsoft YaHei","PingFang SC",sans-serif}
 #v7chat .hd{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.08)}
 #v7chat .hd b{color:#ffd9a0;font-size:15px}
 #v7chat .tier{font-size:12px;color:#cfc6ff;background:rgba(140,110,255,.25);padding:2px 8px;border-radius:10px;margin-left:8px}
-#v7chat .x{cursor:pointer;color:#ccc;font-size:18px;padding:0 6px}
+#v7chat .x{cursor:pointer;color:#ccc;font-size:28px;padding:8px 12px;min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center}
 #v7log{height:220px;overflow:auto;padding:10px 14px;font-size:13px;line-height:1.55}
 #v7log .u{color:#ffe2b0;margin:6px 0}#v7log .n{color:#dcd4ff;margin:6px 0}#v7log .meta{color:#8a82a8;font-size:11px}
 #v7row{display:flex;gap:8px;padding:10px 12px;border-top:1px solid rgba(255,255,255,.08)}
-#v7in{flex:1;background:#1a1430;border:1px solid #3a3160;border-radius:10px;color:#fff;padding:8px 10px;font-size:14px;outline:none}
-#v7send,#v7endbtn,#v7copy,#v7closeCard,#v7again{background:linear-gradient(90deg,#ffb070,#a58bff);border:0;color:#1a1028;font-weight:bold;border-radius:10px;padding:8px 14px;cursor:pointer}
+#v7in{flex:1;background:#1a1430;border:1px solid #3a3160;border-radius:12px;color:#fff;padding:12px 14px;font-size:16px;outline:none;min-height:48px}
+#v7send,#v7endbtn,#v7copy,#v7closeCard,#v7again{background:linear-gradient(90deg,#ffb070,#a58bff);border:0;color:#1a1028;font-weight:bold;border-radius:12px;padding:12px 16px;cursor:pointer;min-height:48px;font-size:16px}
 #v7card{position:fixed;inset:0;background:rgba(5,3,12,.72);z-index:70;display:none;align-items:center;justify-content:center;padding:20px}
 #v7card .box{width:min(520px,94vw);background:linear-gradient(160deg,#2a1a3a,#1a1230 60%,#241828);color:#f7eefc;border-radius:18px;padding:22px 24px;box-shadow:0 0 50px rgba(255,180,120,.25);border:1px solid rgba(255,210,160,.35)}
 #v7card h2{margin:0 0 10px;font-size:20px;letter-spacing:3px;color:#ffd9a0;font-weight:600}

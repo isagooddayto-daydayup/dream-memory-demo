@@ -50,4 +50,13 @@ python3 -m http.server 8797
 - 在线发布状态见本文件「发布」一节（提交后更新）。
 
 ## 发布
-（部署时回填）
+- **已确认**：已 push 到 `isagooddayto-daydayup/dream-memory-demo` main，commit `e87308b`。
+- 试玩链接：https://isagooddayto-daydayup.github.io/dream-memory-demo/v7/
+- 本地同源：`/workspace/game/demo/dream_v7_public/`
+- **Pages 已确认 HTTP 200**（北京时间约 2026-10-26 21:14 探测）：页面含「回忆与梦境 · v7」「阿澄」「dream_v7_features」。
+
+## 触屏增强（2026-10-27）
+- 已确认改动：Pointer Events + 大按钮（交谈/菜单/结束这局/场景 chips）+ Electron 默认 `?touch=1`
+- 说明：`/workspace/game/demo/v7work/TOUCH.md`
+- 网页强制触屏：在 URL 后加 `?touch`
+- 操作：左半屏走、右半屏转视角；点大按钮交谈/菜单/结束这局
