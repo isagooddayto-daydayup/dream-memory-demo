@@ -1,10 +1,10 @@
 # 梦境游戏 v8.5 进度
 
-时间：2026-10-27 17:25:00（北京时间 / Asia/Shanghai）
+时间：2026-10-27 17:24:59（北京时间 / Asia/Shanghai）
 
 ## 状态总览
 - **本刀 v8.5**：真人骨骼动画（idle/walk/run + 转身碎步）；换人后前任留原地作闲逛 NPC；去掉漂浮发光门框，只走实体门口/矿车/山洞；公开版 Rocketbox MIT 最逼真角色 + 近景特写；私密版含 YY + Windows exe
-- **发布**：**待 stamp**（本文件随 Pages push 更新）
+- **发布**：**已确认**（Pages 200，含 v8.5）
 - **验证**：Playwright Chromium + SwiftShader；`?emu=1&nosplat=1` 功能证据 + 普通模式（无 emu）mixer/骨骼数据证据
 - **公开包**：无 YY 脸、无 Renderpeople；仅 Rocketbox MIT
 
@@ -36,7 +36,8 @@
 - Sophia/小夏无 jog 重定向 → run 回退为加速 walk（runIsWalk）
 - cutscenes/manifest.json 仍 404（v8.4 起既有，不影响主路）
 
-## 发布（证据，push 后填）
+## 发布（证据）
 - 试玩：https://isagooddayto-daydayup.github.io/dream-memory-demo/v8/
-- commit：_pending_
-- Pages 探测：_pending_
+- 功能 commit （71c31549b8d9a86896296f0ba0566828c93a4690，2026-10-27 17:23:23 北京时间）
+- Pages last-modified 2026-10-27 17:24:12 北京时间（Tue, 27 Oct 2026 09:24:12 GMT）；探测 index/world 均 200，含 v8.5、parkCurrentChar、toggleClose、SkeletonUtils；world VERSION=v8.5、9 DOORS、公开 roster 仅 Rocketbox；无 npc/yy
+- 私密 exe：/workspace/game/offline/梦境游戏v8.5私密版-win32-x64/（~399MB 未压缩；zip 222MB，3 part）；上传 YY Google Drive（不共享）
