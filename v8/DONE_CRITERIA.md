@@ -1,7 +1,9 @@
-# v8.2 done criteria
+# v8.3 done criteria (machine-checkable)
 
-1. Hub has forest door 「林间小路」→ walkable scene G with Kenney trees; return door works.
-2. Community markers 家门口 / 矿车站 / 小卖部 visible on hub; placards in Chinese.
-3. Menu/HUD shows v8.2; character card panel reads localStorage fields.
-4. Public package: no YY face, no Renderpeople d05.
-5. Pages `/v8/` HTTP 200 and body contains `v8.2` / `hub_forest` / `COMMUNITY`.
+1. Pages `https://isagooddayto-daydayup.github.io/dream-memory-demo/v8/` HTTP 200
+2. Body / dream_v8_world.js contains `v8.3`
+3. dream_v8_world.js exports doors `hub_home` / `hub_station` / `hub_shop` (or equivalent ids)
+4. No active placard-only community path: no `kind: 'placard'` / no primary `makeHubMarker` pillar UX; COMMUNITY placards removed or empty
+5. Public package: no YY face path, no Renderpeople d05 in default roster
+6. Touch docs updated (触屏怎么玩.txt + README) mention joystick / look / 角色 / walk-into doors
+7. PROGRESS.md records commit hash + curl evidence + Asia/Shanghai timestamps

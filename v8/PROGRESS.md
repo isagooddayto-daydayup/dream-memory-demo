@@ -1,35 +1,23 @@
-# 梦境游戏 v8.2 进度
+# 梦境游戏 v8.3 进度
 
-时间：2026-10-27（北京时间 / Asia/Shanghai）
+时间：2026-10-27 08:42:52（北京时间 / Asia/Shanghai）
 
 ## 状态总览
-- **已确认**：v8.0 枢纽门洞（教室 F、小房间 D）+ 角色切换；v8.1 校园/火星门
-- **本刀 v8.2**：林间小路可走迷你森林（Kenney CC0）+ 社区标记（家门口/矿车站/小卖部）+ 角色卡 localStorage
-- **已确认**：公开包无 YY 脸、无 Renderpeople d05；local 仍含 YY
-- **发布**：见文末
+- **本刀 v8.3**：家门口 / 矿车站 / 小卖部 → 可走进实体入口 + 程序化室内；去掉光柱告示；触屏进门加大、门提示上移
+- **保留**：教室/小房间/校园/火星/林间门洞；角色卡；触屏摇杆
+- **公开包**：无 YY 脸、无 Renderpeople d05
 
 ## 做了什么
-1. `dream_v8_world.js` → `VERSION=v8.2`，`DOORS` 增至 5（+ `hub_forest`「林间小路」→ G）。
-2. 新增 mesh 场景 G：`scenes/forest/*.glb`（Kenney City Kit Suburban / Retro Urban，CC0）拼可走清林 + 浅水盘。
-3. `COMMUNITY` 三标记：家门口 / 矿车站（告示「班车即将开通」并指向火星门）/ 小卖部。
-4. 角色卡：localStorage `dream_v8_charcards`（经历[]、技能{}），菜单面板显示；换人/过门会写经历、探索+1。
-5. 同步 public + local（local 保留 YY roster）。
-
-## 手工试玩
-1. 矿山 → 东侧绿门「林间小路」→ 应进森林空地 → 「回矿山」门走回。
-2. 走近家门口 / 矿车站 / 小卖部光柱 → 中文告示。
-3. M 菜单看角色卡；G 换人后经历变长。
+1. `dream_v8_world.js` → `VERSION=v8.3`，`DOORS` + `hub_home` / `hub_station` / `hub_shop`（COMMUNITY placard 清空）
+2. 场景 H/I/J：程序化家室内 / 候车棚（墙上「班车即将开通」）/ 小卖部柜台货架
+3. 枢纽实体 facade（门框+门脸/雨棚/遮阳）
+4. 触屏：进门半径 2.05；门提示 bottom 220px；场景芯片换行；更新「触屏怎么玩.txt」
 
 ## 路径
 - 公开：`/workspace/game/demo/dream_v8_public/`
 - 本地（含 YY）：`/workspace/game/demo/dream_v8_local/`
-- 工作笔记：`/workspace/game/demo/v8work/`
+- 试玩：https://isagooddayto-daydayup.github.io/dream-memory-demo/v8/
 
 ## 缺口（诚实）
-- 无 Marble 写实唯美森林 / 雨夜 spz；本刀用 Kenney 低配可走林区代替，非摄影级。
-- 矿山专用 Blender 房间仍缺；车站/小卖部仅为告示骨架，未做真实班车或商店 UI。
-
-## 发布
-- 试玩（覆盖 v8/）：https://isagooddayto-daydayup.github.io/dream-memory-demo/v8/
-- **已确认**：push isagooddayto-daydayup/dream-memory-demo main，功能 commit 9331bb1（其后文档戳记 c50ebaf / 5886efe）。
-- Pages HTTP 200，正文含 v8.2；dream_v8_world.js 含 hub_forest / COMMUNITY；scenes/forest/tree-large.glb 200（探测约 2026-10-27 08:21 北京时间）。
+- 室内为低模程序化，非 Marble / 非矿山专用 Blender 房
+- 班车与小卖部交易未做

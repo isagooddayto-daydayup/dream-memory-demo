@@ -1,5 +1,5 @@
-/** Dream v8.2 world helpers: doors, community hubs, char cards. No paid APIs. */
-export const VERSION = 'v8.2';
+/** Dream v8.3 world helpers: doors (incl. home/station/shop interiors), char cards. No paid APIs. */
+export const VERSION = 'v8.3';
 
 /**
  * Hub door definitions (local offsets relative to scene A spawn).
@@ -59,7 +59,6 @@ export const DOORS = [
     label: '林间小路',
     from: 'A',
     to: 'G',
-    // east of spawn — Kenney CC0 mini forest mesh zone
     hubLocal: [7.2, -2.0],
     destLocal: [0, 7.5],
     destYaw: Math.PI,
@@ -67,35 +66,49 @@ export const DOORS = [
     exitYaw: 0,
     color: 0x6dff9a,
   },
+  {
+    id: 'hub_home',
+    label: '家门口',
+    from: 'A',
+    to: 'H',
+    hubLocal: [2.6, 1.2],
+    destLocal: [0, 2.2],
+    destYaw: Math.PI,
+    exitLocal: [0, 4.6],
+    exitYaw: 0,
+    color: 0xffe08a,
+    facade: 'home',
+  },
+  {
+    id: 'hub_station',
+    label: '矿车站',
+    from: 'A',
+    to: 'I',
+    hubLocal: [-3.8, -5.0],
+    destLocal: [0, 3.5],
+    destYaw: Math.PI,
+    exitLocal: [0, 7.2],
+    exitYaw: 0,
+    color: 0xffb07a,
+    facade: 'station',
+  },
+  {
+    id: 'hub_shop',
+    label: '小卖部',
+    from: 'A',
+    to: 'J',
+    hubLocal: [-5.8, 0.8],
+    destLocal: [0, 2.0],
+    destYaw: Math.PI,
+    exitLocal: [0, 4.4],
+    exitYaw: 0,
+    color: 0xa8e0ff,
+    facade: 'shop',
+  },
 ];
 
-/** Lightweight living-community markers on hub A (placards, not full sim). */
-export const COMMUNITY = [
-  {
-    id: 'home',
-    label: '家门口',
-    hubLocal: [2.6, 1.2],
-    color: 0xffe08a,
-    kind: 'placard',
-    text: '家门口 · 生活圈入口\n室内装修筹备中；可先走「教室门」当屋里转转。',
-  },
-  {
-    id: 'station',
-    label: '矿车站',
-    hubLocal: [-3.8, -5.0],
-    color: 0xffb07a,
-    kind: 'placard',
-    text: '矿车站 · 班车即将开通\n去外地可先走南侧「洞穴 · 火星边疆」。',
-  },
-  {
-    id: 'shop',
-    label: '小卖部',
-    hubLocal: [-5.8, 0.8],
-    color: 0xa8e0ff,
-    kind: 'placard',
-    text: '小卖部 · 广场筹备中\n生活社区骨架占位，后续可买补给、接任务。',
-  },
-];
+/** @deprecated v8.3: community hubs are real doors now; kept empty for old callers. */
+export const COMMUNITY = [];
 
 export function doorWorldPos(SC, door, which) {
   const key = which === 'hub' ? door.from : door.to;
