@@ -7,28 +7,23 @@
 | 火星 | memC_mars_frontier.spz | 门洞 | 同上 |
 | Remy 房间 | memD_remy_room.spz | 门洞室内 | 同上 |
 | 教室 pack | scenes/classroom/*.glb | 门洞室内 | Grab3D CC0 |
-| Kenney trees | scenes/forest/*.glb | 林间小路 | CC0 |
-| Rocketbox FP02 | npc/FP02.glb | 可玩 | MIT |
-| public real NPCs | npc/real/c04,c05,d01–d04 | 可玩+氛围 | 无 d05 |
+| Kenney trees + Textures | scenes/forest/*.glb + Textures/*.png | 林间小路 | Kenney CC0（city-kit-suburban + retro-urban） |
+| Rocketbox public | npc/real/c04,c05,d01–d04 | 可玩 | MIT |
+| public jog clips | npc/anim/*_jog.glb | run | Quaternius UAL1 CC0 → Rocketbox 重定向，动画-only GLB |
 | YY 仿真人 | dream_v8_local/npc/yy/*.glb | 仅本地 | **禁止** Pages |
+| local-only humans | c02/c03/c06/d06 | 仅本地 | Renderpeople / 未核实 → 不公开 |
 
-## v8.3 (2026-10-27)
+## v8.5 (2026-10-27)
 | 资产 | 路径 | 用途 | 许可/注意 |
 |---|---|---|---|
-| 家 / 车站 / 小卖部室内 | 代码 meshPack home/station/shop | 可走程序化室内 | 自建低模，无外部模型 |
-| 枢纽实体门口 facade | makeEntranceFacade | 家门口/车站/小卖部外观 | 自建 |
-| （移除）光柱 COMMUNITY | — | 不再使用 placard | — |
+| SkeletonUtils | lib/addons/utils/SkeletonUtils.js | skinned clone | three r180 |
+| UAL1 Standard | assets/characters/glb/UAL1_Standard.glb（源） | Idle/Walk/Jog 源 | Quaternius CC0 |
+| retarget_anim.py | demo/v8work/anim85/ | Blender 重定向 | 输出动画-only ~90KB |
+| 实体门口/矿车/山洞 | makeEntranceFacade | 场景切换 | 自建低模 |
+| 近景补光 FILL | DirectionalLight | 特写质感 | — |
+| forest Textures | scenes/forest/Textures/{colormap,dirt,tiles,treeA,treeB}.png | 修白模 | Kenney CC0 |
 
 ## v8.4 (2026-10-27)
 | 资产 | 路径 | 用途 | 许可/注意 |
 |---|---|---|---|
-| 做旧贴图 rust / wood / corr / coal | index.html `OLDTEX`（CanvasTexture 256px） | 矿车站门脸+室内 | 代码程序生成，无外部图片，无许可问题 |
-| 老站牌「矿车站」/ 告示 / 裂表盘 | `OLDTEX.sign` 512×160、`notice` 256×320、`clock` 128 | 同上 | 程序生成 |
-| 矿车 + 铁轨 | `OLDTEX.cart()` + 盒体 | 同上 | 自建低模 |
-| PWA 图标 | icon-192.png / icon-512.png | 添加到主屏幕 | 本地 PIL 程序生成 |
-| （未用）外部 CC0 PBR | — | — | 本刀未下载任何外部贴图 |
-
-## 缺口
-- Marble/写实唯美森林、雨夜 spz：仍未入库。
-- 矿山专用 Blender 房间：仍缺；本刀用程序化家室内顶上。
-- 车站真实班车 / 小卖部交易 UI：未做（墙上「班车即将开通」小牌保留）。
+| 做旧贴图 rust / wood / corr / coal | index.html `OLDTEX` | 矿车站 | 程序 CanvasTexture |

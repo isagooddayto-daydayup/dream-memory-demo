@@ -1,11 +1,11 @@
-# v8.4 done criteria (machine-checkable)
+# v8.5 done criteria (machine-checkable)
 
-1. Pages `https://isagooddayto-daydayup.github.io/dream-memory-demo/v8/` HTTP 200; body contains `v8.4`, `v8Fullscreen`, `requestFullscreen`, `apple-mobile-web-app-capable`
-2. `v8/manifest.webmanifest` HTTP 200 with `"display": "fullscreen"` + `"orientation": "landscape"`; dream_v8_world.js contains `v8.4`
-3. Station weathering present: `OLDTEX` + sign text `矿车站` in index.html (hub facade + interior I)
-4. Playwright Chromium mobile emulation (hasTouch) on live URL, 4 profiles (844×390, 915×412, 667×375 landscape + 390×844 portrait):
-   全屏 button exists & tap raises no pageerror; all `.tb` ≥44×44; no button∩button / button∩joystick; all in viewport;
-   right-half swipe changes yaw; joystick moves player; walking into 矿车站 door reaches scene I
-5. Screenshots in `/workspace/game/demo/v8work/shots_v84/` (+ results.json)
-6. Public package: no `yy_fb` / `npc/yy` / Renderpeople d05 in roster
-7. PROGRESS.md records commit + curl evidence + Asia/Shanghai timestamps; emulator-only caveat stated
+1. Pages `…/dream-memory-demo/v8/` HTTP 200; body contains `v8.5`, `toggleClose`, `parkCurrentChar`, `rideStart`/`RIDE`, no floating portal default (`portalOn=Q.has('portal')`)
+2. dream_v8_world.js: `VERSION==='v8.5'`, 9 DOORS, ROSTER_PUBLIC 6 Rocketbox only, NPC_LOCAL=[]
+3. Public package: no `yy_fb` / `npc/yy/` files; no Renderpeople d05/c01/c02/c03/c06/d06 in roster or shipped glbs under npc/
+4. Playwright evidence in `/workspace/game/demo/v8work/shots_v85/`:
+   ① idle non-T (mixer + bone quat change) ② walk/run weights ③ switch parks previous with mixer
+   ④ station→cart ride→Mars ⑤ home door ⑥ cave/mine ⑦ close-up face ⑧ local YY (not public)
+   + `demo_01to06.mp4` ≤30s + `normal_mode_probe.json` mixer_advances && bone_changes
+5. Private Windows tree under `/workspace/game/offline/` with ~90MB parts + 合并说明; uploaded only to YY Google Drive (not shared)
+6. PROGRESS.md: commit + curl Pages evidence + Asia/Shanghai stamps; honest gaps

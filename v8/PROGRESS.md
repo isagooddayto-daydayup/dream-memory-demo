@@ -1,38 +1,42 @@
-# 梦境游戏 v8.4 进度
+# 梦境游戏 v8.5 进度
 
-时间：2026-10-27 10:13:10（北京时间 / Asia/Shanghai）
+时间：2026-10-27 17:25:00（北京时间 / Asia/Shanghai）
 
 ## 状态总览
-- **本刀 v8.4**：矿车站做旧（枢纽门脸 + 候车棚室内）；手机全屏按钮 + PWA manifest；横屏布局重排 + 安全区 + 防误触；竖屏「横屏更好玩」提示
-- **发布**：**已确认**（Pages 200，含 v8.4 / v8Fullscreen / manifest）
-- **验证**：Playwright Chromium 手机模拟（hasTouch）4 机型全过；**仅模拟器，真机（iOS Safari 全屏行为、帧率）未验**
-- **公开包**：无 YY 脸、无 Renderpeople d05
+- **本刀 v8.5**：真人骨骼动画（idle/walk/run + 转身碎步）；换人后前任留原地作闲逛 NPC；去掉漂浮发光门框，只走实体门口/矿车/山洞；公开版 Rocketbox MIT 最逼真角色 + 近景特写；私密版含 YY + Windows exe
+- **发布**：**待 stamp**（本文件随 Pages push 更新）
+- **验证**：Playwright Chromium + SwiftShader；`?emu=1&nosplat=1` 功能证据 + 普通模式（无 emu）mixer/骨骼数据证据
+- **公开包**：无 YY 脸、无 Renderpeople；仅 Rocketbox MIT
 
 ## 做了什么
-1. 做旧贴图 `OLDTEX`（代码 CanvasTexture ≤512px）：锈铁、斑驳木板、波纹铁皮+锈流痕、煤灰、褪色老站牌「矿车站 / KUANG CHE ZHAN · 1987」（掉漆、锈角）、旧告示、裂表盘、矿车
-2. 候车棚室内 I：木站台、铁轨+枕木、两辆矿车、锈柱、塌一角的铁皮顶、歪木条后墙、老灯泡、灰尘；进站朝向站牌
-3. 枢纽门脸：锈柱、下垂铁皮雨棚、木板墙、老站牌、链条、短铁轨+矿车
-4. 手机：左上「⛶ 全屏」（requestFullscreen/webkit + screen.orientation.lock('landscape')，失败不报错；iOS 弹「分享 → 添加到主屏幕」）；manifest.webmanifest（fullscreen/landscape）+ apple-mobile-web-app-capable + 图标
-5. 横屏布局：右下 3×3 按钮（52px，间距 10px）、左下 140px 摇杆、上角 全屏/菜单/结束这局；env(safe-area-inset-*)；HUD 触屏隐藏、桌面 12 秒淡出
-6. 防误触：touch-action/overscroll/user-select/touch-callout；阻止双击缩放、手势缩放、长按菜单；按钮 400ms 去重（修复一按触发 2–3 次导致菜单/飞行自己关掉）
-7. 进门：出门后需先离开门范围才重新「上膛」，出门落点 2.9m 外，避免刚出又被吸回
+1. **动画**：Rocketbox 自带 Idle_Loop/Walk_Loop；Jog_Fwd_Loop 由 Quaternius UAL1（CC0）重定向到各角色（Blender 4.2 headless）；SkeletonUtils.clone 修 T 字；换人 `parkCurrentChar` 前任带 mixer 闲逛
+2. **门**：去掉漂浮发光门框；9 条 DOORS（家/小卖部/教室/小房间/山洞校园/矿洞林间/矿车站 + 矿车→火星/校园）；实体 facade（cave/mine/cart/home/shop/classroom…）；矿车「上车」1.8s 过场
+3. **公开角色**：晓雨 c04 / 小晴 d01 / 小雯 c05 / 小悦 d02 / 阿澄·可玩 d03 / Vivi d04（全 Rocketbox MIT）；近景特写 Z + FILL 补光
+4. **私密**：dream_v8_local 含 YY + Claudia/Carla/Sophia/小夏；Windows exe 替换 Electron v7 树；切分 ~90MB；上传 YY 本人 Google Drive（不共享）
+5. **林间贴图**：补齐 Kenney CC0 Textures（colormap/treeA/treeB/dirt/tiles）
 
-## 模拟器验证（live Pages，2026-10-27 10:13:10 北京时间）
-- 机型：844×390（iPhone 13 横）、915×412（Pixel 7 横）、667×375（iPhone SE 横）、390×844（iPhone 13 竖）；全部 hasTouch + isMobile
-- 全部 12 个按钮 ≥52×52；按钮互不重叠、不压摇杆（最小间距 10px）；全在视口内
-- 点「全屏」：无 pageerror；Chromium 进入全屏，锁横屏 NotSupportedError 已被吞掉
-- 右半屏左滑 120px → yaw +0.78 rad；摇杆前推 1.6s → 移动约 4m
-- 站在矿车站门前 3.2m 推摇杆 → 约 3.9s 进入 I；倒退走出 → 回 A，3.5s 后仍在 A（不回吸）
-- 「菜单」一按即开、「角色」一按只换 1 位
-- 测试用 ?emu=1&nosplat=1（软件 GL 下 Gaussian splat 仅约 1 FPS，功能检查时不加载枢纽 splat 背景）；另有一组完整 splat 截图
-- 截图：/workspace/game/demo/v8work/shots_v84/
+## 自查证据（/workspace/game/demo/v8work/shots_v85/）
+| # | 文件 | 结果 |
+|---|---|---|
+| ① | 01_idle.png | confirmed：非 T 字，Idle_Loop 权重 1，骨骼四元数随时间变 |
+| ② | 02_walk.png / 02b_run.png | confirmed：walk/run 权重正确 |
+| ③ | 03a/b/c_*switch*.png | confirmed：晓雨→小晴，前任 mixer 闲逛 walkW≈0.86 |
+| ④ | 04a–e | confirmed：进矿车站→上车 overlay→火星边疆→坐回→回枢纽 |
+| ⑤ | 05a/b | confirmed：进家门 / 室内出口门 |
+| ⑥ | 06a–d | confirmed：山洞→校园、矿洞→林间 |
+| ⑦ | 07_closeup.png | confirmed：近景脸清晰 |
+| ⑧ | 08_yy_local_*.png | confirmed（仅本地）：YY 开局在场、可切、mixer+walk；**不上传公开处** |
+| 视频 | demo_01to06.mp4 | 28s |
+| 普通模式 | normal_mode_probe.json | mixer_advances + bone_changes = true（无 emu） |
 
 ## 缺口（诚实）
-- 真机未测：iOS Safari 不支持网页全屏（只能添加到主屏幕）；真机帧率未知
-- 667px 宽横屏：开局 7 秒的说明条会换行压住门提示，淡出后正常
-- 家门口/小卖部尚未做旧；班车与小卖部交易未做
+- 无独立 turn clip，原地转身用 walk 碎步混合
+- 矿车过场中角色未做「坐姿」专用动画（约 1.8s，保持 idle）
+- 真机未测；Playwright 模拟器帧率偏低（~22–40）
+- Sophia/小夏无 jog 重定向 → run 回退为加速 walk（runIsWalk）
+- cutscenes/manifest.json 仍 404（v8.4 起既有，不影响主路）
 
-## 发布（证据）
+## 发布（证据，push 后填）
 - 试玩：https://isagooddayto-daydayup.github.io/dream-memory-demo/v8/
-- 功能 commit `431f716`（431f7161db713f06c61a8302e2b050f984da42f7，2026-10-27 10:06:24 北京时间）
-- Pages last-modified 2026-10-27 10:07:11 北京时间；10:07:17 探测：index/world/manifest/icon 均 200，含 v8.4、v8Fullscreen、requestFullscreen、orientation.lock、apple-mobile-web-app-capable、OLDTEX、矿车站；manifest display=fullscreen、orientation=landscape；world 无 npc/yy
+- commit：_pending_
+- Pages 探测：_pending_

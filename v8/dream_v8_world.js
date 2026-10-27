@@ -1,111 +1,23 @@
-/** Dream v8.4 world helpers: doors (incl. home/station/shop interiors), char cards. No paid APIs. */
-export const VERSION = 'v8.4';
+/** Dream v8.5 world helpers: physical entrances (doors / storefronts / cave mouths / station mine carts), char cards. No paid APIs. */
+export const VERSION = 'v8.5';
 
 /**
  * Hub door definitions (local offsets relative to scene A spawn).
  * Main travel path = walk into glowing frames. Digit keys remain debug/fast travel.
  */
 export const DOORS = [
-  {
-    id: 'hub_classroom',
-    label: '教室门',
-    from: 'A',
-    to: 'F',
-    hubLocal: [4.5, 2.8],
-    destLocal: [2.0, 6.5],
-    destYaw: Math.PI,
-    exitLocal: [2.0, 9.2],
-    exitYaw: 0,
-    color: 0xffd28a,
-  },
-  {
-    id: 'hub_room',
-    label: '小房间门',
-    from: 'A',
-    to: 'D',
-    hubLocal: [-3.8, 3.2],
-    destLocal: [-3.2, 1.5],
-    destYaw: Math.PI,
-    exitLocal: [-3.6, 0.4],
-    exitYaw: 0,
-    color: 0xa8c8ff,
-  },
-  {
-    id: 'hub_campus',
-    label: '山洞 · 矿区校园',
-    from: 'A',
-    to: 'B',
-    hubLocal: [1.5, 8.5],
-    destLocal: [0, 0],
-    destYaw: 0,
-    exitLocal: [0, -2.4],
-    exitYaw: Math.PI,
-    color: 0x9dffc2,
-  },
-  {
-    id: 'hub_mars',
-    label: '洞穴 · 火星边疆',
-    from: 'A',
-    to: 'C',
-    hubLocal: [-1.5, -7.0],
-    destLocal: [1.5, 0],
-    destYaw: Math.PI,
-    exitLocal: [3.2, 0],
-    exitYaw: 0,
-    color: 0xff8a6a,
-  },
-  {
-    id: 'hub_forest',
-    label: '林间小路',
-    from: 'A',
-    to: 'G',
-    hubLocal: [7.2, -2.0],
-    destLocal: [0, 7.5],
-    destYaw: Math.PI,
-    exitLocal: [0, 10.2],
-    exitYaw: 0,
-    color: 0x6dff9a,
-  },
-  {
-    id: 'hub_home',
-    label: '家门口',
-    from: 'A',
-    to: 'H',
-    hubLocal: [2.6, 1.2],
-    destLocal: [0, 2.2],
-    destYaw: Math.PI,
-    exitLocal: [0, 4.6],
-    exitYaw: 0,
-    color: 0xffe08a,
-    facade: 'home',
-  },
-  {
-    id: 'hub_station',
-    label: '矿车站',
-    from: 'A',
-    to: 'I',
-    hubLocal: [-3.8, -5.0],
-    destLocal: [0, 3.5],
-    destYaw: 0, // v8.4: face the old sign / rails on arrival
-    exitLocal: [0, 7.2],
-    exitYaw: 0,
-    color: 0xffb07a,
-    facade: 'station',
-    weathered: true,
-  },
-  {
-    id: 'hub_shop',
-    label: '小卖部',
-    from: 'A',
-    to: 'J',
-    hubLocal: [-5.8, 0.8],
-    destLocal: [0, 2.0],
-    destYaw: Math.PI,
-    exitLocal: [0, 4.4],
-    exitYaw: 0,
-    color: 0xa8e0ff,
-    facade: 'shop',
-  },
+  // v8.5: no floating glow frames. Every door is a physical entrance model; exits are physical too.
+  // hubLocal: splat 'from' scene → relative to its spawn; mesh 'from' scene → scene-local.
+  { id: 'hub_classroom', label: '教室', from: 'A', to: 'F', hubLocal: [0.8, -7.2], destLocal: [2.0, 6.5], destYaw: Math.PI, exitLocal: [2.0, 9.4], color: 0xffd28a, facade: 'classroom', exitFacade: 'exitdoor' },
+  { id: 'hub_room', label: '小房间', from: 'A', to: 'D', hubLocal: [-3.8, 3.2], destLocal: [-3.2, 1.5], destYaw: Math.PI, exitLocal: [-3.6, 0.2], color: 0xa8c8ff, facade: 'room', exitFacade: 'exitdoor' },
+  { id: 'hub_campus', label: '山洞 · 矿区校园', from: 'A', to: 'B', hubLocal: [1.5, 8.5], destLocal: [0, 0], destYaw: 0, exitLocal: [0, -2.6], color: 0x9dffc2, facade: 'cave', exitFacade: 'cave' },
+  { id: 'hub_forest', label: '矿洞 · 林间小路', from: 'A', to: 'G', hubLocal: [7.2, -2.0], destLocal: [0, 7.5], destYaw: Math.PI, exitLocal: [0, 10.4], color: 0x6dff9a, facade: 'mine', exitFacade: 'mine' },
+  { id: 'hub_home', label: '家', from: 'A', to: 'H', hubLocal: [2.6, 1.2], destLocal: [0, 2.2], destYaw: Math.PI, exitLocal: [0, 3.9], color: 0xffe08a, facade: 'home', exitFacade: 'exitdoor' },
+  { id: 'hub_station', label: '矿车站', from: 'A', to: 'I', hubLocal: [-3.8, -5.0], destLocal: [0, 3.5], destYaw: 0, exitLocal: [0, 7.2], color: 0xffb07a, facade: 'station', exitFacade: 'exitdoor', weathered: true },
+  { id: 'hub_shop', label: '小卖部', from: 'A', to: 'J', hubLocal: [-5.8, 0.8], destLocal: [0, 2.0], destYaw: Math.PI, exitLocal: [0, 3.9], color: 0xa8e0ff, facade: 'shop', exitFacade: 'exitdoor' },
+  // 矿车站里的矿车：走进矿车 = 上车 → 短过场 → 远处场景；那边的矿车停靠点坐回来
+  { id: 'cart_mars', label: '火星边疆', from: 'I', to: 'C', hubLocal: [3.2, -0.9], hubYaw: 0, destLocal: [1.5, 0], destYaw: Math.PI, exitLocal: [4.6, 0], color: 0xff8a6a, facade: 'cart', exitFacade: 'cartstop', ride: true },
+  { id: 'cart_campus', label: '矿区校园', from: 'I', to: 'B', hubLocal: [-3.6, -0.9], hubYaw: 0, destLocal: [2.4, 1.0], destYaw: 0, exitLocal: [4.4, 2.6], color: 0x9dffc2, facade: 'cart', exitFacade: 'cartstop', ride: true },
 ];
 
 /** @deprecated v8.3: community hubs are real doors now; kept empty for old callers. */
@@ -116,12 +28,14 @@ export function doorWorldPos(SC, door, which) {
   const S = SC[key];
   if (!S) return null;
   const loc = which === 'hub' ? door.hubLocal : which === 'dest' ? door.destLocal : door.exitLocal;
-  return {
-    key,
-    x: S.off.x + (which === 'hub' ? S.spawn[0] + loc[0] : (S.kind === 'mesh' ? loc[0] : S.spawn[0] + loc[0])),
-    z: S.off.z + (which === 'hub' ? S.spawn[1] + loc[1] : (S.kind === 'mesh' ? loc[1] : S.spawn[1] + loc[1])),
-    yaw: which === 'hub' ? 0 : which === 'dest' ? door.destYaw : door.exitYaw,
-  };
+  const mesh = S.kind === 'mesh';
+  const x = S.off.x + (mesh ? loc[0] : S.spawn[0] + loc[0]);
+  const z = S.off.z + (mesh ? loc[1] : S.spawn[1] + loc[1]);
+  let yaw = 0;
+  if (which === 'hub') yaw = door.hubYaw !== undefined ? door.hubYaw : Math.atan2(-loc[0], -loc[1]); // facade opening faces the hub spawn
+  else if (which === 'dest') yaw = door.destYaw;
+  else { const d = door.destLocal; yaw = Math.atan2(d[0] - loc[0], d[1] - loc[1]); } // exit opening faces the arrival point
+  return { key, x, z, yaw };
 }
 
 export function communityWorldPos(SC, hub) {
@@ -192,16 +106,18 @@ export function appendCharStory(name, line) {
 
 /** Public-safe playable roster (Rocketbox MIT / already in public npc/real). */
 export const ROSTER_PUBLIC = [
-  { f: 'npc/FP02.glb', name: '小芳' },
-  { f: 'npc/real/d03_fp01_npc.glb', name: '阿澄·可玩' },
+  // v8.5 公开版：只用 Microsoft Rocketbox (MIT) 写实模型；每个都有 Idle / Walk / Jog（Quaternius UAL CC0 重定向）
   { f: 'npc/real/c04_fa11_npc.glb', name: '晓雨' },
-  { f: 'npc/real/c05_fa03_npc.glb', name: '小雯' },
   { f: 'npc/real/d01_fa12_npc.glb', name: '小晴' },
+  { f: 'npc/real/c05_fa03_npc.glb', name: '小雯' },
+  { f: 'npc/real/d02_fa15_npc.glb', name: '小悦' },
+  { f: 'npc/real/d03_fp01_npc.glb', name: '阿澄·可玩' },
   { f: 'npc/real/d04_fp02_npc.glb', name: 'Vivi' },
 ];
 
 /** Public build never uses local roster. */
 export const ROSTER_LOCAL = ROSTER_PUBLIC;
+export const NPC_LOCAL = [];
 
 export function pickRoster(isLocal) {
   return ROSTER_PUBLIC;
