@@ -19,6 +19,15 @@
 | 枢纽实体门口 facade | makeEntranceFacade | 家门口/车站/小卖部外观 | 自建 |
 | （移除）光柱 COMMUNITY | — | 不再使用 placard | — |
 
+## v8.4 (2026-10-27)
+| 资产 | 路径 | 用途 | 许可/注意 |
+|---|---|---|---|
+| 做旧贴图 rust / wood / corr / coal | index.html `OLDTEX`（CanvasTexture 256px） | 矿车站门脸+室内 | 代码程序生成，无外部图片，无许可问题 |
+| 老站牌「矿车站」/ 告示 / 裂表盘 | `OLDTEX.sign` 512×160、`notice` 256×320、`clock` 128 | 同上 | 程序生成 |
+| 矿车 + 铁轨 | `OLDTEX.cart()` + 盒体 | 同上 | 自建低模 |
+| PWA 图标 | icon-192.png / icon-512.png | 添加到主屏幕 | 本地 PIL 程序生成 |
+| （未用）外部 CC0 PBR | — | — | 本刀未下载任何外部贴图 |
+
 ## 缺口
 - Marble/写实唯美森林、雨夜 spz：仍未入库。
 - 矿山专用 Blender 房间：仍缺；本刀用程序化家室内顶上。

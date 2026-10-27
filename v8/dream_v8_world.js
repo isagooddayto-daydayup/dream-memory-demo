@@ -1,5 +1,5 @@
-/** Dream v8.3 world helpers: doors (incl. home/station/shop interiors), char cards. No paid APIs. */
-export const VERSION = 'v8.3';
+/** Dream v8.4 world helpers: doors (incl. home/station/shop interiors), char cards. No paid APIs. */
+export const VERSION = 'v8.4';
 
 /**
  * Hub door definitions (local offsets relative to scene A spawn).
@@ -86,11 +86,12 @@ export const DOORS = [
     to: 'I',
     hubLocal: [-3.8, -5.0],
     destLocal: [0, 3.5],
-    destYaw: Math.PI,
+    destYaw: 0, // v8.4: face the old sign / rails on arrival
     exitLocal: [0, 7.2],
     exitYaw: 0,
     color: 0xffb07a,
     facade: 'station',
+    weathered: true,
   },
   {
     id: 'hub_shop',
