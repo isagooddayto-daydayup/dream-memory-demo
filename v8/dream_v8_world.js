@@ -1,5 +1,5 @@
-/** Dream v8.1 world helpers: door volumes + parked playable NPCs. No paid APIs. */
-export const VERSION = 'v8.1';
+/** Dream v8.2 world helpers: doors, community hubs, char cards. No paid APIs. */
+export const VERSION = 'v8.2';
 
 /**
  * Hub door definitions (local offsets relative to scene A spawn).
@@ -35,11 +35,9 @@ export const DOORS = [
     label: '山洞 · 矿区校园',
     from: 'A',
     to: 'B',
-    // north of spawn — flat trail / cave mouth metaphor
     hubLocal: [1.5, 8.5],
     destLocal: [0, 0],
     destYaw: 0,
-    // return door slightly south of campus spawn so you don't re-trigger instantly
     exitLocal: [0, -2.4],
     exitYaw: Math.PI,
     color: 0x9dffc2,
@@ -49,7 +47,6 @@ export const DOORS = [
     label: '洞穴 · 火星边疆',
     from: 'A',
     to: 'C',
-    // south of spawn — cave to Marble Mars Frontier (not ARES mesh)
     hubLocal: [-1.5, -7.0],
     destLocal: [1.5, 0],
     destYaw: Math.PI,
@@ -57,10 +54,50 @@ export const DOORS = [
     exitYaw: 0,
     color: 0xff8a6a,
   },
+  {
+    id: 'hub_forest',
+    label: '林间小路',
+    from: 'A',
+    to: 'G',
+    // east of spawn — Kenney CC0 mini forest mesh zone
+    hubLocal: [7.2, -2.0],
+    destLocal: [0, 7.5],
+    destYaw: Math.PI,
+    exitLocal: [0, 10.2],
+    exitYaw: 0,
+    color: 0x6dff9a,
+  },
+];
+
+/** Lightweight living-community markers on hub A (placards, not full sim). */
+export const COMMUNITY = [
+  {
+    id: 'home',
+    label: '家门口',
+    hubLocal: [2.6, 1.2],
+    color: 0xffe08a,
+    kind: 'placard',
+    text: '家门口 · 生活圈入口\n室内装修筹备中；可先走「教室门」当屋里转转。',
+  },
+  {
+    id: 'station',
+    label: '矿车站',
+    hubLocal: [-3.8, -5.0],
+    color: 0xffb07a,
+    kind: 'placard',
+    text: '矿车站 · 班车即将开通\n去外地可先走南侧「洞穴 · 火星边疆」。',
+  },
+  {
+    id: 'shop',
+    label: '小卖部',
+    hubLocal: [-5.8, 0.8],
+    color: 0xa8e0ff,
+    kind: 'placard',
+    text: '小卖部 · 广场筹备中\n生活社区骨架占位，后续可买补给、接任务。',
+  },
 ];
 
 export function doorWorldPos(SC, door, which) {
-  // which: 'hub' | 'dest' | 'exit'
   const key = which === 'hub' ? door.from : door.to;
   const S = SC[key];
   if (!S) return null;
@@ -73,8 +110,70 @@ export function doorWorldPos(SC, door, which) {
   };
 }
 
+export function communityWorldPos(SC, hub) {
+  const S = SC.A;
+  if (!S) return null;
+  return {
+    x: S.off.x + S.spawn[0] + hub.hubLocal[0],
+    z: S.off.z + S.spawn[1] + hub.hubLocal[1],
+  };
+}
+
 export function nearDoor(px, pz, dx, dz, r = 1.35) {
   return Math.hypot(px - dx, pz - dz) < r;
+}
+
+const CARD_KEY = 'dream_v8_charcards';
+
+export function loadCharCards() {
+  try {
+    return JSON.parse(localStorage.getItem(CARD_KEY) || '{}') || {};
+  } catch (_) {
+    return {};
+  }
+}
+
+export function saveCharCards(all) {
+  try {
+    localStorage.setItem(CARD_KEY, JSON.stringify(all));
+  } catch (_) {}
+}
+
+/** Ensure placeholder growth fields for a playable name. */
+export function ensureCharCard(name) {
+  const all = loadCharCards();
+  if (!all[name]) {
+    all[name] = {
+      name,
+      经历: ['初入矿山小镇'],
+      技能: { 探索: 1, 交谈: 1 },
+    };
+    saveCharCards(all);
+  }
+  return all[name];
+}
+
+export function bumpCharSkill(name, skill, delta = 1) {
+  const all = loadCharCards();
+  const c = all[name] || ensureCharCard(name);
+  if (!c.技能) c.技能 = {};
+  c.技能[skill] = (c.技能[skill] || 0) + delta;
+  all[name] = c;
+  saveCharCards(all);
+  return c;
+}
+
+export function appendCharStory(name, line) {
+  const all = loadCharCards();
+  const c = all[name] || ensureCharCard(name);
+  if (!c.经历) c.经历 = [];
+  if (c.经历[c.经历.length - 1] !== line) {
+    c.经历.push(line);
+    if (c.经历.length > 12) c.经历 = c.经历.slice(-12);
+  }
+  all[name] = c;
+  saveCharCards(all);
+  return c;
 }
 
 /** Public-safe playable roster (Rocketbox MIT / already in public npc/real). */

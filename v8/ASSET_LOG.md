@@ -21,3 +21,15 @@
 ## v8.1 (2026-10-27)
 - 无新增外部资产；复用 memB_mining_school / memC_mars_frontier 既有 spz+height。
 - 门洞标签：山洞·矿区校园、洞穴·火星边疆。
+
+## v8.2 (2026-10-27)
+| 资产 | 路径 | 用途 | 许可/注意 |
+|---|---|---|---|
+| Kenney trees (suburban + retro urban) | scenes/forest/*.glb | 林间小路迷你森林 | CC0（见 LICENSE_kenney_cc0.txt）；非 Marble 写实 |
+| 社区标记 | 代码 COMMUNITY | 家门口/矿车站/小卖部告示 | 自建光柱，无外部模型 |
+| 角色卡 | localStorage dream_v8_charcards | 经历/技能占位 | 浏览器本地 |
+
+## 缺口
+- Marble/写实唯美森林、雨夜 spz：仍未入库；本刀用 Kenney 低配可走林区顶上。
+- 矿山专用 Blender 房间：仍缺。
+- 车站真实交通节点 / 小卖部交互：仅告示骨架。
