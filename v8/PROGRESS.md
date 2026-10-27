@@ -30,4 +30,7 @@
 
 ## 发布
 - 试玩（覆盖 v8/）：https://isagooddayto-daydayup.github.io/dream-memory-demo/v8/
-- （push 后更新 commit / curl 证据）
+- 
+- **已确认**：push `isagooddayto-daydayup/dream-memory-demo` main，commit `fd9ed51`。
+- 试玩：https://isagooddayto-daydayup.github.io/dream-memory-demo/v8/
+- Pages 探测时间约 2026-10-27 08:14 CST（见执行记录）。
