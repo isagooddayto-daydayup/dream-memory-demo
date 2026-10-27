@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>回忆与梦境 · v8 矿山世界试玩</title>
+<title>回忆与梦境 · v8.1 矿山世界试玩</title>
 <style>
 html,body{margin:0;height:100%;overflow:hidden;background:#07060c;font-family:"Microsoft YaHei","PingFang SC",sans-serif}
 canvas{display:block}
@@ -19,7 +19,7 @@ canvas{display:block}
 <script type="importmap">{"imports":{"three":"./lib/three.module.js","three/addons/":"./lib/addons/","@sparkjsdev/spark":"./lib/spark.module.js","@pixiv/three-vrm":"./lib/three-vrm.module.js","MG":"./minigames.js","V7":"./dream_v7_features.js","V8":"./dream_v8_world.js"}}</script>
 </head><body>
 <div id="tint"></div><div id="vig"></div><div id="flash"></div><div id="title"></div><div id="cross"></div>
-<div id="hud"><b>回忆与梦境 · v8 矿山世界 · 门洞进出 + 换人</b><br>走去发光<strong>门框</strong>可进出教室/小房间（不必靠数字键）；<b>E</b> 靠近阿澄交谈；地上发光圈=小游戏<br>
+<div id="hud"><b>回忆与梦境 · v8.1 矿山世界 · 门洞进出 + 换人</b><br>走去发光<strong>门框</strong>可进出教室/小房间/矿区校园/火星边疆（主路；数字键仅快进）；<b>E</b> 靠近阿澄交谈；地上发光圈=小游戏<br>
 点击画面锁定鼠标 · 鼠标转视角 · <b>WASD</b> 走 · <b>Shift</b> 跑<br>
 <b>空格</b> 按住起飞/上升 · <b>Ctrl/Q</b> 下降 · <b>F</b> 飞行/步行切换<br>
 <b>M</b> 菜单（结束这局→梦境回忆）· <b>G</b> 切换角色（前任留在原地当 NPC）· <b>1-6</b> 仍可快切场景 · <b>C</b> 镜头 · <b>V</b> 第一人称<br>
@@ -58,7 +58,7 @@ addEventListener('resize',()=>{renderer.setSize(W(),H());camera.aspect=W()/H();c
 
 // ---------------- memory scenes ----------------
 const SC={
- A:{key:'A',name:'矿山小镇 · 探索枢纽',sub:'Marble 矿区大世界（门洞连通教室/小房间，后续可接校园/火星/森林）',url:'scenes/memA_fujian_town.spz',prevUrl:'scenes/memA_portalview.spz',hm:'scenes/memA_height.json',
+ A:{key:'A',name:'矿山小镇 · 探索枢纽',sub:'Marble 矿区大世界（门洞连通教室·小房间·矿区校园·火星边疆）',url:'scenes/memA_fujian_town.spz',prevUrl:'scenes/memA_portalview.spz',hm:'scenes/memA_height.json',
     off:new THREE.Vector3(0,0,0),spawn:[0,0],yaw:0,tint:[1.12,0.98,0.82],sat:0.74,fog:[0.96,0.84,0.64],fogR:[20,100],glow:[1.05,0.82,0.45]},
  B:{key:'B',name:'回忆二 · 小学矿区校园',sub:'小学矿区校园（你的 Marble 场景）',url:'scenes/memB_mining_school.spz',prevUrl:'scenes/memB_portalview.spz',hm:'scenes/memB_height.json',
     off:new THREE.Vector3(500,0,0),spawn:[0,2],yaw:0,tint:[1.10,0.98,0.82],sat:0.80,fog:[0.95,0.82,0.62],fogR:[16,78],glow:[1.0,0.82,0.48]},
@@ -588,7 +588,7 @@ const menu=document.createElement('div');menu.id='menu';menu.style.cssText='posi
 function menuRender(){const tier=V7.tierOf(V7MEM.affinity);menu.innerHTML='<b style="font-size:18px">梦境菜单 (M 关闭)</b><br><span style="color:#ffd9a0">场景 · 数字键</span><br>'+
  ORDER.map((k,i)=>'<div data-s="'+k+'" style="cursor:pointer;'+(k===cur?'color:#ffd28a':'')+'">'+(i+1)+'. '+SC[k].name+(SC[k].loaded?'':' <small style="color:#9a90c0">(首次进入时加载)</small>')+'</div>').join('')+
  '<span style="color:#ffd9a0">角色 · G 切换</span><br>'+ROSTER.map((r,i)=>'<span data-c="'+i+'" style="cursor:pointer;margin-right:14px;'+(i===PL.idx?'color:#ffd28a;text-decoration:underline':'')+'">'+r.name+'</span>').join('')+
- '<br><span style="color:#ffd9a0">v8 · 门洞</span><br><div style="font-size:13px;color:#cfc6ff">出生点附近发光门框：教室 / 小房间；走进即传送，房间内门框回矿山</div><br><span style="color:#ffd9a0">记事NPC</span><br><div style="font-size:13px;color:#cfc6ff">阿澄好感：'+tier.name+' ('+tier.score+') · 走近金环按 E 交谈</div>'+
+ '<br><span style="color:#ffd9a0">v8.1 · 门洞</span><br><div style="font-size:13px;color:#cfc6ff">枢纽发光门框：教室 / 小房间 / 山洞·矿区校园 / 洞穴·火星边疆；走进即传送，对侧门框回矿山（数字键 1–6 仍为调试快进）</div><br><span style="color:#ffd9a0">记事NPC</span><br><div style="font-size:13px;color:#cfc6ff">阿澄好感：'+tier.name+' ('+tier.score+') · 走近金环按 E 交谈</div>'+
  '<div data-end="1" style="cursor:pointer;margin-top:8px;color:#ffd28a;text-decoration:underline">结束这局 · 生成「这局梦境回忆」</div>'+
  '<div data-resetmem="1" style="cursor:pointer;margin-top:4px;font-size:12px;color:#9a90c0">清空阿澄记忆（测试用）</div>';
  menu.querySelectorAll('[data-s]').forEach(el=>el.onclick=()=>{toggleMenu(false);goScene(el.dataset.s);});

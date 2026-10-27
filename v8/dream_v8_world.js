@@ -1,19 +1,19 @@
-/** Dream v8 world helpers: door volumes + parked playable NPCs. No paid APIs. */
-export const VERSION = 'v8';
+/** Dream v8.1 world helpers: door volumes + parked playable NPCs. No paid APIs. */
+export const VERSION = 'v8.1';
 
-/** Hub door definitions (local offsets relative to scene A spawn). */
+/**
+ * Hub door definitions (local offsets relative to scene A spawn).
+ * Main travel path = walk into glowing frames. Digit keys remain debug/fast travel.
+ */
 export const DOORS = [
   {
     id: 'hub_classroom',
     label: '教室门',
     from: 'A',
     to: 'F',
-    // near spawn in mine town — walkable flat area
     hubLocal: [4.5, 2.8],
-    // where player appears in classroom mesh scene
     destLocal: [2.0, 6.5],
     destYaw: Math.PI,
-    // exit door in classroom → back to hub beside this door
     exitLocal: [2.0, 9.2],
     exitYaw: 0,
     color: 0xffd28a,
@@ -29,6 +29,33 @@ export const DOORS = [
     exitLocal: [-3.6, 0.4],
     exitYaw: 0,
     color: 0xa8c8ff,
+  },
+  {
+    id: 'hub_campus',
+    label: '山洞 · 矿区校园',
+    from: 'A',
+    to: 'B',
+    // north of spawn — flat trail / cave mouth metaphor
+    hubLocal: [1.5, 8.5],
+    destLocal: [0, 0],
+    destYaw: 0,
+    // return door slightly south of campus spawn so you don't re-trigger instantly
+    exitLocal: [0, -2.4],
+    exitYaw: Math.PI,
+    color: 0x9dffc2,
+  },
+  {
+    id: 'hub_mars',
+    label: '洞穴 · 火星边疆',
+    from: 'A',
+    to: 'C',
+    // south of spawn — cave to Marble Mars Frontier (not ARES mesh)
+    hubLocal: [-1.5, -7.0],
+    destLocal: [1.5, 0],
+    destYaw: Math.PI,
+    exitLocal: [3.2, 0],
+    exitYaw: 0,
+    color: 0xff8a6a,
   },
 ];
 

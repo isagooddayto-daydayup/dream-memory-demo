@@ -17,3 +17,7 @@
 ## 缺口
 - 专用「矿山房间」Blender 室内：Drive 搜「矿山房」无可用 glb/blend（2026-10-27）；下一刀继续搜或自建。
 - 森林 / 雨夜 Marble 或等价 mesh：未入库本刀。
+
+## v8.1 (2026-10-27)
+- 无新增外部资产；复用 memB_mining_school / memC_mars_frontier 既有 spz+height。
+- 门洞标签：山洞·矿区校园、洞穴·火星边疆。
