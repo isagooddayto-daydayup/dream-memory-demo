@@ -27,3 +27,12 @@
 | 资产 | 路径 | 用途 | 许可/注意 |
 |---|---|---|---|
 | 做旧贴图 rust / wood / corr / coal | index.html `OLDTEX` | 矿车站 | 程序 CanvasTexture |
+
+## v8.6 2026-10-28 11:15:50 Asia/Shanghai
+| 项 | 来源 | 许可 | 备注 |
+| --- | --- | --- | --- |
+| 程序化煤灰/砖石/锈铁 CanvasTexture | 自写 | 自有 | ≤512px，无外部依赖 |
+| FogExp2 / SCENE_MOOD | three.js | MIT | 冷灰石青 |
+| 角色模型 | Microsoft Rocketbox | MIT | 公开包不变 |
+| Kenney 等 CC0（若沿用） | Kenney | CC0 | 林间等旧场景 |
+公开包：无 YY 脸、无 Renderpeople。
