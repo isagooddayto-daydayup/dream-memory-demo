@@ -16,5 +16,5 @@
 4. nosplat textured ground — PASS（shots 01/02 vs 00_v85）
 5. cold SUN/HEMI + close FILL — PASS（mood probe sun=c8d4dc）
 6. shots_v86 ①–⑤ — PASS（9 png）
-7. Pages — pending deploy this stamp
+7. Pages — PASS http 200 + v8.6 @ 2026-10-28 11:17:26 Asia/Shanghai commit bb0280a
 8. PROGRESS gaps — PASS（PROGRESS.md 诚实缺口）
