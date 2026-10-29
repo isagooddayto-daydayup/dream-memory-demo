@@ -1,0 +1,165 @@
+{
+  "version": "interior_props_LM_20261029",
+  "created_beijing": "2026-10-29 09:46 Asia/Shanghai",
+  "note": "L机场候车 / M火星庇护所 程序化道具摆点（未接线）。字段 type/x/z/rot/note；y≈0 贴地；rot 绕 Y 弧度。对齐 portal_whitebox_params walk_bounds。勿改 dream_v8_public。",
+  "wired": true,
+  "ref": {
+    "portal_draft": "PORTAL_MARS_AIRPORT_DRAFT_v817.md",
+    "params": "snippets/portal_whitebox_params.json",
+    "furniture_style": "snippets/furniture_hub_extra.json"
+  },
+  "scenes": {
+    "L": {
+      "scene_id": "L",
+      "label": "机场候车厅 · 白盒",
+      "meshPack": "airport",
+      "walk_bounds": {
+        "x": [
+          -6.2,
+          6.2
+        ],
+        "z": [
+          -5.2,
+          5.2
+        ]
+      },
+      "placements": [
+        {
+          "type": "wait_chair",
+          "x": -3.5,
+          "z": 1.5,
+          "rot": 0.0,
+          "note": "西侧候车长椅段，可坐；呼应白盒 benches[-3.5]"
+        },
+        {
+          "type": "wait_chair",
+          "x": 3.5,
+          "z": 1.5,
+          "rot": 3.14,
+          "note": "东侧候车长椅对坐，雨夜共坐钩"
+        },
+        {
+          "type": "flight_board",
+          "x": 0.0,
+          "z": -5.5,
+          "rot": 0.0,
+          "note": "北墙航班牌 Plane「ARES / 火星边疆」；接线可接 CLOCK"
+        },
+        {
+          "type": "checkin_counter",
+          "x": -4.8,
+          "z": -3.2,
+          "rot": 1.57,
+          "note": "西侧值机矮柜，暖点灯旁；lore tip 位"
+        },
+        {
+          "type": "luggage_cart",
+          "x": 4.2,
+          "z": -1.8,
+          "rot": -0.4,
+          "note": "东柱旁锈行李车，轮子半陷冷灰地"
+        },
+        {
+          "type": "pa_speaker",
+          "x": 2.2,
+          "z": -5.4,
+          "rot": 0.2,
+          "note": "航班牌侧广播喇叭，可复用 station_pa 杂音"
+        },
+        {
+          "type": "vending_crate",
+          "x": -5.6,
+          "z": 2.8,
+          "rot": 0.3,
+          "note": "南出口西侧汽水箱，矿山味混机场漆"
+        },
+        {
+          "type": "window_ledge",
+          "x": -6.0,
+          "z": -1.5,
+          "rot": 1.57,
+          "note": "西窗台矮沿，雨丝剪影落点；非可走障碍薄件"
+        }
+      ]
+    },
+    "M": {
+      "scene_id": "M",
+      "label": "火星地表庇护所 · 白盒",
+      "meshPack": "mars_shelter",
+      "walk_bounds": {
+        "x": [
+          -4.0,
+          4.0
+        ],
+        "z": [
+          -4.0,
+          4.0
+        ]
+      },
+      "placements": [
+        {
+          "type": "oxygen_cabinet",
+          "x": -3.2,
+          "z": -2.6,
+          "rot": 0.0,
+          "note": "西壁氧气柜，表盘停在半格；亲密档闲聊钩"
+        },
+        {
+          "type": "basalt_crate",
+          "x": -2.5,
+          "z": -2.8,
+          "rot": 0.35,
+          "note": "玄武岩箱×尘土，对照白盒 crate_dust 西"
+        },
+        {
+          "type": "basalt_crate",
+          "x": 2.5,
+          "z": -2.8,
+          "rot": -0.25,
+          "note": "玄武岩箱东侧，可坐旁白/回忆卡"
+        },
+        {
+          "type": "terminal_panel",
+          "x": 0.0,
+          "z": -3.2,
+          "rot": 0.0,
+          "note": "北侧终端台 panel_ui；lore tip / 班次错停"
+        },
+        {
+          "type": "airlock_lamp",
+          "x": 0.0,
+          "z": 3.6,
+          "rot": 3.14,
+          "note": "气闸洞内顶灯点，出舱踏板前暖斑"
+        },
+        {
+          "type": "suit_rack",
+          "x": 3.3,
+          "z": 1.2,
+          "rot": -1.57,
+          "note": "东窗旁空宇航服架，袖口积红尘"
+        },
+        {
+          "type": "dust_filter",
+          "x": -3.4,
+          "z": 0.8,
+          "rot": 1.2,
+          "note": "西墙滤尘箱，嗡嗡声旁白位"
+        },
+        {
+          "type": "basalt_stool",
+          "x": 1.4,
+          "z": -1.0,
+          "rot": 0.5,
+          "note": "舱中玄武岩矮凳，终端前可坐"
+        }
+      ]
+    }
+  },
+  "import_hint": {
+    "for": "v8.17+",
+    "js_example": "const P=await (await fetch('./snippets/interior_props_LM.json')).json();\nfor(const sc of ['L','M']){ for(const p of P.scenes[sc].placements){ /* placeProp(root,p.type,p.x,0,p.z,p.rot) */ } }"
+  },
+  "wired_version": "v8.18",
+  "wired_beijing": "2026-10-29 Asia/Shanghai"
+}

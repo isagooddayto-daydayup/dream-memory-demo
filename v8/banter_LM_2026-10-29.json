@@ -1,0 +1,164 @@
+{
+  "version": 1,
+  "created_beijing": "2026-10-29 09:46 Asia/Shanghai",
+  "title": "场景加厚闲聊 · 机场L / 火星庇护所M（v8.18 已接线）",
+  "license_note": "原创手写；公开安全，无 YY 真名/脸/私密。角色名仅用公开 NPC。超现实梦境口吻。",
+  "wired": true,
+  "affinity_tiers": {
+    "stranger": {
+      "label": "陌生",
+      "score_max": 24
+    },
+    "familiar": {
+      "label": "熟识",
+      "score_min": 25,
+      "score_max": 59
+    },
+    "intimate": {
+      "label": "亲密",
+      "score_min": 60
+    }
+  },
+  "note": "每场景 × 三档 × 4 条。接线时可并进 scenePools 或 characters.banter。",
+  "scenes": {
+    "airport_L": {
+      "scene_id": "L",
+      "label": "机场候车厅",
+      "door": "hub_airport",
+      "npc_pool": [
+        "阿澄",
+        "小晴",
+        "晓雨",
+        "小悦"
+      ],
+      "banter": {
+        "stranger": [
+          {
+            "speaker": "阿澄",
+            "text": "这间候车厅是梦里的换乘。航班牌停在「ARES」，别找检票口。"
+          },
+          {
+            "speaker": "小晴",
+            "text": "广播半句就要发车，半句又像车站雨声。你是新面孔？"
+          },
+          {
+            "speaker": "晓雨",
+            "text": "长椅能坐。别挡登机口——那扇门通向冷灰边疆。"
+          },
+          {
+            "speaker": "小悦",
+            "text": "窗外星子在下雨。门是实体的，从枢纽机库门脸进来。"
+          }
+        ],
+        "familiar": [
+          {
+            "speaker": "阿澄",
+            "text": "熟了就知道：时刻牌字会抖一下，像矿车过岔。"
+          },
+          {
+            "speaker": "小晴",
+            "text": "行李车轮子陷进冷灰地。我听过它自己滚半圈。"
+          },
+          {
+            "speaker": "晓雨",
+            "text": "汽水箱还是矿山味。机场漆墙上，糖纸更亮。"
+          },
+          {
+            "speaker": "小悦",
+            "text": "联运通道能回车站棚。袖口灰两种：煤灰和雨灰。"
+          }
+        ],
+        "intimate": [
+          {
+            "speaker": "阿澄",
+            "text": "你来，我把西侧长椅留给你。回忆卡会写：推开过机场候车门。"
+          },
+          {
+            "speaker": "小晴",
+            "text": "想听广播，我陪你站在喇叭下——半句戏曲、半句登机。"
+          },
+          {
+            "speaker": "晓雨",
+            "text": "亲密了也按规矩：航班牌别撕。梦会记那一行「火星边疆」。"
+          },
+          {
+            "speaker": "小悦",
+            "text": "走之前回头看窗雨。那一幕我想你记得，再回广场回话。"
+          }
+        ]
+      }
+    },
+    "mars_shelter_M": {
+      "scene_id": "M",
+      "label": "火星地表庇护所",
+      "door": "hub_mars_shelter",
+      "npc_pool": [
+        "阿澄",
+        "小雯",
+        "晓雨",
+        "小悦"
+      ],
+      "banter": {
+        "stranger": [
+          {
+            "speaker": "阿澄",
+            "text": "这是火星地表舱白盒。氧气柜半格，别当真去吸。"
+          },
+          {
+            "speaker": "小雯",
+            "text": "红尘贴窗。我不熟你——先说你从机场还是矿车进来。"
+          },
+          {
+            "speaker": "晓雨",
+            "text": "玄武岩箱能坐。别踢气闸框，梦会响一下空铁声。"
+          },
+          {
+            "speaker": "小悦",
+            "text": "终端台字在跳。班次像停错到舱里的矿车。"
+          }
+        ],
+        "familiar": [
+          {
+            "speaker": "阿澄",
+            "text": "熟识了就知道：滤尘箱嗡嗡是背景，不是故障。"
+          },
+          {
+            "speaker": "小雯",
+            "text": "东窗剪影是假天空。你盯久了，会幻听广场喇叭。"
+          },
+          {
+            "speaker": "晓雨",
+            "text": "空宇航服架袖口积尘。摸一下，手背会红一会儿。"
+          },
+          {
+            "speaker": "小悦",
+            "text": "从机场那扇锈红门过来也行。两条路我都认。"
+          }
+        ],
+        "intimate": [
+          {
+            "speaker": "阿澄",
+            "text": "你来，氧气柜旁我留一盏工作灯。回忆卡写：进过地表舱。"
+          },
+          {
+            "speaker": "小雯",
+            "text": "想并坐玄武岩矮凳——终端前，话可以慢一点。"
+          },
+          {
+            "speaker": "晓雨",
+            "text": "亲密了也不出气闸乱跑。踏板外是梦的剪影，不是实地。"
+          },
+          {
+            "speaker": "小悦",
+            "text": "走之前拍掉红尘。我想你干净一点，回矿山小镇回话。"
+          }
+        ]
+      }
+    }
+  },
+  "import_hint": {
+    "for": "v8.17+",
+    "js_example": "const B=await (await fetch('./snippets/banter_LM_2026-10-29.json')).json();\nfunction line(sceneKey,tier){ const s=B.scenes[sceneKey]; const pool=s.banter[tier]; return pool[(Math.random()*pool.length)|0]; }"
+  },
+  "wired_version": "v8.18"
+}

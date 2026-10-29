@@ -1,0 +1,151 @@
+{
+  "title": "souls_feel_tweaks_v818",
+  "draft": false,
+  "wired": true,
+  "beijing": "2026-10-29 09:48 Asia/Shanghai",
+  "scope": "v8work snippets only; do NOT patch dream_v8_public from this file alone",
+  "disclaimer": "建议常量补丁，手机 WebGL 气质微调。勿声称已达主机魂系 / 体积雾 / 材质密度。非刷镰刀。",
+  "baseline_public": {
+    "VERSION": "v8.17",
+    "souls_core_since": "v8.6",
+    "P.camD": 4.5,
+    "P.pitch": -0.26,
+    "third.camY_nudge": -0.12,
+    "third.pitch_clamp": -0.18,
+    "third.look_h_factor": "eye*0.52",
+    "SCENE_MOOD.A": {
+      "fog": "0x646e76",
+      "dens": 0.034,
+      "clear": "0x566066",
+      "exp": 0.9
+    },
+    "HEMI": {
+      "sky": "0xb8c4cc",
+      "ground": "0x3a3e3c",
+      "i": 0.42
+    },
+    "SUN": {
+      "color": "0xd6e0e8",
+      "i": 2.15
+    },
+    "SCENE_LIGHT.A": {
+      "c": "0xc8d4dc",
+      "i": 2.15,
+      "h": 0.42
+    },
+    "FILL": {
+      "color": "0xfff0e4",
+      "i_ctor": 0.35,
+      "i_third": 0.28,
+      "i_close": 1.85
+    },
+    "toneMappingExposure_init": 0.92,
+    "clear0": "0x5a6468",
+    "tint_opacity": 0.22
+  },
+  "proposed_constants": {
+    "P.camD": 5.2,
+    "P.pitch": -0.3,
+    "third": {
+      "min_cd": 3.8,
+      "camY_nudge": -0.18,
+      "pitch_clamp": -0.24,
+      "look_h_factor": "eye*0.46",
+      "shoulder_bias": 0.28
+    },
+    "SCENE_MOOD_patch": {
+      "A": {
+        "fog": "0x5e6870",
+        "dens": 0.044,
+        "clear": "0x4a545c",
+        "exp": 0.86
+      },
+      "B": {
+        "fog": "0x646e76",
+        "dens": 0.046,
+        "clear": "0x505860",
+        "exp": 0.88
+      },
+      "I": {
+        "fog": "0x566068",
+        "dens": 0.05,
+        "clear": "0x3a4248",
+        "exp": 0.82
+      },
+      "J": {
+        "fog": "0x586068",
+        "dens": 0.052,
+        "clear": "0x3c444a",
+        "exp": 0.82
+      },
+      "G": {
+        "fog": "0x5a6860",
+        "dens": 0.044,
+        "clear": "0x465048",
+        "exp": 0.88
+      },
+      "note": "C/M 可保留区域暖褐；勿强行全域同一冷灰"
+    },
+    "lights": {
+      "HEMI": {
+        "sky": "0xaeb8c0",
+        "ground": "0x343836",
+        "i": 0.36
+      },
+      "SUN": {
+        "color": "0xc8d2da",
+        "i": 1.75
+      },
+      "SCENE_LIGHT.A": {
+        "c": "0xc0ccd4",
+        "i": 1.75,
+        "h": 0.36
+      },
+      "FILL": {
+        "color": "0xd8e2e8",
+        "i_third": 0.18,
+        "i_close": 1.55,
+        "note": "去暖；近景仍可读脸"
+      }
+    },
+    "renderer": {
+      "toneMappingExposure_init": 0.88,
+      "setClearColor0": "0x505860"
+    },
+    "css": {
+      "tint_opacity": 0.26,
+      "tint_gradient": "linear-gradient(180deg,#9aa6ae,#5a6870)",
+      "vig_outer_alpha": 0.78
+    }
+  },
+  "apply_pseudocode": [
+    "P.camD=5.2; P.pitch=-0.30;",
+    "third: cd=Math.max(3.8,P.camD); lh=eye*0.46; pt=Math.min(P.pitch,-0.24); _cam.y-=0.18;",
+    "SCENE_MOOD.A/B/I/J/G dens/fog/clear/exp 按 proposed_constants.SCENE_MOOD_patch;",
+    "HEMI/SUN/SCENE_LIGHT.A/FILL 按 lights；FILL.intensity = cm==='close'?1.55:0.18;",
+    "renderer.toneMappingExposure=0.88; setClearColor(0x505860,1);",
+    "#tint opacity .26; 渐变改冷；#vig 外圈 rgba alpha .78"
+  ],
+  "acceptance_after_wire": [
+    "P.camD>=5.0 && P.pitch<=-0.28",
+    "SCENE_MOOD.A.dens>=0.040 && SCENE_MOOD.A.dens<=0.048",
+    "FILL.color.getHex()===0xd8e2e8 || cold-family",
+    "SUN.intensity<=1.90 for scene A fair weather",
+    "shots: hub far fog mid-gray; third fullbody figure occupies ~35-45% frame height; no purple clear"
+  ],
+  "non_goals": [
+    "volumetric fog / godrays",
+    "SSAO default on",
+    "combat lock-on",
+    "console-parity materials",
+    "claim host-level souls feel"
+  ],
+  "refs": [
+    "v8work/SOULS_FEEL_GAP_v817.md",
+    "v8work/DONE_CRITERIA_v86.md",
+    "v8work/shots_v86/results.json",
+    "v8work/POSTFX_MOBILE_2026-10-29.md"
+  ],
+  "wired_version": "v8.18",
+  "beijing_wired": "2026-10-29 Asia/Shanghai"
+}

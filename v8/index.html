@@ -11,8 +11,8 @@ canvas{display:block}
 #hud{position:fixed;left:12px;top:10px;color:#f3ecff;font-size:13px;line-height:1.55;text-shadow:0 0 4px #000,0 0 2px #000;pointer-events:none;max-width:46vw}
 #hud b{color:#ffd9a0}
 #st{position:fixed;right:12px;top:10px;color:#cfc6ff;font-size:12px;text-shadow:0 0 3px #000;pointer-events:none;text-align:right}
-#vig{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 48%,rgba(6,10,14,.72) 100%)}
-#tint{position:fixed;inset:0;pointer-events:none;mix-blend-mode:soft-light;opacity:.22;background:linear-gradient(180deg,#a8b4bc,#6a7880)}
+#vig{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 48%,rgba(6,10,14,.78) 100%)}
+#tint{position:fixed;inset:0;pointer-events:none;mix-blend-mode:soft-light;opacity:.26;background:linear-gradient(180deg,#9aa6ae,#5a6870)}
 #flash{position:fixed;inset:0;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% 55%,rgba(255,240,210,.95),rgba(255,190,140,.35) 40%,rgba(120,80,255,0) 75%);mix-blend-mode:screen}
 #title{position:fixed;left:0;right:0;top:36%;text-align:center;color:#fff;font-size:30px;letter-spacing:8px;opacity:0;text-shadow:0 0 18px #ffb070,0 0 40px #8a6cff;pointer-events:none;transition:opacity 1s}
 #title small{display:block;font-size:14px;letter-spacing:3px;margin-top:8px;color:#e8dcff}
@@ -55,7 +55,7 @@ const W=()=>innerWidth,H=()=>innerHeight;
 const renderer=new THREE.WebGLRenderer({antialias:false,preserveDrawingBuffer:TEST,powerPreference:'high-performance'});
 renderer.setPixelRatio(TEST?1:Q.has('emu')?0.3:(TOUCH.on?Math.min(devicePixelRatio,1.0)*0.85:Math.min(devicePixelRatio,1.25))); // ?emu=1: software-GL emulator test only
 renderer.setSize(W(),H());document.body.prepend(renderer.domElement);
-const scene=new THREE.Scene();renderer.setClearColor(0x5a6468,1); // v8.6 cold gray-teal void (was purple); no Color background (would wipe portal behind-pass)
+const scene=new THREE.Scene();renderer.setClearColor(0x505860,1); // v8.6 cold gray-teal void (was purple); no Color background (would wipe portal behind-pass)
 const camera=new THREE.PerspectiveCamera(62,W()/H(),0.05,900);
 const localFrame=new THREE.Group();scene.add(localFrame);localFrame.add(camera);
 const portals=new SparkPortals({renderer,scene,camera,localFrame,defaultPortalRadius:1.15,
@@ -64,7 +64,7 @@ addEventListener('resize',()=>{renderer.setSize(W(),H());camera.aspect=W()/H();c
 
 // ---------------- memory scenes ----------------
 const SC={
- A:{key:'A',name:'矿山小镇 · 探索枢纽',sub:'Marble 矿区大世界（家·小卖·教室·小房间·飞船口ARES·机场候车·火星舱；山洞→校园；矿洞→林间；矿车站矿车→火星/校园/ARES）',url:'scenes/memA_fujian_town.spz',prevUrl:'scenes/memA_portalview.spz',hm:'scenes/memA_height.json',
+ A:{key:'A',name:'矿山小镇 · 探索枢纽',sub:'Marble 矿区大世界（家·小卖·教室·小房间·飞船口ARES·机场候车·火星舱·道具加厚；山洞→校园；矿洞→林间；矿车站矿车→火星/校园/ARES）',url:'scenes/memA_fujian_town.spz',prevUrl:'scenes/memA_portalview.spz',hm:'scenes/memA_height.json',
     off:new THREE.Vector3(0,0,0),spawn:[0,0],yaw:0,tint:[0.92,0.96,1.02],sat:0.62,fog:[0.42,0.48,0.52],fogR:[12,55],glow:[0.75,0.82,0.90]},
  B:{key:'B',name:'回忆二 · 小学矿区校园',sub:'小学矿区校园（你的 Marble 场景）',url:'scenes/memB_mining_school.spz',prevUrl:'scenes/memB_portalview.spz',hm:'scenes/memB_height.json',
     off:new THREE.Vector3(500,0,0),spawn:[0,2],yaw:0,tint:[0.94,0.97,1.02],sat:0.68,fog:[0.45,0.52,0.55],fogR:[10,48],glow:[0.78,0.85,0.92]},
@@ -566,6 +566,7 @@ async function loadMeshScene(S){
     root.userData.timetable3d=board;
    }catch(e){console.warn('airboard',e);}
    window.__airportWhitebox=true;
+   try{placeInteriorPropsLM(root,'L');}catch(e){console.warn('lmProps L',e);}
   }else{
    root.add(new THREE.HemisphereLight(0xe8d0b0,0x3a2a20,0.70));
    const sun=new THREE.DirectionalLight(0xffc090,0.95);sun.position.set(8,12,2);root.add(sun);
@@ -605,6 +606,7 @@ async function loadMeshScene(S){
     root.add(new THREE.Points(new THREE.BufferGeometry().setAttribute('position',new THREE.BufferAttribute(pos,3)),new THREE.PointsMaterial({color:0xc4a888,size:0.04,transparent:true,opacity:0.35,depthWrite:false})));
    }
    window.__marsShelterWhitebox=true;
+   try{placeInteriorPropsLM(root,'M');}catch(e){console.warn('lmProps M',e);}
   }
   scene.add(root);root.updateMatrixWorld(true);
   S.mesh=root;S.loaded=true;return S;
@@ -737,7 +739,7 @@ function poseAvatar(t,mode,speed,fly){
 
 // ---------------- player / camera ----------------
 const CAMS=['third','far','shoulder','first','close'],CAMN={third:'第三人称·魂系',far:'远景',shoulder:'肩后(CS)',first:'第一人称',close:'近景特写（正面看人物）'};
-const P={cam:0,camPrev:0,pos:new THREE.Vector3(),yaw:0,pitch:-0.26,vy:0,fly:false,flyK:0,speed:0,moving:false,t:0,camD:4.5,near:false,heading:0,vel:0,closeBase:0}; /* v8.6 默认第三人称：略远略低 */
+const P={cam:0,camPrev:0,pos:new THREE.Vector3(),yaw:0,pitch:-0.30,vy:0,fly:false,flyK:0,speed:0,moving:false,t:0,camD:5.2,near:false,heading:0,vel:0,closeBase:0}; /* v8.18 souls feel: 略远略低 */
 const player=new THREE.Group(),body=new THREE.Group();player.add(body);scene.add(player);
 const AV_YAW=Q.has('avyaw')?+Q.get('avyaw'):Math.PI; // avatar facing correction
 const keys={};
@@ -857,10 +859,10 @@ function applyGfxMode(){
  setSt(GFX.low?'低画质：雾更淡 · 无阴影 · 像素比降低':'标准画质');
 }
 function toggleLowQ(){GFX.low=!GFX.low;try{if(GFX.low)POSTFX.setEnabled(false);}catch(_){}applyGfxMode();menuRender();}
-renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=0.92; /* v8.6 略压曝光，对比更高 */
+renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=0.88; /* v8.6 略压曝光，对比更高 */
 renderer.shadowMap.enabled=!LOWQ;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-const HEMI=new THREE.HemisphereLight(0xb8c4cc,0x3a3e3c,0.42);scene.add(HEMI);
-const SUN=new THREE.DirectionalLight(0xd6e0e8,2.15);SUN.position.set(5,13,3);SUN.castShadow=true;
+const HEMI=new THREE.HemisphereLight(0xaeb8c0,0x343836,0.36);scene.add(HEMI);
+const SUN=new THREE.DirectionalLight(0xc8d2da,1.75);SUN.position.set(5,13,3);SUN.castShadow=true;
 SUN.shadow.mapSize.set(1024,1024);Object.assign(SUN.shadow.camera,{left:-9,right:9,top:9,bottom:-9,near:0.5,far:40});SUN.shadow.bias=-0.0004;SUN.shadow.normalBias=0.03;SUN.shadow.radius=3;
 scene.add(SUN);scene.add(SUN.target);
 { // 程序化天空环境贴图（不依赖外部 HDR，0 下载）
@@ -869,13 +871,13 @@ scene.add(SUN);scene.add(SUN.target);
  geo.setAttribute('color',new THREE.Float32BufferAttribute(col,3));es.add(new THREE.Mesh(geo,new THREE.MeshBasicMaterial({vertexColors:true,side:THREE.BackSide})));
  const sunb=new THREE.Mesh(new THREE.SphereGeometry(1.0,16,8),new THREE.MeshBasicMaterial({color:new THREE.Color(4.2,4.5,5.0)}));sunb.position.set(5,9,2);es.add(sunb);
  const pm=new THREE.PMREMGenerator(renderer);scene.environment=pm.fromScene(es,0.04).texture;scene.environmentIntensity=0.7;pm.dispose();}
-const SCENE_LIGHT={A:{c:0xc8d4dc,i:2.15,h:0.42},B:{c:0xd0dae0,i:2.0,h:0.48},C:{c:0xe0c8b0,i:2.1,h:0.40},D:{c:0xd8d4cc,i:1.45,h:0.55},E:{c:0xd0d8e0,i:2.0,h:0.45},F:{c:0xd4d8dc,i:1.9,h:0.5},G:{c:0xc8d4c8,i:2.0,h:0.48},H:{c:0xd8d0c4,i:1.55,h:0.5},I:{c:0xb8c0c4,i:1.85,h:0.38},J:{c:0xd0d8e0,i:1.55,h:0.5},K:{c:0xd8d4c8,i:1.7,h:0.52},L:{c:0xd0d8e0,i:1.8,h:0.42},M:{c:0xe8d0b0,i:1.7,h:0.40}};
+const SCENE_LIGHT={A:{c:0xc0ccd4,i:1.75,h:0.36},B:{c:0xd0dae0,i:2.0,h:0.48},C:{c:0xe0c8b0,i:2.1,h:0.40},D:{c:0xd8d4cc,i:1.45,h:0.55},E:{c:0xd0d8e0,i:2.0,h:0.45},F:{c:0xd4d8dc,i:1.9,h:0.5},G:{c:0xc8d4c8,i:2.0,h:0.48},H:{c:0xd8d0c4,i:1.55,h:0.5},I:{c:0xb8c0c4,i:1.85,h:0.38},J:{c:0xd0d8e0,i:1.55,h:0.5},K:{c:0xd8d4c8,i:1.7,h:0.52},L:{c:0xd0d8e0,i:1.8,h:0.42},M:{c:0xe8d0b0,i:1.7,h:0.40}};
 // v8.6 魂系雾：冷灰/石青 FogExp2；室内更淡
-const SCENE_MOOD={A:{fog:0x646e76,dens:0.034,clear:0x566066,exp:0.90},B:{fog:0x6e7880,dens:0.036,clear:0x5c666c,exp:0.92},C:{fog:0x7a6a5c,dens:0.028,clear:0x5e564c,exp:0.95},D:{fog:0x5a5e62,dens:0.055,clear:0x3a3e42,exp:0.88},E:{fog:0x5a646c,dens:0.038,clear:0x3e464c,exp:0.88},F:{fog:0x6a7074,dens:0.040,clear:0x4a5054,exp:0.90},G:{fog:0x627068,dens:0.038,clear:0x4e5a52,exp:0.92},H:{fog:0x5c5850,dens:0.050,clear:0x3e3a34,exp:0.88},I:{fog:0x5e666c,dens:0.042,clear:0x4a5258,exp:0.90},J:{fog:0x606870,dens:0.048,clear:0x3e464c,exp:0.88},K:{fog:0x6a6860,dens:0.042,clear:0x4a4840,exp:0.90},L:{fog:0x5a646c,dens:0.040,clear:0x3e464c,exp:0.86},M:{fog:0x7a6a5c,dens:0.032,clear:0x5e564c,exp:0.90}};
-function applySceneMood(key){const m=SCENE_MOOD[key]||SCENE_MOOD.A;let dens=(typeof GFX!=='undefined'&&GFX.low)?m.dens*0.55:m.dens;
+const SCENE_MOOD={A:{fog:0x5e6870,dens:0.044,clear:0x4a545c,exp:0.86},B:{fog:0x646e76,dens:0.046,clear:0x505860,exp:0.88},C:{fog:0x7a6a5c,dens:0.028,clear:0x5e564c,exp:0.95},D:{fog:0x5a5e62,dens:0.055,clear:0x3a3e42,exp:0.88},E:{fog:0x5a646c,dens:0.038,clear:0x3e464c,exp:0.88},F:{fog:0x6a7074,dens:0.040,clear:0x4a5054,exp:0.90},G:{fog:0x5a6860,dens:0.044,clear:0x465048,exp:0.88},H:{fog:0x5c5850,dens:0.050,clear:0x3e3a34,exp:0.88},I:{fog:0x566068,dens:0.050,clear:0x3a4248,exp:0.82},J:{fog:0x586068,dens:0.052,clear:0x3c444a,exp:0.82},K:{fog:0x6a6860,dens:0.042,clear:0x4a4840,exp:0.90},L:{fog:0x5a646c,dens:0.040,clear:0x3e464c,exp:0.86},M:{fog:0x7a6a5c,dens:0.032,clear:0x5e564c,exp:0.90}};
+function applySceneMood(key){const m=SCENE_MOOD[key]||SCENE_MOOD.A;let dens=(typeof GFX!=='undefined'&&GFX.low)?m.dens*0.55:m.dens;try{if(!feelEnabled()&&(key==='A'||key==='B'||key==='I'||key==='J'||key==='G'))dens*=0.78; /* feel off/lowq → 略稀回退 */}catch(_){}
  // v8.11 雨夜林间雾加深
  try{if(key==='G'&&typeof WEATHER!=='undefined'&&WEATHER.forceRain()){dens=Math.min(0.12, dens*2.15);scene.fog=new THREE.FogExp2(0x3a4840,dens);renderer.setClearColor(0x2a322c,1);renderer.toneMappingExposure=0.72;window.__forestFog={dens,rain:true};return;}}catch(_){}
- scene.fog=new THREE.FogExp2(m.fog,dens);renderer.setClearColor(m.clear,1);renderer.toneMappingExposure=m.exp;window.__forestFog={dens,rain:false,key};}
+ scene.fog=new THREE.FogExp2(m.fog,dens);renderer.setClearColor(m.clear,1);renderer.toneMappingExposure=m.exp;try{if(feelEnabled()&&(key==='A'||key==='L')&&scene.fog){scene.fog.color.setHex(FEEL.coolGray||0x5a646c);}}catch(_){}window.__forestFog={dens,rain:false,key};}
 applySceneMood('A');
 function realify(o){if(!o.isMesh)return;o.castShadow=!LOWQ;o.receiveShadow=false;
  const ms=Array.isArray(o.material)?o.material:[o.material];const out=ms.map(m=>{if(!m)return m;
@@ -1189,13 +1191,13 @@ const menu=document.createElement('div');menu.id='menu';menu.style.cssText='posi
 function menuRender(){const tier=V7.tierOf(V7MEM.affinity);const card=PL.name?V8.ensureCharCard(PL.name):null;const cardHtml=card?('当前：'+card.name+'\n经历：'+(card.经历||[]).join(' → ')+'\n技能：'+Object.entries(card.技能||{}).map(([k,v])=>k+' '+v).join(' · ')):'（切换角色后显示）';menu.innerHTML='<b style="font-size:18px">梦境菜单 (M 关闭)</b><br><span style="color:#ffd9a0">场景 · 数字键</span><br>'+
  ORDER.map((k,i)=>'<div data-s="'+k+'" style="cursor:pointer;'+(k===cur?'color:#ffd28a':'')+'">'+(i+1)+'. '+SC[k].name+(SC[k].loaded?'':' <small style="color:#9a90c0">(首次进入时加载)</small>')+'</div>').join('')+
  '<span style="color:#ffd9a0">角色 · G 切换</span><br>'+ROSTER.map((r,i)=>'<span data-c="'+i+'" style="cursor:pointer;margin-right:14px;'+(i===PL.idx?'color:#ffd28a;text-decoration:underline':'')+'">'+r.name+'</span>').join('')+
- '<br><span style="color:#ffd9a0">v8.17 · 机场/火星舱·门洞·闲聊·作息/好感·AI/POSTFX</span><br><div style="font-size:13px;color:#cfc6ff">家 / 小卖部 / 教室 / 小房间 走实体门；校园走<b>山洞</b>、林间走<b>矿洞</b>；火星边疆 / 校园也可在<b>矿车站坐矿车</b>。数字键 1–9 快进；手机点「角色」换人</div><div data-close="1" style="cursor:pointer;color:#ffd28a;text-decoration:underline">📷 近景特写（Z）· 正面看人物</div><br><span style="color:#ffd9a0">角色卡</span><br><div id="v8cardpanel" style="font-size:13px;color:#cfc6ff;white-space:pre-wrap">'+cardHtml+'</div><br><span style="color:#ffd9a0">记事NPC</span><br><div style="font-size:13px;color:#cfc6ff">阿澄好感：'+tier.name+' ('+tier.score+') · 走近金环按 E 交谈</div>'+
+ '<br><span style="color:#ffd9a0">v8.18 · L/M道具·闲聊加厚·轻量手感·门洞</span><br><div style="font-size:13px;color:#cfc6ff">家 / 小卖部 / 教室 / 小房间 走实体门；校园走<b>山洞</b>、林间走<b>矿洞</b>；火星边疆 / 校园也可在<b>矿车站坐矿车</b>。数字键 1–9 快进；手机点「角色」换人</div><div data-close="1" style="cursor:pointer;color:#ffd28a;text-decoration:underline">📷 近景特写（Z）· 正面看人物</div><br><span style="color:#ffd9a0">角色卡</span><br><div id="v8cardpanel" style="font-size:13px;color:#cfc6ff;white-space:pre-wrap">'+cardHtml+'</div><br><span style="color:#ffd9a0">记事NPC</span><br><div style="font-size:13px;color:#cfc6ff">阿澄好感：'+tier.name+' ('+tier.score+') · 走近金环按 E 交谈</div>'+
  '<div data-quest="1" style="cursor:pointer;margin-top:8px;color:#d8c8ff;text-decoration:underline">阿澄主线任务板 ('+V7.questStatus().doneCount+'/'+V7.QUEST_BEATS.length+')</div>'+
  '<div data-questcopy="1" style="cursor:pointer;margin-top:4px;color:#c8e0ff;text-decoration:underline">节拍文案：'+((window.__questCopy&&window.__questCopy.label)||'默认节拍')+'（点切）</div>'+
  '<div data-weather="1" style="cursor:pointer;margin-top:8px;color:#9ec8ff;text-decoration:underline">天气：'+WEATHER.label()+'（点切 雨夜/自动）</div>'+
  '<div data-pa="1" style="cursor:pointer;margin-top:4px;color:#c8d8e8;text-decoration:underline">车站广播：'+(stationPAEnabled()?'开':'关')+'（点切）</div>'+
  '<div data-atmo="1" style="cursor:pointer;margin-top:4px;color:#a8c0d8;text-decoration:underline">雨夜加深：'+(atmoDeepEnabled()?'开':'关')+'（点切）</div>'+
-'<div data-postfx="1" style="cursor:pointer;margin-top:4px;color:#b8c8e0;text-decoration:underline">轻量后期 POSTFX：'+(POSTFX.enabled?'开':'关')+'（默认关）</div>'+
+'<div data-postfx="1" style="cursor:pointer;margin-top:4px;color:#b8c8e0;text-decoration:underline">轻量后期 POSTFX：'+(POSTFX.enabled?'开':'关')+'（默认关）</div>'+'<div data-feel="1" style="cursor:pointer;margin-top:4px;color:#b8c8e0;text-decoration:underline">轻量手感 FEEL：'+(feelEnabled()?'开':'关')+'（fog dens↑·camD≈5.2·冷FILL；非主机级）</div>'+
 '<div data-sched="1" style="cursor:pointer;margin-top:4px;color:#c8e0c8;text-decoration:underline">社区作息：'+CLOCK.label()+(window.__sched&&window.__sched.n?' · 可见'+(window.__sched.n.length)+'人':'')+'（点看锚点）</div>'+
  '<div data-memhooks="1" style="cursor:pointer;margin-top:4px;color:#e0d0ff;text-decoration:underline">回忆卡钩预览（'+(window.__memHooksN||0)+'）</div>'+
 '<div data-recalltpl="1" style="cursor:pointer;margin-top:4px;color:#e8d8c0;text-decoration:underline">回忆模板预览（'+(window.__dreamRecallN||0)+'）</div>'+
@@ -1212,6 +1214,7 @@ function menuRender(){const tier=V7.tierOf(V7MEM.affinity);const card=PL.name?V8
  menu.querySelector('[data-pa]')?.addEventListener('click',()=>toggleStationPA());
  menu.querySelector('[data-atmo]')?.addEventListener('click',()=>toggleAtmoDeep());
  menu.querySelector('[data-postfx]')?.addEventListener('click',()=>{try{POSTFX.setEnabled(!POSTFX.enabled);window.__postfx=POSTFX;setSt('POSTFX：'+(POSTFX.enabled?'开':'关')+(GFX.low?'（低画质强制关）':''));menuRender();}catch(e){setSt('POSTFX失败');}});
+ menu.querySelector('[data-feel]')?.addEventListener('click',()=>{try{toggleFeel();menuRender();}catch(e){setSt('FEEL失败');}});
  menu.querySelector('[data-sched]')?.addEventListener('click',()=>{try{scheduleUpdate();const s=window.__sched||{};const lines=(s.n||[]).map(x=>x.name.replace('(闲逛)','')+'→'+(x.poi||'?')).join(' · ')||'（枢纽无人）';setSt('作息 '+s.label+'：'+lines);const el=$('title');el.innerHTML='社区作息 · '+s.label+'<small>'+lines+'</small>';el.style.opacity='1';clearTimeout(showTitle.h);showTitle.h=setTimeout(()=>el.style.opacity='0',4200);window.__schedShown={t:Date.now(),label:s.label,n:(s.n||[]).length};}catch(e){setSt('作息查看失败');}});
  menu.querySelector('[data-memhooks]')?.addEventListener('click',()=>{try{const hs=(V7.pickMemoryHooks?V7.pickMemoryHooks(3,{place:'station',weather:'rain'}):[]);window.__memHooks=hs;const body=hs.map(h=>'· '+h.text).join('\n')||'（无）';setSt('回忆卡钩\n'+body);const el=$('title');el.innerHTML='回忆卡钩<small style="white-space:pre-wrap">'+body+'</small>';el.style.opacity='1';clearTimeout(showTitle.h);showTitle.h=setTimeout(()=>el.style.opacity='0',4500);}catch(e){setSt('回忆卡钩失败');}});
  menu.querySelector('[data-recalltpl]')?.addEventListener('click',()=>{try{const line=V7.pickDreamRecallLine?V7.pickDreamRecallLine(V7SESS,{weather:WEATHER.forceRain()?'雨夜':'冷雾'}):null;const t=line||'（未加载）';setSt('回忆模板\n'+t);const el=$('title');el.innerHTML='回忆模板<small>'+t+'</small>';el.style.opacity='1';clearTimeout(showTitle.h);showTitle.h=setTimeout(()=>el.style.opacity='0',4200);window.__recallPreview={t:Date.now(),line:t};}catch(e){setSt('回忆模板失败');}});
@@ -1699,6 +1702,13 @@ fetch('npc_schedule_v817.json').then(r=>r.json()).then(j=>{window.__npcSchedV817
 fetch('station_pa_lines.json').then(r=>r.json()).then(j=>{window.__stationPA=j;window.__stationPAOn=localStorage.getItem('dream_v815_pa')!=='0';}).catch(e=>console.warn('stationPA',e));
 fetch('dream_recall_templates_v816.json').then(r=>r.json()).then(j=>{window.__dreamRecall=j;window.__dreamRecallN=(j.templates||[]).length;try{if(V7.setDreamRecallTemplates)V7.setDreamRecallTemplates(j.templates||[]);}catch(_){}}).catch(e=>console.warn('dreamRecall',e));
 fetch('furniture_hub_extra.json').then(r=>r.json()).then(j=>{window.__hubFurnPlan=j;try{placeHubFurnitureExtra();}catch(e){console.warn('hubFurn',e);}}).catch(e=>console.warn('hubFurn',e));
+fetch('interior_props_LM.json').then(r=>r.json()).then(j=>{window.__lmPropsPlan=j;try{
+  if(SC.L&&SC.L.loaded&&SC.L.mesh)placeInteriorPropsLM(SC.L.mesh,'L');
+  if(SC.M&&SC.M.loaded&&SC.M.mesh)placeInteriorPropsLM(SC.M.mesh,'M');
+}catch(e){console.warn('lmProps fetch',e);}}).catch(e=>console.warn('lmProps',e));
+fetch('banter_LM_2026-10-29.json').then(r=>r.json()).then(j=>{window.__banterLM=j;try{const n=mergeBanterExtra(j);window.__banterLMMerged=n;}catch(e){console.warn('banterLM',e);}}).catch(e=>console.warn('banterLM',e));
+fetch('souls_feel_tweaks_v818.json').then(r=>r.json()).then(j=>{window.__soulsFeel=j;window.__soulsFeelWired=!!(j&&j.wired);}).catch(()=>{window.__soulsFeelWired=false;});
+
 
 let QUEST_ALT=null; const QUEST_ALT_KEY='dream_v813_quest_copy';
 fetch('quest_copy_alt_20261029.json').then(r=>r.json()).then(j=>{QUEST_ALT=j;window.__questAltLoaded=true;
@@ -1718,6 +1728,63 @@ function cycleQuestCopy(forceId, silent){
  return curId;
 }
 
+
+
+// ---- v8.18 L/M interior props (procedural whitebox props from JSON) ----
+const LM_PROP_MESH={
+  wait_chair:(box)=>box(3.0,0.12,0.55,0xc89a6a,0,0.55,0),
+  flight_board:(box)=>box(2.6,1.35,0.08,0x1a2228,0,2.0,0,{basic:1}),
+  checkin_counter:(box)=>{box(1.6,1.0,0.55,0x8a9098,0,0.5,0,{r:0.7,m:0.15});box(1.65,0.06,0.6,0xc8d0d8,0,1.02,0);},
+  luggage_cart:(box)=>{box(0.7,0.55,1.1,0x6a7078,0,0.35,0,{r:0.55,m:0.4});box(0.55,0.08,0.9,0x4a5058,0,0.72,0);},
+  pa_speaker:(box)=>box(0.28,0.22,0.22,0x3a4048,0,2.4,0,{r:0.5,m:0.35}),
+  vending_crate:(box)=>box(0.75,0.85,0.55,0x6b4428,0,0.42,0),
+  window_ledge:(box)=>box(0.18,0.12,1.8,0xb0b8c0,0,1.05,0,{r:0.85}),
+  oxygen_cabinet:(box)=>{box(0.7,1.4,0.4,0x5a6870,0,0.7,0,{r:0.5,m:0.3});box(0.2,0.2,0.05,0x88ffaa,0,1.15,0.22,{basic:1});},
+  basalt_crate:(box)=>box(0.7,0.5,0.5,0x6b4428,0,0.25,0),
+  terminal_panel:(box)=>box(1.2,0.8,0.55,0x3a4550,0,0.4,0,{r:0.5,m:0.35}),
+  airlock_lamp:(box)=>box(0.35,0.12,0.35,0xffe2a8,0,2.2,0,{basic:1,em:0xffc070,ei:0.4}),
+  suit_rack:(box)=>{box(0.15,1.6,0.15,0x6a7078,0,0.8,0,{r:0.55,m:0.4});box(0.55,0.08,0.2,0x5a6068,0,1.5,0);},
+  dust_filter:(box)=>box(0.55,0.7,0.4,0x7a6a5c,0,0.4,0,{r:0.8}),
+  basalt_stool:(box)=>box(0.45,0.4,0.45,0x6b5040,0,0.2,0)
+};
+function makeLMProp(type, root){
+  const g=new THREE.Group(); g.name='lmProp_'+type;
+  const mats=[];
+  function box(w,h,d,col,x,y,z,opts){
+    const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),
+      opts&&opts.basic?new THREE.MeshBasicMaterial({color:col}):
+      new THREE.MeshStandardMaterial({color:col,roughness:(opts&&opts.r)||0.88,metalness:(opts&&opts.m)||0.06,
+        emissive:(opts&&opts.em)||0x000000,emissiveIntensity:(opts&&opts.ei)||0}));
+    m.position.set(x,y,z); m.castShadow=true; m.receiveShadow=true; g.add(m); return m;
+  }
+  const fn=LM_PROP_MESH[type];
+  if(fn) fn(box);
+  else box(0.5,0.5,0.5,0x888888,0,0.25,0); // fallback cube
+  // lowq: slightly smaller / no shadow
+  try{if(typeof GFX!=='undefined'&&GFX.low){g.scale.setScalar(0.92); g.traverse(o=>{if(o.isMesh){o.castShadow=false;}});}}catch(_){}
+  return g;
+}
+function placeInteriorPropsLM(root, sceneKey){
+  const plan=window.__lmPropsPlan; if(!plan||!plan.scenes) return 0;
+  const sc=plan.scenes[sceneKey]; if(!sc||!sc.placements) return 0;
+  // remove prior
+  const old=root.getObjectByName('lmProps_'+sceneKey); if(old) root.remove(old);
+  const g=new THREE.Group(); g.name='lmProps_'+sceneKey;
+  let n=0;
+  for(const p of sc.placements){
+    try{
+      const o=makeLMProp(p.type, root);
+      o.position.set(p.x||0, p.y||0, p.z||0);
+      if(p.rot!=null) o.rotation.y=p.rot;
+      o.userData.lmProp={type:p.type,scene:sceneKey,note:p.note||''};
+      g.add(o); n++;
+    }catch(e){console.warn('lmProp',p.type,e);}
+  }
+  root.add(g);
+  window.__lmProps=window.__lmProps||{}; window.__lmProps[sceneKey]=n;
+  window.__lmPropsGroup=window.__lmPropsGroup||{}; window.__lmPropsGroup[sceneKey]=g;
+  return n;
+}
 
 // ---- v8.15 banter scene merge / hub furniture / station PA / atmo ----
 function mergeBanterExtra(extra){
@@ -1856,6 +1923,24 @@ function toggleAtmoDeep(force){
   try{menuRender();}catch(_){}
   return on;
 }
+
+// ---- v8.18 light feel (honest: not console-grade souls; dens+cam nudge) ----
+const FEEL={on:true, hubDensMul:1.0, camFarAdd:0.0, camLowAdd:0.06, coolGray:0x5e6870, camD:5.2, pitch:-0.30, minCd:3.8, lookK:0.46, pitchClamp:-0.24, yNudge:0.18, fillThird:0.18, fillClose:1.55, sunI:1.75, src:'souls_feel_tweaks_v818'};
+function feelEnabled(){
+  try{if(localStorage.getItem('dream_v818_feel')==='0')return false;}catch(_){}
+  try{if(typeof GFX!=='undefined'&&GFX.low)return false;}catch(_){}
+  return FEEL.on!==false;
+}
+function toggleFeel(force){
+  const on=(force==null)?!feelEnabled():!!force;
+  try{localStorage.setItem('dream_v818_feel',on?'1':'0');}catch(_){}
+  FEEL.on=on; window.__feelV818={on:on,camFarAdd:FEEL.camFarAdd,camLowAdd:FEEL.camLowAdd,hubDensMul:FEEL.hubDensMul};
+  try{applySceneMood(cur);}catch(_){}
+  setSt('轻量手感：'+(on?'开':'关')+'（雾略浓·镜头略远略低；非主机级）');
+  try{menuRender();}catch(_){}
+  return on;
+}
+window.__feelV818={on:feelEnabled(),camFarAdd:FEEL.camFarAdd,camLowAdd:FEEL.camLowAdd,hubDensMul:FEEL.hubDensMul};
 
 const MG_TRIGGER={mutouren:'minigame_statues',shabao:'minigame_sandbag',wuziqi:'minigame_gomoku',tiaosheng:'minigame_rope',paizhipian:'minigame_cards',gunlhuan:'minigame_statues',caijidan:'minigame_sandbag',moxiazi:'minigame_statues',dapai:'minigame_cards',junqi_lite:'minigame_gomoku',tiaofangzi:'minigame_statues',tijianzi:'minigame_sandbag'};
 function banterContextKeys(){
@@ -2366,9 +2451,12 @@ function rideUpdate(dt){if(!RIDE.on)return false;RIDE.t+=dt;const t=RIDE.t,cart=
   finishDoor(door,kind).then(()=>{showArriveCard(door,kind);});
   setTimeout(()=>{rideDiv.style.display='none';},2200);}
  return true;}
-async function useDoor(door,kind,obj){
+async function useDoor(door,kind,obj,force){
+ if(force){DOOR_CD=0;DOOR_ARM=true;try{if(TR)TR.on=false;}catch(_){}}
  if(DOOR_CD>0||TR.on||CS.on||!DOOR_ARM||RIDE.on)return;
  DOOR_CD=1.6;DOOR_ARM=false;
+ // v8.18: map legacy E2E kind 'hub'→enter
+ if(kind==='hub')kind='enter';
  if(door.ride&&obj&&obj.userData.cart){rideStart(door,kind,obj);DOOR_CD=4;return;}
  await finishDoor(door,kind);}
 async function finishDoor(door,kind){
@@ -2419,7 +2507,7 @@ function placeCommunity(){/* no-op: doors only */}function communityUpdate(dt){}
 
 // ---------------- update loop ----------------
 const _hd=new THREE.Vector3();
-const FILL=new THREE.DirectionalLight(0xfff0e4,0.35);scene.add(FILL);scene.add(FILL.target); // v8.5 跟随补光（近景时加强，让皮肤/衣服质感看得清）
+const FILL=new THREE.DirectionalLight(0xd8e2e8,0.22);scene.add(FILL);scene.add(FILL.target); // v8.18 souls: 去暖补光（近景仍可读脸）
 function toggleClose(){const ci=CAMS.indexOf('close');if(CAMS[P.cam]==='close'){P.cam=P.camPrev||0;}else{P.camPrev=P.cam;P.cam=ci;P.closeBase=P.yaw;}camHud();}
 const _f=new THREE.Vector3(),_r=new THREE.Vector3(),_mv=new THREE.Vector3(),_look=new THREE.Vector3(),_cam=new THREE.Vector3();
 function update(dt){if(typeof SIT!=='undefined'&&SIT.on){for(const k in keys)keys[k]=false;P.vel=0;}
@@ -2457,7 +2545,7 @@ function update(dt){if(typeof SIT!=='undefined'&&SIT.on){for(const k in keys)key
  // camera: third person
  const cm=CAMS[P.cam];const eye=(PL.h||1.65);
  if(PL.model)PL.model.visible=(cm!=='first');
- FILL.intensity=cm==='close'?1.85:0.28; /* 近景仍提亮皮肤；日常补光克制 */
+ FILL.intensity=cm==='close'?((typeof feelEnabled==='function'&&feelEnabled())?1.55:1.85):((typeof feelEnabled==='function'&&feelEnabled())?0.18:0.28); /* v8.18 feel: cold fill */
  if(cm==='close'){ // 近景特写：相机在人物正前方约 1m，对准头部；跟随补光
   if(PLA.head){PLA.head.getWorldPosition(_hd);}else _hd.set(P.pos.x,P.pos.y+eye*0.93,P.pos.z);
   _hd.y-=0.02;const a=P.heading+(P.yaw-P.closeBase);const dist=Math.max(0.7,Math.min(2.4,P.camD*0.3));
@@ -2468,13 +2556,13 @@ function update(dt){if(typeof SIT!=='undefined'&&SIT.on){for(const k in keys)key
  else if(cm==='first'){_cam.set(P.pos.x,P.pos.y+eye*0.94+body.position.y,P.pos.z).addScaledVector(_f,0.12);
   _look.set(-Math.sin(P.yaw)*Math.cos(P.pitch),Math.sin(P.pitch),-Math.cos(P.yaw)*Math.cos(P.pitch)).add(_cam);
   camera.position.copy(_cam);camera.lookAt(_look);}
- else{const cd=cm==='far'?8.5:cm==='shoulder'?2.35:Math.max(3.6,P.camD); // v8.6 默认更远
-  const lh=cm==='shoulder'?eye*0.88:eye*0.52; // 看向躯干中段 → 全身入画
+ else{const _feelOn=(typeof feelEnabled==='function'&&feelEnabled());const cd=cm==='far'?8.5:cm==='shoulder'?2.35:Math.max(_feelOn?(FEEL.minCd||3.8):3.6,P.camD); // v8.18 souls feel camD // v8.18 feel: slightly farther
+  const lh=cm==='shoulder'?eye*0.88:(typeof feelEnabled==='function'&&feelEnabled()?eye*0.46:eye*0.52); // v8.18 feel: 略低 look
   _look.set(P.pos.x,P.pos.y+lh+P.flyK*0.2,P.pos.z);
-  if(cm==='shoulder'||cm==='third')_look.addScaledVector(_r,cm==='shoulder'?0.55:0.32); // 略跟肩
-  let pt=cm==='far'?Math.min(P.pitch,-0.38):P.pitch;if(cm==='third')pt=Math.min(pt,-0.18); // 略俯视纵深
+  if(cm==='shoulder'||cm==='third')_look.addScaledVector(_r,cm==='shoulder'?0.55:(_feelOn?0.28:0.32)); // v8.18 feel shoulder
+  let pt=cm==='far'?Math.min(P.pitch,-0.38):P.pitch;if(cm==='third')pt=Math.min(pt,(typeof feelEnabled==='function'&&feelEnabled()?-0.24:-0.18)); // v8.18 feel pitch
   _cam.set(Math.sin(P.yaw)*Math.cos(pt)*cd,-Math.sin(pt)*cd*0.92,Math.cos(P.yaw)*Math.cos(pt)*cd).add(_look);
-  if(cm==='third')_cam.y-=0.12; // 略低
+  if(cm==='third')_cam.y-=(_feelOn?(FEEL.yNudge||0.18):0.12); // v8.18 souls feel y nudge
   const cg=groundW(cur,_cam.x,_cam.z,_cam.y)+0.35;if(_cam.y<cg)_cam.y=cg;
   camera.position.copy(_cam);camera.lookAt(_look);}if(window.__camFn)window.__camFn(camera,P);
  // which scenes need to be visible
@@ -2512,7 +2600,7 @@ addEventListener('keydown',e=>{if(MGM.MG.active||CS.on||V7_CHAT)return;
  if(e.code==='Escape'&&document.getElementById('v7card').style.display==='flex'){document.getElementById('v7card').style.display='none';}
 });
 // test hooks (headless capture)
-window.__G={loadScene,loadMeshScene,DOOR_VIS,PLA,RIDE,doorVisRefresh,toggleClose,FILL,SkeletonUtils,applySceneMood,SCENE_MOOD,HEMI,SUN,get fog(){return scene.fog;},get exposure(){return renderer.toneMappingExposure;},MGM,MGX,mgEnter,mgUpdate,SHOP,shopBuy,placeHubDensity,HUB_DENS,CLOCK,scheduleUpdate,GFX,toggleLowQ,applyGfxMode,placeRain,WEATHER,setWeather,applyNightLights,SIT,sitToggle,showArriveCard,arriveDiv,sleepInBed,talkClerk,renderTimetable,renderQuestBoard,questHook,BED,CLERK,questDiv,timetableDiv,readCalendar,toggleLamp,playQuestReward,calendarBlurb,CAL,LAMP,rewardDiv,questPinBtn,talkBanter,BANTER_NEAR,get BANTER(){return BANTER;},loadBanterAff,bumpBanterAff,banterScore,banterTierOfScore,banterContextKeys,pickBanterLine,readPoster,posterBlurb,POSTER,playBeep,spawnRewardParticles,banterNeverHit,cycleQuestCopy,get QUEST_ALT(){return QUEST_ALT;},questHookExt,toggleHomeRadio,loreQuestTick,placeHubFurnitureExtra,mergeBanterExtra,speakStationPA,toggleStationPA,toggleAtmoDeep,maybeStationPATip,get POSTFX(){return POSTFX;},pickMemoryHooks:(n,o)=>V7.pickMemoryHooks&&V7.pickMemoryHooks(n,o),get HUB_FURN(){return HUB_FURN;},get TOUCH_FEEL(){return (typeof TOUCH_FEEL!=='undefined'?TOUCH_FEEL:null);},get scene(){return scene;},get RAIN(){return RAIN;},PL,ROSTER,setChar,goScene,V8,DOORS:V8.DOORS,PARKED,placeDoors,placeCommunity,useDoor,COMM_VIS,CAMS,toggleMenu,ORDER,NPCS,CS,playCutscene,enterDream,THREE,P,SC,AV,TR,keys,update,startDissolve,place,makePortal,removePortal,camera,player,body,portals,get cur(){return cur;},set cur(v){cur=v;},groundW,poseAvatar,avatarBones,showTitle,V7,get V7MEM(){return V7MEM;},get V7SESS(){return V7SESS;},v7OpenChat,v7CloseChat,v7EndSession,get V7_NEAR(){return V7_NEAR;}};
+window.__G={loadScene,loadMeshScene,DOOR_VIS,PLA,RIDE,doorVisRefresh,toggleClose,FILL,SkeletonUtils,applySceneMood,SCENE_MOOD,HEMI,SUN,get fog(){return scene.fog;},get exposure(){return renderer.toneMappingExposure;},MGM,MGX,mgEnter,mgUpdate,SHOP,shopBuy,placeHubDensity,HUB_DENS,CLOCK,scheduleUpdate,GFX,toggleLowQ,applyGfxMode,placeRain,WEATHER,setWeather,applyNightLights,SIT,sitToggle,showArriveCard,arriveDiv,sleepInBed,talkClerk,renderTimetable,renderQuestBoard,questHook,BED,CLERK,questDiv,timetableDiv,readCalendar,toggleLamp,playQuestReward,calendarBlurb,CAL,LAMP,rewardDiv,questPinBtn,talkBanter,BANTER_NEAR,get BANTER(){return BANTER;},loadBanterAff,bumpBanterAff,banterScore,banterTierOfScore,banterContextKeys,pickBanterLine,readPoster,posterBlurb,POSTER,playBeep,spawnRewardParticles,banterNeverHit,cycleQuestCopy,get QUEST_ALT(){return QUEST_ALT;},questHookExt,toggleHomeRadio,loreQuestTick,placeHubFurnitureExtra,mergeBanterExtra,speakStationPA,toggleStationPA,toggleAtmoDeep,maybeStationPATip,get POSTFX(){return POSTFX;},get FEEL(){return FEEL;},feelEnabled,toggleFeel,placeInteriorPropsLM,get __lmProps(){return window.__lmProps;},pickMemoryHooks:(n,o)=>V7.pickMemoryHooks&&V7.pickMemoryHooks(n,o),get HUB_FURN(){return HUB_FURN;},get TOUCH_FEEL(){return (typeof TOUCH_FEEL!=='undefined'?TOUCH_FEEL:null);},get scene(){return scene;},get RAIN(){return RAIN;},PL,ROSTER,setChar,goScene,V8,DOORS:V8.DOORS,PARKED,placeDoors,placeCommunity,useDoor,COMM_VIS,CAMS,toggleMenu,ORDER,NPCS,CS,playCutscene,enterDream,THREE,P,SC,AV,TR,keys,update,startDissolve,place,makePortal,removePortal,camera,player,body,portals,get cur(){return cur;},set cur(v){cur=v;},groundW,poseAvatar,avatarBones,showTitle,V7,get V7MEM(){return V7MEM;},get V7SESS(){return V7SESS;},v7OpenChat,v7CloseChat,v7EndSession,get V7_NEAR(){return V7_NEAR;}};
 window.__step=(sec,dt=1/30)=>{for(let t=0;t<sec-1e-6;t+=dt)update(dt);};
 
 // ---------------- boot ----------------
