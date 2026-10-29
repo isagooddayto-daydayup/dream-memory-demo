@@ -1,0 +1,99 @@
+{
+  "version": "community_errands_v819",
+  "created_beijing": "2026-10-29 09:55 Asia/Shanghai",
+  "note": "小生活社区短任务草稿（v8.19 已接线）。闽西 90s 矿山小镇口吻；公开安全：无个人姓名、无现实住址。check 用靠近/交互 flag 名（near_* / interact_*），可与现有 questAdvance(flag) 并列，勿写入 QUEST_KEY / QUEST_KEY_EXT。",
+  "tone": "闽西矿山小镇·九十年代·短跑腿·煤灰汽水粉笔票根",
+  "errand_count": 8,
+  "storage_key_proposed": "dream_v819_errands",
+  "parallel_to": [
+    "dream_v810_quest (QUEST_KEY · 阿澄主线四拍)",
+    "dream_v814_quest_ext (QUEST_KEY_EXT · 雨夜二段)"
+  ],
+  "places_vocab": {
+    "shop": "小卖部内 / 柜台·老板娘闲聊位",
+    "plaza": "矿山小镇枢纽入口广场·阿澄金环",
+    "station": "矿车站·候车棚·可坐长椅",
+    "nursery": "育儿所教室 K",
+    "home": "家门口室内"
+  },
+  "check_convention": {
+    "format": "near_<object>|interact_<action> 或 单 flag",
+    "meaning": "near_* = 玩家靠近触发区置位；interact_* = 按 E / 触屏「交谈」在近距完成交互",
+    "advance": "errandAdvance(flag) 若当前拍 check 含 flag（按 | 拆）则推进"
+  },
+  "errands": [
+    {
+      "id": "fetch_newspaper",
+      "title": "帮老板娘拿报纸",
+      "hint": "小卖部门口或柜台旁有一摞发黄的《闽西日报》，走近按 E 拿起再交给老板娘闲聊位。",
+      "check": "near_newspaper|interact_newspaper",
+      "place": "shop",
+      "reward_line": "油墨味沾在指尖。老板娘点点头：今天的报你拿过了。"
+    },
+    {
+      "id": "deliver_chalk_acheng",
+      "title": "给阿澄送粉笔",
+      "hint": "教室或育儿所门口捡起一支白粉笔，回到矿山入口金环，按 E 交给阿澄。",
+      "check": "near_chalk|interact_deliver_chalk",
+      "place": "plaza",
+      "reward_line": "粉笔灰落在袖口。阿澄捏了捏：够画半个淡圈了。"
+    },
+    {
+      "id": "pick_ticket_stub",
+      "title": "车站捡车票",
+      "hint": "进矿车站候车棚，走近木站台缝里那张皱票根，按 E 捡起。",
+      "check": "near_ticket|interact_ticket",
+      "place": "station",
+      "reward_line": "票根上印着模糊的站名与年份。袖口又沾了一点煤灰。"
+    },
+    {
+      "id": "return_empty_bottles",
+      "title": "空瓶送回小卖",
+      "hint": "广场或家门口有几只空玻璃汽水瓶，走近按 E 收起，再进小卖部柜台交还。",
+      "check": "near_bottles|interact_return_bottles",
+      "place": "shop",
+      "reward_line": "瓶底还剩一点糖水腥甜。柜台抽屉里多了一枚铝币响。"
+    },
+    {
+      "id": "nursery_chalk_bits",
+      "title": "育儿所捡粉笔头",
+      "hint": "走进育儿所教室（K），靠近黑板槽边的粉笔头堆，按 E 收进口袋。",
+      "check": "near_chalk_bits|interact_chalk_bits",
+      "place": "nursery",
+      "reward_line": "粉笔头硌着手心。窗外蝉声像没停过的暑假。"
+    },
+    {
+      "id": "station_bench_pa",
+      "title": "站台坐听广播",
+      "hint": "矿车站可坐长椅坐下（或走近广播喇叭），听半句时刻与戏曲杂音。",
+      "check": "near_bench|interact_sit_station",
+      "place": "station",
+      "reward_line": "广播半句「注意」、半句地方戏。腿脚沾了站台凉意。"
+    },
+    {
+      "id": "home_flip_calendar",
+      "title": "家门口翻日历",
+      "hint": "走进家门，走近墙上日历，按 E 翻过今天那一页。",
+      "check": "near_calendar|interact_calendar",
+      "place": "home",
+      "reward_line": "纸页沙沙响。日期糊成暑假与通车那年叠在一起。"
+    },
+    {
+      "id": "plaza_mend_circle",
+      "title": "广场补淡圈",
+      "hint": "广场地上淡圈缺了一角，走近按 E 用粉笔补一笔（有粉笔更好）。",
+      "check": "near_mg_circle|interact_mend_circle",
+      "place": "plaza",
+      "reward_line": "粉笔灰画进土缝。铁环声仿佛又近了一点。"
+    }
+  ],
+  "reward_optional": {
+    "note": "接线时可把 reward_line 推到 setSt / 回忆卡一行；勿强制改阿澄 affinity 主线分",
+    "affinity_bump_max": 1,
+    "dream_card_budget": "局末 lines 8 行内最多插入 1 条已完成跑腿摘要"
+  },
+  "public_safe": true,
+  "wired": true,
+  "wired_version": "v8.19",
+  "wired_beijing": "2026-10-29 Asia/Shanghai"
+}

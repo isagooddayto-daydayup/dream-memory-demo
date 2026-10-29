@@ -206,6 +206,65 @@ export function questPhaseLineExt(q) {
 }
 
 
+
+/** v8.19 community errands parallel board (does NOT overwrite QUEST_KEY / QUEST_KEY_EXT). */
+export const ERRAND_KEY = 'dream_v819_errands';
+export let ERRAND_BEATS = [];
+export function setErrandBeats(list) {
+  ERRAND_BEATS = Array.isArray(list) ? list.map((b) => ({
+    id: b.id,
+    title: b.title,
+    hint: b.hint,
+    check: b.check,
+    place: b.place,
+    reward_line: b.reward_line || '',
+  })) : [];
+  return ERRAND_BEATS.length;
+}
+export function loadErrands() {
+  const q = loadRaw(ERRAND_KEY, null);
+  if (q && q.version === 1 && Array.isArray(q.done)) return q;
+  return { version: 1, done: [], active: null, completedAt: 0, startedAt: Date.now() };
+}
+export function saveErrands(q) { saveRaw(ERRAND_KEY, q); }
+export function errandStatus(q) {
+  q = q || loadErrands();
+  const beats = ERRAND_BEATS.map((b) => ({
+    ...b,
+    state: q.done.includes(b.id) ? 'done' : (q.active === b.id ? 'active' : 'open'),
+  }));
+  const all = ERRAND_BEATS.length > 0 && q.done.length >= ERRAND_BEATS.length;
+  const active = beats.find((b) => b.state === 'active') || null;
+  return { beats, active, all, doneCount: q.done.length, total: ERRAND_BEATS.length };
+}
+export function errandAdvance(flag, detail) {
+  const q = loadErrands();
+  if (!ERRAND_BEATS.length) return { q, advanced: false, status: errandStatus(q) };
+  const hit = ERRAND_BEATS.find((b) => {
+    if (q.done.includes(b.id)) return false;
+    const flags = String(b.check || '').split('|').map((s) => s.trim()).filter(Boolean);
+    return flags.includes(flag);
+  });
+  if (!hit) return { q, advanced: false, status: errandStatus(q) };
+  q.done.push(hit.id);
+  if (q.active === hit.id) q.active = null;
+  if (q.done.length >= ERRAND_BEATS.length) q.completedAt = Date.now();
+  saveErrands(q);
+  return { q, advanced: true, beat: hit, status: errandStatus(q), justFinished: q.done.length >= ERRAND_BEATS.length, reward_line: hit.reward_line };
+}
+export function clearErrands() {
+  const q = { version: 1, done: [], active: null, completedAt: 0, startedAt: Date.now() };
+  saveErrands(q);
+  return q;
+}
+export function pinErrand(id) {
+  const q = loadErrands();
+  if (id && ERRAND_BEATS.some((b) => b.id === id) && !q.done.includes(id)) q.active = id;
+  else q.active = null;
+  saveErrands(q);
+  return q;
+}
+
 /** v8.15 memory-card lore hooks (14). Filled by index fetch / setMemoryHooks. */
 export let MEMORY_CARD_LORE_HOOKS = [];
 export function setMemoryHooks(list) {
@@ -667,6 +726,13 @@ export function buildDreamCard(sess, mem) {
     if (qe.doneCount) {
       const names = qe.beats.filter((b) => b.state === 'done').map((b) => b.title);
       lines.push('阿澄第二段：已完成 ' + qe.doneCount + '/' + QUEST_BEATS_EXT.length + (names.length ? ('（' + names.join(' → ') + '）') : '') + (qe.all ? '。' : '。'));
+    }
+  } catch (_) {}
+  try {
+    const er = errandStatus(loadErrands());
+    if (er.doneCount) {
+      const names = er.beats.filter((b) => b.state === 'done').map((b) => b.title).slice(0, 3);
+      lines.push('社区小事：已帮过 ' + er.doneCount + '/' + er.total + (names.length ? ('（' + names.join('；') + (er.doneCount > 3 ? '…' : '') + '）') : '') + '。');
     }
   } catch (_) {}
   try {

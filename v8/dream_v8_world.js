@@ -1,5 +1,5 @@
-/** Dream v8.18 world helpers (魂系气质: fog/camera/cold light): physical entrances (doors / storefronts / cave mouths / station mine carts), char cards. No paid APIs. */
-export const VERSION = 'v8.18';
+/** Dream v8.19 world helpers (魂系气质: fog/camera/cold light): physical entrances (doors / storefronts / cave mouths / station mine carts), char cards. No paid APIs. */
+export const VERSION = 'v8.19';
 
 /**
  * Hub door definitions (local offsets relative to scene A spawn).
