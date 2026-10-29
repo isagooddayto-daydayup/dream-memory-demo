@@ -200,7 +200,7 @@ function findQuote(mem, text) {
   return lines[lines.length - 1];
 }
 
-const TPL = {
+export const TPL = {
   stranger: {
     greet: [
       '……你是新来的梦游人吗？我叫阿澄，守着这座矿区小镇的入口。',
@@ -290,6 +290,27 @@ function intentOf(text) {
   if (/主线|守望|碎片|回忆卡/.test(text)) return 'lore';
   if (LORE_ASK.some((w) => text.includes(w))) return 'lore';
   return 'default';
+}
+
+
+/** v8.12: merge 阿澄 banter stranger/familiar/intimate into TPL.*.default */
+export function mergeAchengBanterIntoTPL(BANTER){
+  if(!BANTER||!TPL)return false;
+  const c=(BANTER.characters||[]).find(x=>x.id==='acheng'||x.name==='阿澄');
+  if(!c||!c.banter)return false;
+  const map={stranger:'stranger',familiar:'known',intimate:'close'};
+  for(const [bk,tk] of Object.entries(map)){
+    const extra=c.banter[bk]||[];
+    if(!TPL[tk])continue;
+    if(!TPL[tk].default)TPL[tk].default=[];
+    const seen=new Set(TPL[tk].default);
+    for(const line of extra){
+      if(seen.has(line))continue;
+      if(/大模型|ChatGPT|我是AI/i.test(line))continue;
+      TPL[tk].default.push(line);seen.add(line);
+    }
+  }
+  return true;
 }
 
 export function replyTo(mem, text) {
