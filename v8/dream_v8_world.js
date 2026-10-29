@@ -119,10 +119,10 @@ export const ROSTER_PUBLIC = [
   { f: 'npc/real/d04_fp02_npc.glb', name: 'Vivi' },
 ];
 
-/** Public build never uses local roster. */
+/** Public stub: LOCAL==PUBLIC (no YY paths in public tree). Real ROSTER_LOCAL restored only on dream_v8_local via sync --restore-roster. */
 export const ROSTER_LOCAL = ROSTER_PUBLIC;
 export const NPC_LOCAL = [];
 
 export function pickRoster(isLocal) {
-  return ROSTER_PUBLIC;
+  return isLocal ? ROSTER_LOCAL : ROSTER_PUBLIC;
 }
