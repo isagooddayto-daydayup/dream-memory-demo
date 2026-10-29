@@ -1,0 +1,169 @@
+{
+  "version": "quest_copy_alt_20261029",
+  "created_beijing": "2026-10-29 09:06 Asia/Shanghai",
+  "note": "阿澄主线任务板 4 节拍扩展文案 · 2 套备选。替换目标：dream_v7_features.js 的 QUEST_BEATS（title/hint）与 QUEST_PHASE_LINES（完成拍后台词）。不改 check 字段与 id。公开安全：无 YY 真名、无现实住址。",
+  "beat_ids": [
+    "buy_soda",
+    "play_mg",
+    "ride_cart",
+    "report_acheng"
+  ],
+  "current_baseline": {
+    "QUEST_BEATS": [
+      {
+        "id": "buy_soda",
+        "title": "去小卖买汽水",
+        "hint": "走进小卖部，按 E 买一瓶汽水。",
+        "check": "buy:soda"
+      },
+      {
+        "id": "play_mg",
+        "title": "玩一个童年游戏",
+        "hint": "走近地上淡圈，完一局小游戏。",
+        "check": "minigame"
+      },
+      {
+        "id": "ride_cart",
+        "title": "坐矿车去一站",
+        "hint": "进矿车站，走上矿车去火星/校园/ARES。",
+        "check": "ride"
+      },
+      {
+        "id": "report_acheng",
+        "title": "回来跟阿澄回话",
+        "hint": "回到枢纽找阿澄按 E 交谈，告诉他你回来了。",
+        "check": "talk"
+      }
+    ],
+    "QUEST_PHASE_LINES": {
+      "buy_soda": [
+        "汽水买到了？矿区的玻璃瓶还是那种凉。下一拍：去地上淡圈玩一局童年游戏。",
+        "嗯，柜台上的汽水你拿走了。玩完游戏再来找我。"
+      ],
+      "play_mg": [
+        "铁环声我听见了。下一拍：进矿车站，坐一班矿车去火星、校园或 ARES。",
+        "玩过了就好。矿车时刻表会变——看清「即将发车」再检票。"
+      ],
+      "ride_cart": [
+        "你坐车回来了。风里还有煤灰味。过来按 E 跟我说一声，四节拍就齐了。",
+        "矿车门又关上了。回来回话吧——我就在入口守着。"
+      ],
+      "report_acheng": [
+        "四节拍都记下了。梦会写成回忆卡；你愿意的话，结束这局就能看见。"
+      ]
+    }
+  },
+  "alt_sets": [
+    {
+      "id": "alt_rain_coal",
+      "label": "雨夜煤灰味",
+      "tone": "冷灰、短句、破败站台",
+      "QUEST_BEATS": [
+        {
+          "id": "buy_soda",
+          "title": "柜台上那瓶汽水",
+          "hint": "雨里钻进小卖部，按 E 拿走一瓶冰汽水。",
+          "check": "buy:soda"
+        },
+        {
+          "id": "play_mg",
+          "title": "淡圈里玩一局",
+          "hint": "枢纽或校园地上淡圈——完一局木头人/跳绳/纸片都行。",
+          "check": "minigame"
+        },
+        {
+          "id": "ride_cart",
+          "title": "检票上矿车",
+          "hint": "进做旧矿车站，看清「即将发车」，走上矿车去一站。",
+          "check": "ride"
+        },
+        {
+          "id": "report_acheng",
+          "title": "入口回话",
+          "hint": "回到矿山入口金环，按 E 跟阿澄说你回来了。",
+          "check": "talk"
+        }
+      ],
+      "QUEST_PHASE_LINES": {
+        "buy_soda": [
+          "瓶子外壁有一层雾。下一拍：去淡圈里玩，让铁环声进梦。",
+          "汽水凉意还在。雨还没停——先去玩一局再找我。"
+        ],
+        "play_mg": [
+          "我听见圈里的脚步停住了。下一拍：矿车站，检票上矿车。",
+          "玩过就好。时刻表会跳「即将发车」——别上错车。"
+        ],
+        "ride_cart": [
+          "煤灰挂在袖口。过来按 E 回话，四节拍就齐了。",
+          "矿车门哐地合上。我在入口等你那一句「回来了」。"
+        ],
+        "report_acheng": [
+          "四节拍都进梦了。结束这局，短笺会把雨和矿车风写进去。",
+          "记下了。你愿意的话，回忆卡里也会有我守门的影子。"
+        ]
+      }
+    },
+    {
+      "id": "alt_warm_plaza",
+      "label": "暖色广场",
+      "tone": "熟识语气、鼓励、童年回声",
+      "QUEST_BEATS": [
+        {
+          "id": "buy_soda",
+          "title": "先去买瓶汽水",
+          "hint": "小卖部柜台左边按 E——老板娘灯一直亮着。",
+          "check": "buy:soda"
+        },
+        {
+          "id": "play_mg",
+          "title": "跟童年打个招呼",
+          "hint": "走近地上淡圈，随便完一局；输赢都算数。",
+          "check": "minigame"
+        },
+        {
+          "id": "ride_cart",
+          "title": "坐一班矿车看看",
+          "hint": "矿车站里走上矿车，去火星边疆、校园或 ARES 都行。",
+          "check": "ride"
+        },
+        {
+          "id": "report_acheng",
+          "title": "回来告诉我一声",
+          "hint": "广场入口找阿澄按 E，把路上的事说一句就够。",
+          "check": "talk"
+        }
+      ],
+      "QUEST_PHASE_LINES": {
+        "buy_soda": [
+          "买到了就好。矿区的玻璃瓶还是老味道。下一拍：去淡圈玩一局。",
+          "嗯，汽水你拿走了。玩完再来，我不急。"
+        ],
+        "play_mg": [
+          "铁环、沙包、纸片——哪一样都算。下一拍：进站坐矿车。",
+          "玩过了就好。看清时刻表「即将发车」，再检票。"
+        ],
+        "ride_cart": [
+          "你坐车回来了。风里还有站台的味道。按 E 跟我说一声吧。",
+          "矿车门关上了。四节拍还差回话——我在入口。"
+        ],
+        "report_acheng": [
+          "四节拍齐了。梦会写成回忆卡；结束这局就能看见。",
+          "我都记下了。你走的路、买的汽水、玩过的圈——短笺里会有。"
+        ]
+      }
+    }
+  ],
+  "how_to_paste": {
+    "file": "dream_v8_public/dream_v7_features.js",
+    "replace": [
+      "export const QUEST_BEATS = [ ... ]  → 用所选 alt 的 QUEST_BEATS（保留 id/check）",
+      "export const QUEST_PHASE_LINES = { ... }  → 用所选 alt 的 QUEST_PHASE_LINES"
+    ],
+    "keep": [
+      "questAdvance 的 check 逻辑",
+      "QUEST_KEY",
+      "questPhaseLine 选取算法"
+    ],
+    "pick": "二选一整套替换；勿混用两套的拍标题与台词。"
+  }
+}

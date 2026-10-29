@@ -1,5 +1,5 @@
-/** Dream v8.12 world helpers (魂系气质: fog/camera/cold light): physical entrances (doors / storefronts / cave mouths / station mine carts), char cards. No paid APIs. */
-export const VERSION = 'v8.12';
+/** Dream v8.13 world helpers (魂系气质: fog/camera/cold light): physical entrances (doors / storefronts / cave mouths / station mine carts), char cards. No paid APIs. */
+export const VERSION = 'v8.13';
 
 /**
  * Hub door definitions (local offsets relative to scene A spawn).
@@ -9,6 +9,8 @@ export const DOORS = [
   // v8.5: no floating glow frames. Every door is a physical entrance model; exits are physical too.
   // hubLocal: splat 'from' scene → relative to its spawn; mesh 'from' scene → scene-local.
   { id: 'hub_classroom', label: '教室', from: 'A', to: 'F', hubLocal: [0.8, -7.2], destLocal: [2.0, 6.5], destYaw: Math.PI, exitLocal: [2.0, 9.4], color: 0xffd28a, facade: 'classroom', exitFacade: 'exitdoor' },
+  { id: 'hub_nursery', label: '育儿所', from: 'A', to: 'K', hubLocal: [-1.8, -7.5], destLocal: [0, 2.8], destYaw: Math.PI, exitLocal: [0, 4.6], color: 0xffe0a8, facade: 'classroom', exitFacade: 'exitdoor' },
+  { id: 'classroom_nursery', label: '隔壁育儿所', from: 'F', to: 'K', hubLocal: [-6.5, 2.0], destLocal: [2.5, 2.0], destYaw: Math.PI/2, exitLocal: [4.2, 2.0], color: 0xffe0a8, facade: 'room', exitFacade: 'exitdoor' },
   { id: 'hub_room', label: '小房间', from: 'A', to: 'D', hubLocal: [-3.8, 3.2], destLocal: [-3.2, 1.5], destYaw: Math.PI, exitLocal: [-3.6, 0.2], color: 0xa8c8ff, facade: 'room', exitFacade: 'exitdoor' },
   { id: 'hub_campus', label: '山洞 · 矿区校园', from: 'A', to: 'B', hubLocal: [1.5, 8.5], destLocal: [0, 0], destYaw: 0, exitLocal: [0, -2.6], color: 0x9dffc2, facade: 'cave', exitFacade: 'cave' },
   { id: 'hub_forest', label: '矿洞 · 林间小路', from: 'A', to: 'G', hubLocal: [7.2, -2.0], destLocal: [0, 7.5], destYaw: Math.PI, exitLocal: [0, 10.4], color: 0x6dff9a, facade: 'mine', exitFacade: 'mine' },

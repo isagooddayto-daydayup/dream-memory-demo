@@ -103,6 +103,28 @@ export const QUEST_PHASE_LINES = {
     '四节拍都记下了。梦会写成回忆卡；你愿意的话，结束这局就能看见。',
   ],
 };
+
+/** v8.13: switch QUEST_BEATS titles/hints + QUEST_PHASE_LINES from quest_copy_alt sets. Keeps id/check. */
+export const QUEST_COPY_BASELINE = {
+  QUEST_BEATS: QUEST_BEATS.map(b => ({ ...b })),
+  QUEST_PHASE_LINES: JSON.parse(JSON.stringify(QUEST_PHASE_LINES)),
+};
+export let QUEST_COPY_SET = 'baseline';
+export function applyQuestCopy(alt) {
+  const src = !alt || alt === 'baseline' ? QUEST_COPY_BASELINE : alt;
+  const beats = src.QUEST_BEATS || [];
+  for (let i = 0; i < QUEST_BEATS.length && i < beats.length; i++) {
+    if (beats[i].id && beats[i].id !== QUEST_BEATS[i].id) continue;
+    if (beats[i].title) QUEST_BEATS[i].title = beats[i].title;
+    if (beats[i].hint) QUEST_BEATS[i].hint = beats[i].hint;
+  }
+  const ph = src.QUEST_PHASE_LINES || {};
+  for (const k of Object.keys(QUEST_PHASE_LINES)) {
+    if (ph[k]) QUEST_PHASE_LINES[k] = ph[k].slice();
+  }
+  QUEST_COPY_SET = (alt && alt.id) || (alt === 'baseline' || !alt ? 'baseline' : 'custom');
+  return QUEST_COPY_SET;
+}
 export function questPhaseLine(q) {
   q = q || loadQuest();
   if (!q.done.length) return null;
