@@ -5,3 +5,5 @@
 - 更新：2026-10-29 08:36:31 Asia/Shanghai
 
 - **v8.8** shipped: hub childhood+2, ARES hangar link, NPC schedule, Acheng tiers, lowq menu.
+
+- **v8.9** rain-night, hub moxiazi/caijidan, ride cards, indoor sit/radio, privacy scrub.

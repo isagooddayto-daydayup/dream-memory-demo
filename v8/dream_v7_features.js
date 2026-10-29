@@ -279,6 +279,26 @@ export function markScene(sess, key) {
 export function markMinigame(sess, id) {
   if (sess && id) sess.minigames.add(id);
 }
+export function rememberMinigame(mem, id, win, score) {
+  if (!mem) return;
+  const names = { gunlhuan:'滚铁环', shabao:'丢沙包', wuziqi:'五子棋', paizhipian:'拍纸片', mutouren:'一二三木头人', tiaosheng:'跳大绳', caijidan:'踩鸡蛋', moxiazi:'摸瞎子' };
+  const nm = names[id] || id;
+  const line = (win ? '赢了' : '没赢') + '「' + nm + '」，得分 ' + (score|0);
+  mem.met = true;
+  mem.lines = mem.lines || [];
+  mem.lines.push({ role: 'user', text: '（梦境记录）我刚玩了童年游戏：' + line, at: Date.now() });
+  const tier = tierOf(mem.affinity || 0);
+  const tag = tier.id === 'close' ? '【亲密】' : tier.id === 'known' ? '【熟识】' : '【陌生】';
+  const ans = tag + (win
+    ? ('记得了。你' + line + '。矿区夜里适合再玩一局。')
+    : ('记下了。你' + line + '。下次再试，我看着。'));
+  mem.lines.push({ role: 'npc', text: ans, at: Date.now() });
+  if (mem.lines.length > MAX_LINES) mem.lines = mem.lines.slice(-MAX_LINES);
+  bumpAffinity(mem, win ? '谢谢喜欢开心' : '游戏');
+  saveMem(mem);
+  return ans;
+}
+
 export function markTalk(sess) {
   if (sess) sess.talked = true;
 }

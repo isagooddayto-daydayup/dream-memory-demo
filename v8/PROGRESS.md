@@ -35,3 +35,9 @@ https://isagooddayto-daydayup.github.io/dream-memory-demo/v8/
 - Acheng: MAINLINE beats, visible 【陌生/熟识/亲密】tags, faster affinity, probeTiers/setAffinity
 - Menu 一键低画质 (fog dens×0.55, shadow off, pixelRatio≤0.55), localStorage dream_v88_gfx
 - Same public /v8/ link; free Rocketbox MIT only
+## v8.9 (2026-10-29 Asia/Shanghai)
+- Rain-night: WEATHER auto/rainnight, denser rain+splash, night lamp/indoor warm contrast
+- Hub +moxiazi +caijidan; results → Acheng dream_v7_npc_mem
+- Ride boarding UI + 3.2s + arrive title cards (火星/校园/ARES)
+- Home sit chair; shop radio toggle + candy/gum shelf
+- Scrubbed public /yy/ dead path; privacy scan zero hits

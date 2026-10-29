@@ -1,4 +1,4 @@
-回忆与梦境 · VERSION v8.8 · 童年加挂·ARES飞船口·社区作息·阿澄三档·低画质开关· 手机浏览器可玩
+回忆与梦境 · VERSION v8.9 · 雨夜专场·摸瞎踩蛋·发车标题卡·室内坐/收音机· 手机浏览器可玩
 
 公开试玩：https://isagooddayto-daydayup.github.io/dream-memory-demo/v8/
 
