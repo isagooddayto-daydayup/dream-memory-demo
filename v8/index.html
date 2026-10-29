@@ -64,7 +64,7 @@ addEventListener('resize',()=>{renderer.setSize(W(),H());camera.aspect=W()/H();c
 
 // ---------------- memory scenes ----------------
 const SC={
- A:{key:'A',name:'矿山小镇 · 探索枢纽',sub:'Marble 矿区大世界（家·小卖·教室·小房间·飞船口ARES；山洞→校园；矿洞→林间；矿车站矿车→火星/校园/ARES）',url:'scenes/memA_fujian_town.spz',prevUrl:'scenes/memA_portalview.spz',hm:'scenes/memA_height.json',
+ A:{key:'A',name:'矿山小镇 · 探索枢纽',sub:'Marble 矿区大世界（家·小卖·教室·小房间·飞船口ARES·机场候车·火星舱；山洞→校园；矿洞→林间；矿车站矿车→火星/校园/ARES）',url:'scenes/memA_fujian_town.spz',prevUrl:'scenes/memA_portalview.spz',hm:'scenes/memA_height.json',
     off:new THREE.Vector3(0,0,0),spawn:[0,0],yaw:0,tint:[0.92,0.96,1.02],sat:0.62,fog:[0.42,0.48,0.52],fogR:[12,55],glow:[0.75,0.82,0.90]},
  B:{key:'B',name:'回忆二 · 小学矿区校园',sub:'小学矿区校园（你的 Marble 场景）',url:'scenes/memB_mining_school.spz',prevUrl:'scenes/memB_portalview.spz',hm:'scenes/memB_height.json',
     off:new THREE.Vector3(500,0,0),spawn:[0,2],yaw:0,tint:[0.94,0.97,1.02],sat:0.68,fog:[0.45,0.52,0.55],fogR:[10,48],glow:[0.78,0.85,0.92]},
@@ -86,8 +86,12 @@ C:{key:'C',name:'回忆三 · 火星边疆',sub:'Marble Mars Frontier（你的 M
     off:new THREE.Vector3(4500,0,0),spawn:[0,2.2],yaw:Math.PI,glow:[0.85,0.95,1.05]},
  K:{key:'K',kind:'mesh',meshPack:'nursery',name:'回忆 · 育儿所教室',sub:'Grab3D CC0 小学育儿所（实体门；低配可用白盒）',
     off:new THREE.Vector3(5000,0,0),spawn:[0,2.5],yaw:Math.PI,glow:[1.0,0.9,0.7]},
+ L:{key:'L',kind:'mesh',meshPack:'airport',name:'机场候车厅 · 白盒',sub:'程序化候机厅 · 枢纽↔ARES/火星换乘（雨夜窗）',
+    off:new THREE.Vector3(5500,0,0),spawn:[0,4.5],yaw:Math.PI,glow:[0.85,0.92,1.05]},
+ M:{key:'M',kind:'mesh',meshPack:'mars_shelter',name:'火星地表庇护所 · 白盒',sub:'锈红舱内 · 可走室内（回枢纽/机场）',
+    off:new THREE.Vector3(6000,0,0),spawn:[0,2.2],yaw:Math.PI,glow:[1.05,0.78,0.55]},
 };
-const ORDER=['A','B','C','D','E','F','G','H','I','J','K'];
+const ORDER=['A','B','C','D','E','F','G','H','I','J','K','L','M'];
 let cur='A';
 
 function fxDyno(S){
@@ -514,6 +518,98 @@ async function loadMeshScene(S){
   S.mesh=root;S.loaded=true;return S;
  }
 
+
+ if(S.meshPack==='airport'||S.meshPack==='mars_shelter'){
+  const pack=S.meshPack;
+  const isAir=pack==='airport';
+  const skyCol=isAir?0x5a646c:0x7a6a5c;
+  const skyMat=new THREE.MeshBasicMaterial({color:skyCol,side:THREE.BackSide,depthWrite:false,fog:false});
+  const dome=new THREE.Mesh(new THREE.SphereGeometry(90,24,12),skyMat);dome.renderOrder=-5;root.add(dome);
+  if(isAir){
+   root.add(new THREE.HemisphereLight(0xd0d8e0,0x2a3038,0.80));
+   const sun=new THREE.DirectionalLight(0xe8f0ff,1.05);sun.position.set(6,14,4);root.add(sun);
+   const warm=new THREE.PointLight(0xffc070,0.75,16);warm.position.set(0,2.4,0);root.add(warm);
+   root.userData.warmLight=warm;
+   const ground=new THREE.Mesh(new THREE.PlaneGeometry(14,12),new THREE.MeshStandardMaterial({color:0x7a828c,roughness:0.92,metalness:0.08}));
+   ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;root.add(ground);S.walk=[ground];
+   function box(w,h,d,col,x,y,z,opts){
+    const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),opts&&opts.basic?new THREE.MeshBasicMaterial({color:col}):new THREE.MeshStandardMaterial({color:col,roughness:(opts&&opts.r)||0.88,metalness:(opts&&opts.m)||0.04}));
+    m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;root.add(m);return m;
+   }
+   box(14,3.2,0.22,0xc8d0d8,0,1.6,-6);
+   box(0.22,3.2,12,0xc8d0d8,7,1.6,0);box(0.22,3.2,12,0xc8d0d8,-7,1.6,0);
+   box(14,0.12,12,0xb8c0c8,0,3.25,0);
+   box(5.8,3.2,0.22,0xc8d0d8,-5.9,1.6,6);box(5.8,3.2,0.22,0xc8d0d8,5.9,1.6,6);
+   box(1.4,2.15,0.18,0x1a2228,0,1.05,5.85,{basic:1});
+   box(4.2,0.08,1.6,0x8b5a42,0,2.95,6.4,{r:0.82,m:0.25});
+   box(3.0,0.12,0.55,0xc89a6a,-3.5,0.55,1.5);box(3.0,0.12,0.55,0xc89a6a,3.5,0.55,1.5);
+   for(const [x,z] of [[-4,-3],[4,-3],[-4,3],[4,3]]) box(0.28,3.1,0.28,0x6a7078,x,1.55,z,{r:0.55,m:0.45});
+   const win=box(2.0,1.2,0.06,0x2a3540,-6.88,1.7,-1.5,{basic:1});
+   const winRain=new THREE.Group();winRain.name='airportWinRain';winRain.visible=false;winRain.position.set(-6.88,1.7,-1.55);
+   {const N=(typeof GFX!=='undefined'&&GFX.low)?40:80,pos=new Float32Array(N*3);for(let i=0;i<N;i++){pos[i*3]=(Math.random()-0.5)*1.8;pos[i*3+1]=(Math.random()-0.5)*1.0;pos[i*3+2]=-0.05-Math.random()*0.25;}
+    winRain.add(new THREE.Points(new THREE.BufferGeometry().setAttribute('position',new THREE.BufferAttribute(pos,3)),new THREE.PointsMaterial({color:0xb8c8d0,size:0.035,transparent:true,opacity:0.85,depthWrite:false})));}
+   root.add(winRain);root.userData.winRain=winRain;
+   root.userData.sits=[{id:'bench',name:'候机长椅',local:[-3.5,1.5]},{id:'bench',name:'东侧长椅',local:[3.5,1.5]}];
+   root.userData.posters=[{id:'poster',name:'登机告示',local:[0,-5.5]}];
+   try{
+    const c=document.createElement('canvas');c.width=512;c.height=280;const g=c.getContext('2d');
+    g.fillStyle='#1a2228';g.fillRect(0,0,512,280);
+    g.fillStyle='#a8c8ff';g.font='bold 26px sans-serif';g.fillText('机场候车 · ARES / 火星边疆',18,40);
+    g.fillStyle='#9ab0c8';g.font='18px sans-serif';
+    g.fillText('雨夜窗可见 · 登机口北 · 地表舱东',18,78);
+    g.fillStyle='#c8b0ff';g.fillText('ARES  登机口',18,130);g.fillStyle='#ffe2b8';g.fillText('按门洞进入',280,130);
+    g.fillStyle='#ff8a6a';g.fillText('火星地表舱',18,180);g.fillStyle='#ffe2b8';g.fillText('白盒换乘',280,180);
+    g.fillStyle='#7a8898';g.font='14px sans-serif';g.fillText('闽西梦境超现实时刻牌 · 无真机场',18,240);
+    const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;
+    const board=new THREE.Mesh(new THREE.PlaneGeometry(2.6,1.4),new THREE.MeshStandardMaterial({map:tex,roughness:0.85,side:THREE.DoubleSide}));
+    board.position.set(0,2.35,-5.7);board.name='airportBoard';root.add(board);
+    root.userData.timetable3d=board;
+   }catch(e){console.warn('airboard',e);}
+   window.__airportWhitebox=true;
+  }else{
+   root.add(new THREE.HemisphereLight(0xe8d0b0,0x3a2a20,0.70));
+   const sun=new THREE.DirectionalLight(0xffc090,0.95);sun.position.set(8,12,2);root.add(sun);
+   const warm=new THREE.PointLight(0xffb070,1.0,12);warm.position.set(0,2.1,0);root.add(warm);
+   const ground=new THREE.Mesh(new THREE.PlaneGeometry(9,9),new THREE.MeshStandardMaterial({color:0x8a6a52,roughness:0.95,metalness:0.05}));
+   ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;root.add(ground);S.walk=[ground];
+   function box(w,h,d,col,x,y,z,opts){
+    const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),opts&&opts.basic?new THREE.MeshBasicMaterial({color:col}):new THREE.MeshStandardMaterial({color:col,roughness:(opts&&opts.r)||0.90,metalness:(opts&&opts.m)||0.08,emissive:(opts&&opts.em)||0x000000,emissiveIntensity:(opts&&opts.ei)||0}));
+    m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;root.add(m);return m;
+   }
+   box(9,2.6,0.2,0xa87858,0,1.3,-4.5);
+   box(0.2,2.6,9,0xa87858,-4.5,1.3,0);box(0.2,2.6,9,0xa87858,4.5,1.3,0);
+   box(9,0.12,9,0x6a5850,0,2.65,0);
+   box(3.6,2.6,0.2,0xa87858,-2.7,1.3,4.5);box(3.6,2.6,0.2,0xa87858,2.7,1.3,4.5);
+   box(1.35,2.05,0.18,0x1a1410,0,1.0,4.35,{basic:1});
+   // 气闸框
+   box(1.55,0.08,0.12,0x6a7078,0,2.1,4.4,{r:0.55,m:0.45});box(1.55,0.08,0.12,0x6a7078,0,0.05,4.4,{r:0.55,m:0.45});
+   box(0.08,2.2,0.12,0x6a7078,-0.75,1.1,4.4,{r:0.55,m:0.45});box(0.08,2.2,0.12,0x6a7078,0.75,1.1,4.4,{r:0.55,m:0.45});
+   box(1.4,0.9,0.06,0x4a3028,4.38,1.5,0,{basic:1,em:0x221808,ei:0.2});
+   box(0.7,0.5,0.5,0x6b4428,-2.5,0.25,-2.8);box(0.7,0.5,0.5,0x6b4428,2.5,0.25,-2.8);
+   box(1.2,0.8,0.6,0x3a4550,0,0.4,-3.2,{r:0.50,m:0.35});
+   box(2.0,0.1,1.2,0x8a6a52,0,0.05,5.0); // 外延踏板
+   root.userData.posters=[{id:'poster',name:'舱内终端告示',local:[0,-3.2]}];
+   try{
+    const c=document.createElement('canvas');c.width=384;c.height=192;const g=c.getContext('2d');
+    g.fillStyle='#2a3038';g.fillRect(0,0,384,192);
+    g.fillStyle='#ffb070';g.font='bold 22px sans-serif';g.fillText('火星地表 · 庇护所',16,36);
+    g.fillStyle='#c4a888';g.font='16px sans-serif';g.fillText('气闸南开 · 回枢纽走出口门',16,72);
+    g.fillStyle='#a87858';g.fillText('尘土味道是梦记得的',16,110);
+    g.fillStyle='#7a8898';g.font='13px sans-serif';g.fillText('白盒舱 · 非真火星户籍',16,160);
+    const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;
+    const panel=new THREE.Mesh(new THREE.PlaneGeometry(1.1,0.55),new THREE.MeshStandardMaterial({map:tex,roughness:0.5,metalness:0.2,side:THREE.DoubleSide}));
+    panel.position.set(0,1.15,-2.85);panel.name='marsTerminal';root.add(panel);
+   }catch(e){console.warn('marspanel',e);}
+   if(!(typeof GFX!=='undefined'&&GFX.low)){
+    const N=100,pos=new Float32Array(N*3);for(let i=0;i<N;i++){pos[i*3]=(Math.random()-0.5)*8;pos[i*3+1]=0.3+Math.random()*2.2;pos[i*3+2]=(Math.random()-0.5)*8;}
+    root.add(new THREE.Points(new THREE.BufferGeometry().setAttribute('position',new THREE.BufferAttribute(pos,3)),new THREE.PointsMaterial({color:0xc4a888,size:0.04,transparent:true,opacity:0.35,depthWrite:false})));
+   }
+   window.__marsShelterWhitebox=true;
+  }
+  scene.add(root);root.updateMatrixWorld(true);
+  S.mesh=root;S.loaded=true;return S;
+ }
+
  // default: ARES pack
  const sky=await new THREE.TextureLoader().loadAsync('scenes/ares/mars_sky.jpg');sky.colorSpace=THREE.SRGBColorSpace;
  const dome=new THREE.Mesh(new THREE.SphereGeometry(380,48,24),new THREE.MeshBasicMaterial({map:sky,side:THREE.BackSide,depthWrite:false,fog:false}));dome.renderOrder=-5;root.add(dome);
@@ -741,8 +837,15 @@ let LOWQ=Q.has('lowq')||(TOUCH.on&&!Q.has('hiq')); // 手机默认低画质，?h
 try{if(localStorage.getItem('dream_v88_gfx')==='low')LOWQ=true;if(localStorage.getItem('dream_v88_gfx')==='hi')LOWQ=false;}catch(_){}
 const GFX={low:!!LOWQ, basePR:TEST?1:Q.has('emu')?0.3:(TOUCH.on?Math.min(devicePixelRatio,1.0)*0.85:Math.min(devicePixelRatio,1.25))};
 // v8.14 POSTFX_MOBILE stub (default off; full composer needs vendored addons — see v8work/POSTFX_MOBILE)
-const POSTFX={enabled:false,ready:false,reason:'stub',setEnabled(v){if(GFX.low){this.enabled=false;this.reason='lowq_forced_off';try{localStorage.setItem('dream_v8_postfx','0');}catch(_){}window.__postfx=this;return false;}this.enabled=!!v;this.reason=this.enabled?'stub_on':'stub_off';try{localStorage.setItem('dream_v8_postfx',this.enabled?'1':'0');}catch(_){}window.__postfx=this;return this.enabled;},render(){return false;}};
-try{if(Q.get('postfx')==='1'&&!GFX.low){POSTFX.setEnabled(true);POSTFX.reason='requested_no_addons';}else if(localStorage.getItem('dream_v8_postfx')==='1'&&!GFX.low){POSTFX.setEnabled(true);POSTFX.reason='restored_stub';}window.__postfx=POSTFX;}catch(_){window.__postfx=POSTFX;}
+const POSTFX={enabled:false,ready:true,reason:'stub_v817',baseExp:null,baseFog:null,baseClear:null,
+ setEnabled(v){if(GFX.low){this.enabled=false;this.reason='lowq_forced_off';this._apply(false);try{localStorage.setItem('dream_v8_postfx','0');}catch(_){}window.__postfx=this;return false;}
+  this.enabled=!!v;this.reason=this.enabled?'mild_on':'mild_off';try{localStorage.setItem('dream_v8_postfx',this.enabled?'1':'0');}catch(_){}this._apply(this.enabled);window.__postfx=this;return this.enabled;},
+ _snap(){try{if(this.baseExp==null)this.baseExp=renderer.toneMappingExposure;if(scene.fog&&this.baseFog==null)this.baseFog=scene.fog.density;if(this.baseClear==null)this.baseClear=renderer.getClearColor(new THREE.Color()).getHex();}catch(_){}},
+ _apply(on){try{this._snap();if(on){renderer.toneMappingExposure=Math.min(1.15,(this.baseExp||0.9)*1.08);if(scene.fog)scene.fog.density=Math.min(0.09,(this.baseFog||0.034)*1.12);renderer.setClearColor(0x4a545c,1);window.__postfxMild={on:true,exp:renderer.toneMappingExposure,fog:scene.fog&&scene.fog.density};}
+  else{if(this.baseExp!=null)renderer.toneMappingExposure=this.baseExp;if(scene.fog&&this.baseFog!=null)scene.fog.density=this.baseFog;if(this.baseClear!=null)renderer.setClearColor(this.baseClear,1);window.__postfxMild={on:false};}}catch(_){}},
+ render(){if(!this.enabled||GFX.low)return false;try{/* mild live: pulse exposure slightly */const t=(performance.now()*0.00015)%1;const e=(this.baseExp||0.9)*1.06+Math.sin(t*6.28)*0.012;renderer.toneMappingExposure=e;window.__postfxMild={on:true,exp:e,live:true};}catch(_){}
+  return false;}};
+try{if(Q.get('postfx')==='1'&&!GFX.low){POSTFX.setEnabled(true);POSTFX.reason='requested_mild';}else if(localStorage.getItem('dream_v8_postfx')==='1'&&!GFX.low){POSTFX.setEnabled(true);POSTFX.reason='restored_mild';}window.__postfx=POSTFX;}catch(_){window.__postfx=POSTFX;}
 function applyGfxMode(){
  LOWQ=!!GFX.low;
  renderer.shadowMap.enabled=!LOWQ;
@@ -766,9 +869,9 @@ scene.add(SUN);scene.add(SUN.target);
  geo.setAttribute('color',new THREE.Float32BufferAttribute(col,3));es.add(new THREE.Mesh(geo,new THREE.MeshBasicMaterial({vertexColors:true,side:THREE.BackSide})));
  const sunb=new THREE.Mesh(new THREE.SphereGeometry(1.0,16,8),new THREE.MeshBasicMaterial({color:new THREE.Color(4.2,4.5,5.0)}));sunb.position.set(5,9,2);es.add(sunb);
  const pm=new THREE.PMREMGenerator(renderer);scene.environment=pm.fromScene(es,0.04).texture;scene.environmentIntensity=0.7;pm.dispose();}
-const SCENE_LIGHT={A:{c:0xc8d4dc,i:2.15,h:0.42},B:{c:0xd0dae0,i:2.0,h:0.48},C:{c:0xe0c8b0,i:2.1,h:0.40},D:{c:0xd8d4cc,i:1.45,h:0.55},E:{c:0xd0d8e0,i:2.0,h:0.45},F:{c:0xd4d8dc,i:1.9,h:0.5},G:{c:0xc8d4c8,i:2.0,h:0.48},H:{c:0xd8d0c4,i:1.55,h:0.5},I:{c:0xb8c0c4,i:1.85,h:0.38},J:{c:0xd0d8e0,i:1.55,h:0.5},K:{c:0xd8d4c8,i:1.7,h:0.52}};
+const SCENE_LIGHT={A:{c:0xc8d4dc,i:2.15,h:0.42},B:{c:0xd0dae0,i:2.0,h:0.48},C:{c:0xe0c8b0,i:2.1,h:0.40},D:{c:0xd8d4cc,i:1.45,h:0.55},E:{c:0xd0d8e0,i:2.0,h:0.45},F:{c:0xd4d8dc,i:1.9,h:0.5},G:{c:0xc8d4c8,i:2.0,h:0.48},H:{c:0xd8d0c4,i:1.55,h:0.5},I:{c:0xb8c0c4,i:1.85,h:0.38},J:{c:0xd0d8e0,i:1.55,h:0.5},K:{c:0xd8d4c8,i:1.7,h:0.52},L:{c:0xd0d8e0,i:1.8,h:0.42},M:{c:0xe8d0b0,i:1.7,h:0.40}};
 // v8.6 魂系雾：冷灰/石青 FogExp2；室内更淡
-const SCENE_MOOD={A:{fog:0x646e76,dens:0.034,clear:0x566066,exp:0.90},B:{fog:0x6e7880,dens:0.036,clear:0x5c666c,exp:0.92},C:{fog:0x7a6a5c,dens:0.028,clear:0x5e564c,exp:0.95},D:{fog:0x5a5e62,dens:0.055,clear:0x3a3e42,exp:0.88},E:{fog:0x5a646c,dens:0.038,clear:0x3e464c,exp:0.88},F:{fog:0x6a7074,dens:0.040,clear:0x4a5054,exp:0.90},G:{fog:0x627068,dens:0.038,clear:0x4e5a52,exp:0.92},H:{fog:0x5c5850,dens:0.050,clear:0x3e3a34,exp:0.88},I:{fog:0x5e666c,dens:0.042,clear:0x4a5258,exp:0.90},J:{fog:0x606870,dens:0.048,clear:0x3e464c,exp:0.88},K:{fog:0x6a6860,dens:0.042,clear:0x4a4840,exp:0.90}};
+const SCENE_MOOD={A:{fog:0x646e76,dens:0.034,clear:0x566066,exp:0.90},B:{fog:0x6e7880,dens:0.036,clear:0x5c666c,exp:0.92},C:{fog:0x7a6a5c,dens:0.028,clear:0x5e564c,exp:0.95},D:{fog:0x5a5e62,dens:0.055,clear:0x3a3e42,exp:0.88},E:{fog:0x5a646c,dens:0.038,clear:0x3e464c,exp:0.88},F:{fog:0x6a7074,dens:0.040,clear:0x4a5054,exp:0.90},G:{fog:0x627068,dens:0.038,clear:0x4e5a52,exp:0.92},H:{fog:0x5c5850,dens:0.050,clear:0x3e3a34,exp:0.88},I:{fog:0x5e666c,dens:0.042,clear:0x4a5258,exp:0.90},J:{fog:0x606870,dens:0.048,clear:0x3e464c,exp:0.88},K:{fog:0x6a6860,dens:0.042,clear:0x4a4840,exp:0.90},L:{fog:0x5a646c,dens:0.040,clear:0x3e464c,exp:0.86},M:{fog:0x7a6a5c,dens:0.032,clear:0x5e564c,exp:0.90}};
 function applySceneMood(key){const m=SCENE_MOOD[key]||SCENE_MOOD.A;let dens=(typeof GFX!=='undefined'&&GFX.low)?m.dens*0.55:m.dens;
  // v8.11 雨夜林间雾加深
  try{if(key==='G'&&typeof WEATHER!=='undefined'&&WEATHER.forceRain()){dens=Math.min(0.12, dens*2.15);scene.fog=new THREE.FogExp2(0x3a4840,dens);renderer.setClearColor(0x2a322c,1);renderer.toneMappingExposure=0.72;window.__forestFog={dens,rain:true};return;}}catch(_){}
@@ -882,14 +985,16 @@ const CLOCK={mode:'local',
    if(h>=5&&h<11)return 'morning';if(h>=11&&h<17)return 'noon';return 'evening';},
   label(){return {morning:'早晨',noon:'午后',evening:'夜色'}[this.period()];}
 };
-const HUB_POI={home:[2.6,1.2],shop:[-5.8,0.8],station:[-3.8,-5.0],plaza:[0.5,-1.0],ares:[8.5,4.5]};
+const HUB_POI={home:[2.6,1.2],shop:[-5.8,0.8],station:[-3.8,-5.0],plaza:[0.5,-1.0],ares:[8.5,4.5],airport:[6.8,5.2],mars_shelter:[9.2,3.2]};
 const SCHED={
   '晓雨':{morning:'shop',noon:'plaza',evening:'home'},
   '小悦':{morning:'home',noon:'shop',evening:'station'},
-  '小晴':{morning:'station',noon:'home',evening:'shop'},
+  '小晴':{morning:'station',noon:'home',evening:'airport'},
   '小雯':{morning:'plaza',noon:'station',evening:'shop'},
   '阿澄':{morning:'plaza',noon:'plaza',evening:'plaza'},
+  'Vivi':{morning:'ares',noon:'mars_shelter',evening:'airport'},
 };
+window.__schedV817=true;
 function hubPoiWorld(key){const S=SC.A;const p=HUB_POI[key]||HUB_POI.plaza;return new THREE.Vector3(S.off.x+S.spawn[0]+p[0],0,S.off.z+S.spawn[1]+p[1]);}
 function rebuildSchedulePts(n){
  if(n.name==='阿澄'||(n.talkable&&n.name&&n.name.indexOf('阿澄')>=0)){
@@ -1084,7 +1189,7 @@ const menu=document.createElement('div');menu.id='menu';menu.style.cssText='posi
 function menuRender(){const tier=V7.tierOf(V7MEM.affinity);const card=PL.name?V8.ensureCharCard(PL.name):null;const cardHtml=card?('当前：'+card.name+'\n经历：'+(card.经历||[]).join(' → ')+'\n技能：'+Object.entries(card.技能||{}).map(([k,v])=>k+' '+v).join(' · ')):'（切换角色后显示）';menu.innerHTML='<b style="font-size:18px">梦境菜单 (M 关闭)</b><br><span style="color:#ffd9a0">场景 · 数字键</span><br>'+
  ORDER.map((k,i)=>'<div data-s="'+k+'" style="cursor:pointer;'+(k===cur?'color:#ffd28a':'')+'">'+(i+1)+'. '+SC[k].name+(SC[k].loaded?'':' <small style="color:#9a90c0">(首次进入时加载)</small>')+'</div>').join('')+
  '<span style="color:#ffd9a0">角色 · G 切换</span><br>'+ROSTER.map((r,i)=>'<span data-c="'+i+'" style="cursor:pointer;margin-right:14px;'+(i===PL.idx?'color:#ffd28a;text-decoration:underline':'')+'">'+r.name+'</span>').join('')+
- '<br><span style="color:#ffd9a0">v8.16 · 打牌/军棋·404修·作息/小卖反馈·广播提示·雾·POSTFX</span><br><div style="font-size:13px;color:#cfc6ff">家 / 小卖部 / 教室 / 小房间 走实体门；校园走<b>山洞</b>、林间走<b>矿洞</b>；火星边疆 / 校园也可在<b>矿车站坐矿车</b>。数字键 1–9 快进；手机点「角色」换人</div><div data-close="1" style="cursor:pointer;color:#ffd28a;text-decoration:underline">📷 近景特写（Z）· 正面看人物</div><br><span style="color:#ffd9a0">角色卡</span><br><div id="v8cardpanel" style="font-size:13px;color:#cfc6ff;white-space:pre-wrap">'+cardHtml+'</div><br><span style="color:#ffd9a0">记事NPC</span><br><div style="font-size:13px;color:#cfc6ff">阿澄好感：'+tier.name+' ('+tier.score+') · 走近金环按 E 交谈</div>'+
+ '<br><span style="color:#ffd9a0">v8.17 · 机场/火星舱·门洞·闲聊·作息/好感·AI/POSTFX</span><br><div style="font-size:13px;color:#cfc6ff">家 / 小卖部 / 教室 / 小房间 走实体门；校园走<b>山洞</b>、林间走<b>矿洞</b>；火星边疆 / 校园也可在<b>矿车站坐矿车</b>。数字键 1–9 快进；手机点「角色」换人</div><div data-close="1" style="cursor:pointer;color:#ffd28a;text-decoration:underline">📷 近景特写（Z）· 正面看人物</div><br><span style="color:#ffd9a0">角色卡</span><br><div id="v8cardpanel" style="font-size:13px;color:#cfc6ff;white-space:pre-wrap">'+cardHtml+'</div><br><span style="color:#ffd9a0">记事NPC</span><br><div style="font-size:13px;color:#cfc6ff">阿澄好感：'+tier.name+' ('+tier.score+') · 走近金环按 E 交谈</div>'+
  '<div data-quest="1" style="cursor:pointer;margin-top:8px;color:#d8c8ff;text-decoration:underline">阿澄主线任务板 ('+V7.questStatus().doneCount+'/'+V7.QUEST_BEATS.length+')</div>'+
  '<div data-questcopy="1" style="cursor:pointer;margin-top:4px;color:#c8e0ff;text-decoration:underline">节拍文案：'+((window.__questCopy&&window.__questCopy.label)||'默认节拍')+'（点切）</div>'+
  '<div data-weather="1" style="cursor:pointer;margin-top:8px;color:#9ec8ff;text-decoration:underline">天气：'+WEATHER.label()+'（点切 雨夜/自动）</div>'+
@@ -1576,6 +1681,21 @@ fetch('lore_snippets.json').then(r=>r.json()).then(j=>{const sn=(j&&j.snippets)|
 try{const hooks=(typeof MEMORY_CARD_LORE_HOOKS!=='undefined'&&MEMORY_CARD_LORE_HOOKS)||[];if(hooks.length&&V7.setMemoryHooks){V7.setMemoryHooks(hooks);window.__memHooksAll=hooks;window.__memHooksN=hooks.length;}}catch(e){console.warn('memHooks',e);}
 fetch('minigame_sfx_copy_v814.json').then(r=>r.json()).then(j=>{window.__mgSfxCopy=j;try{if(MGM&&MGM.setMgSfxCopy)MGM.setMgSfxCopy(j);}catch(_){}}).catch(e=>console.warn('mgSfx',e));
 fetch('BANTER_EXTRA_SCENES_2026-10-29.json').then(r=>r.json()).then(j=>{window.__banterExtra=j;window.__banterExtraScenes=Object.keys((j&&j.scenes)||{});try{mergeBanterExtra(j);}catch(e){console.warn('banterExtra',e);}}).catch(e=>console.warn('banterExtra',e));
+fetch('npc_affinity_lines_extra.json').then(r=>r.json()).then(j=>{window.__affinityExtraV817=j;try{
+  if(j&&j.characters&&BANTER&&BANTER.characters){
+    let n=0; for(const ch of j.characters){
+      const c=BANTER.characters.find(x=>x.name===ch.name); if(!c)continue;
+      c.banter=c.banter||{};
+      for(const tier of ['stranger','familiar','intimate']){
+        const arr=(ch.banter&&ch.banter[tier])||[];
+        c.banter[tier]=c.banter[tier]||[];
+        for(const t of arr){ if(t&&!c.banter[tier].includes(t)){c.banter[tier].push(t);n++;} }
+      }
+    } window.__affinityMerged=n;
+  }
+}catch(e){console.warn('affinity',e);}}).catch(e=>console.warn('affinity',e));
+fetch('npc_schedule_v817.json').then(r=>r.json()).then(j=>{window.__npcSchedV817=j;}).catch(()=>{});
+
 fetch('station_pa_lines.json').then(r=>r.json()).then(j=>{window.__stationPA=j;window.__stationPAOn=localStorage.getItem('dream_v815_pa')!=='0';}).catch(e=>console.warn('stationPA',e));
 fetch('dream_recall_templates_v816.json').then(r=>r.json()).then(j=>{window.__dreamRecall=j;window.__dreamRecallN=(j.templates||[]).length;try{if(V7.setDreamRecallTemplates)V7.setDreamRecallTemplates(j.templates||[]);}catch(_){}}).catch(e=>console.warn('dreamRecall',e));
 fetch('furniture_hub_extra.json').then(r=>r.json()).then(j=>{window.__hubFurnPlan=j;try{placeHubFurnitureExtra();}catch(e){console.warn('hubFurn',e);}}).catch(e=>console.warn('hubFurn',e));
@@ -1630,6 +1750,8 @@ function mergeBanterExtra(extra){
 function banterSceneKey(){
   if(cur==='K')return 'nursery_K';
   if(cur==='F')return 'classroom_F';
+  if(cur==='L')return 'airport_L';
+  if(cur==='M')return 'mars_shelter_M';
   try{if(WEATHER&&WEATHER.forceRain())return 'rain_night';}catch(_){}
   return null;
 }
@@ -2114,8 +2236,8 @@ function shopUpdate(){
  try{banterUpdate();}catch(_){}
  try{if(cur==='A')renderQuestBoard(false);else if(cur!=='A'&&questDiv.style.display==='block'&&!window.__questPinned){/* keep */}}catch(_){}
  // home window rain visibility
- try{const S=SC.H;if(S&&S.mesh&&S.mesh.userData.winRain){S.mesh.userData.winRain.visible=!!(cur==='H'&&WEATHER.forceRain());
-  if(S.mesh.userData.winRain.visible){const arr=S.mesh.userData.winRain.children[0].geometry.attributes.position.array;for(let i=0;i<arr.length;i+=3){arr[i+1]-=0.04;if(arr[i+1]<-0.5)arr[i+1]=0.5;}S.mesh.userData.winRain.children[0].geometry.attributes.position.needsUpdate=true;}}}catch(_){}
+ try{for(const sk of ['H','L']){const S=SC[sk];if(S&&S.mesh&&S.mesh.userData.winRain){S.mesh.userData.winRain.visible=!!(cur===sk&&WEATHER.forceRain());
+  if(S.mesh.userData.winRain.visible){const ch=S.mesh.userData.winRain.children[0];if(ch&&ch.geometry){const arr=ch.geometry.attributes.position.array;for(let i=0;i<arr.length;i+=3){arr[i+1]-=0.04;if(arr[i+1]<-0.5)arr[i+1]=0.5;}ch.geometry.attributes.position.needsUpdate=true;}}}}}catch(_){}
  if(SIT.on){MGM.setPrompt('坐着 · 按 E 起身',()=>sitToggle());return;}
  if(BED.sleeping)return;
  if(cur==='H'){
@@ -2370,7 +2492,7 @@ function update(dt){if(typeof SIT!=='undefined'&&SIT.on){for(const k in keys)key
 let last=performance.now(),frames=0,fpsT=0,fps=0;
 function frame(){const now=performance.now();let dt=Math.min(0.05,(now-last)/1000);last=now;if(MGM.MG.active)return;
  if(!TEST)update(dt);
- portals.render();
+ portals.render();try{if(POSTFX&&POSTFX.enabled)POSTFX.render();}catch(_pfx){}
  frames++;fpsT+=dt;if(fpsT>1){fps=frames/fpsT;frames=0;fpsT=0;setSt(SC[cur].name+' · '+fps.toFixed(0)+' FPS'+(P.fly?' · 飞行':''));}}
 if(!TEST)renderer.setAnimationLoop(frame);
 window.__render=(n=1)=>{const t0=performance.now();for(let i=0;i<n;i++)portals.render();return performance.now()-t0;};

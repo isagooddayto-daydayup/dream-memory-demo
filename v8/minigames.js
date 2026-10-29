@@ -983,7 +983,13 @@ GAMES.push((()=>{
           cool-=dt;
           hud('<b>🃏 抽王八</b><br>小雯抽牌中…','你 '+handMe.length+' 张 · 对面 '+handOpp.length);
           if(cool<=0 && handMe.length){
-            const i=(Math.random()*handMe.length)|0;
+            // v8.17 AI：优先抽能使对面成对的 rank（手牌中奇数张），否则中位随机
+            let i=0;
+            {const counts={};for(const c of handOpp){if(c.joker)continue;counts[c.rank]=(counts[c.rank]|0)+1;}
+             const odd=[];for(let k=0;k<handMe.length;k++){const c=handMe[k];if(!c.joker&&(counts[c.rank]|0)%2===1)odd.push(k);}
+             if(odd.length)i=odd[(Math.random()*odd.length)|0];
+             else i=((handMe.length*0.5)|0)+(((Math.random()*3)|0)-1); i=Math.max(0,Math.min(handMe.length-1,i));
+             window.__aiBoostV817=(window.__aiBoostV817|0)+1;}
             const card=handMe.splice(i,1)[0];
             handOpp.push(card); turns++;
             const d=dropPairs(handOpp); handOpp=d.hand;
@@ -1142,21 +1148,44 @@ GAMES.push((()=>{
   }
   function aiPlay(){
     const mine=alive(2);
-    // 优先：能吃则吃（尤其吃帅）；否则向前（+j 对我是 -j 方向？红在 j=0，应向 +j）
+    // v8.17：能吃优先（吃帅加分）；威胁己方帅则防守；避免帅送死；推进仍保留
     let best=null, bs=-1e9;
+    const myShuai=mine.find(p=>p.userData.rank===6);
+    const threatOnShuai=(()=>{
+      if(!myShuai)return false;
+      for(const e of alive(1)){
+        for(const [ni,nj] of [[e.userData.i+1,e.userData.j],[e.userData.i-1,e.userData.j],[e.userData.i,e.userData.j+1],[e.userData.i,e.userData.j-1]]){
+          if(ni===myShuai.userData.i&&nj===myShuai.userData.j) return true;
+        }
+      }
+      return false;
+    })();
     for(const p of mine){
       for(const [ni,nj,kind] of legalMoves(p)){
-        let sc=Math.random()*2 + (nj-p.userData.j)*3; // 倾向推进
+        let sc=Math.random()*2 + (nj-p.userData.j)*3.5;
         if(kind==='eat'){
           const t=grid[ni][nj];
-          sc+=20+t.userData.rank*8;
-          if(t.userData.rank===6) sc+=500;
+          sc+=22+t.userData.rank*9;
+          if(t.userData.rank===6) sc+=520;
         } else if(kind==='both'){
-          sc+=5-p.userData.rank; // 用小子换
+          sc+=6-p.userData.rank;
+        }
+        if(p.userData.rank===6){
+          sc-=8; // 帅少动
+          // 若目标格被对方可邻接，重罚
+          for(const e of alive(1)){
+            if(Math.abs(e.userData.i-ni)+Math.abs(e.userData.j-nj)===1 && e.userData.rank>=p.userData.rank) sc-=80;
+          }
+        }
+        if(threatOnShuai && myShuai){
+          // 能挡在帅邻格或吃掉威胁子
+          if(Math.abs(ni-myShuai.userData.i)+Math.abs(nj-myShuai.userData.j)===1) sc+=18;
+          if(kind==='eat') sc+=12;
         }
         if(sc>bs){ bs=sc; best={p,ni,nj,kind}; }
       }
     }
+    window.__aiBoostV817=(window.__aiBoostV817|0)+1;
     if(!best){ turn=1; return false; }
     return doMove(best.p, best.ni, best.nj, best.kind);
   }

@@ -1,0 +1,297 @@
+{
+  "version": "v8.17",
+  "created_beijing": "2026-10-29 09:42 Asia/Shanghai",
+  "title": "社区作息挂点与行为标签 · 旁路草稿（未接线）",
+  "scope": "仅 v8work/snippets · 对齐 public CLOCK 早/午/晚与 HUB_POI",
+  "clock": {
+    "periods": {
+      "morning": {
+        "label": "早晨",
+        "hours": [
+          5,
+          11
+        ]
+      },
+      "noon": {
+        "label": "午后",
+        "hours": [
+          11,
+          17
+        ]
+      },
+      "evening": {
+        "label": "夜色",
+        "hours": [
+          17,
+          5
+        ]
+      }
+    },
+    "source": "dream_v8_public/index.html CLOCK.period()"
+  },
+  "hub_poi": {
+    "home": {
+      "xz": [
+        2.6,
+        1.2
+      ],
+      "hint": "家门口石阶"
+    },
+    "shop": {
+      "xz": [
+        -5.8,
+        0.8
+      ],
+      "hint": "小卖部柜台外"
+    },
+    "station": {
+      "xz": [
+        -3.8,
+        -5.0
+      ],
+      "hint": "矿车站检票/座椅"
+    },
+    "plaza": {
+      "xz": [
+        0.5,
+        -1.0
+      ],
+      "hint": "入口广场"
+    },
+    "ares": {
+      "xz": [
+        8.5,
+        4.5
+      ],
+      "hint": "ARES 机库边"
+    }
+  },
+  "behavior_tags": {
+    "wander": "沿挂点附近 pts 闲逛",
+    "sit": "可坐石阶/车站座椅（对齐 sit）",
+    "shop": "小卖部柜台闲聊/买汽水加权",
+    "play": "靠近小游戏圈（木头人/棋/沙包/纸片等）"
+  },
+  "npcs": {
+    "晓雨": {
+      "id": "xiaoyu",
+      "public_sched_aligned": true,
+      "periods": {
+        "morning": {
+          "poi": "shop",
+          "behavior": [
+            "shop",
+            "wander"
+          ],
+          "hang": "柜台外磨蹭",
+          "weight": 1.0
+        },
+        "noon": {
+          "poi": "plaza",
+          "behavior": [
+            "play",
+            "wander"
+          ],
+          "hang": "广场粉笔线/木头人",
+          "weight": 1.0
+        },
+        "evening": {
+          "poi": "home",
+          "behavior": [
+            "sit",
+            "wander"
+          ],
+          "hang": "家门口石阶",
+          "weight": 1.0
+        }
+      }
+    },
+    "小悦": {
+      "id": "xiaoyue",
+      "public_sched_aligned": true,
+      "periods": {
+        "morning": {
+          "poi": "home",
+          "behavior": [
+            "sit",
+            "wander"
+          ],
+          "hang": "门口花盆边",
+          "weight": 1.0
+        },
+        "noon": {
+          "poi": "shop",
+          "behavior": [
+            "shop",
+            "wander"
+          ],
+          "hang": "小卖转一圈",
+          "weight": 1.0
+        },
+        "evening": {
+          "poi": "station",
+          "behavior": [
+            "sit",
+            "wander"
+          ],
+          "hang": "傍晚车站看灯",
+          "weight": 1.0
+        }
+      }
+    },
+    "小晴": {
+      "id": "xiaoqing",
+      "public_sched_aligned": true,
+      "periods": {
+        "morning": {
+          "poi": "station",
+          "behavior": [
+            "wander",
+            "sit"
+          ],
+          "hang": "看班次/检票口",
+          "weight": 1.0
+        },
+        "noon": {
+          "poi": "home",
+          "behavior": [
+            "sit",
+            "wander"
+          ],
+          "hang": "回家歇脚",
+          "weight": 1.0
+        },
+        "evening": {
+          "poi": "shop",
+          "behavior": [
+            "shop",
+            "play"
+          ],
+          "hang": "夜色小卖/沙包",
+          "weight": 1.0
+        }
+      }
+    },
+    "小雯": {
+      "id": "xiaowen",
+      "public_sched_aligned": true,
+      "periods": {
+        "morning": {
+          "poi": "plaza",
+          "behavior": [
+            "play",
+            "wander"
+          ],
+          "hang": "树下摆棋",
+          "weight": 1.0
+        },
+        "noon": {
+          "poi": "station",
+          "behavior": [
+            "wander",
+            "sit"
+          ],
+          "hang": "车站换气",
+          "weight": 1.0
+        },
+        "evening": {
+          "poi": "shop",
+          "behavior": [
+            "shop",
+            "play"
+          ],
+          "hang": "小卖边跳绳圈",
+          "weight": 1.0
+        }
+      }
+    },
+    "阿澄": {
+      "id": "acheng",
+      "public_sched_aligned": true,
+      "note": "public rebuildSchedulePts 强制 plaza；本草稿保留三档同挂点，行为随日段微调",
+      "periods": {
+        "morning": {
+          "poi": "plaza",
+          "behavior": [
+            "wander"
+          ],
+          "hang": "入口金环巡视",
+          "weight": 1.0
+        },
+        "noon": {
+          "poi": "plaza",
+          "behavior": [
+            "wander",
+            "sit"
+          ],
+          "hang": "广场守望/可坐",
+          "weight": 1.0
+        },
+        "evening": {
+          "poi": "plaza",
+          "behavior": [
+            "wander",
+            "sit"
+          ],
+          "hang": "夜色入口灯",
+          "weight": 1.0
+        }
+      }
+    },
+    "Vivi": {
+      "id": "vivi",
+      "public_sched_aligned": false,
+      "note": "public SCHED 无 Vivi；旁路建议挂 ares，接线时可选并入",
+      "periods": {
+        "morning": {
+          "poi": "ares",
+          "behavior": [
+            "wander",
+            "play"
+          ],
+          "hang": "机库巡检/纸片桌",
+          "weight": 0.9
+        },
+        "noon": {
+          "poi": "ares",
+          "behavior": [
+            "play",
+            "sit"
+          ],
+          "hang": "打纸片/休息",
+          "weight": 0.9
+        },
+        "evening": {
+          "poi": "plaza",
+          "behavior": [
+            "wander"
+          ],
+          "hang": "偶到广场透气",
+          "weight": 0.6
+        }
+      }
+    }
+  },
+  "wiring_hint": {
+    "replace_or_extend": "可将 npcs[*].periods[*].poi 写回 SCHED；behavior 可在 rebuildSchedulePts 后写入 n.schedBehavior",
+    "tags_enum": [
+      "wander",
+      "sit",
+      "shop",
+      "play"
+    ],
+    "do_not_touch_public_in_this_task": true
+  },
+  "stats": {
+    "npc_count": 6,
+    "periods": 3,
+    "poi_keys": [
+      "home",
+      "shop",
+      "station",
+      "plaza",
+      "ares"
+    ],
+    "behavior_tag_count": 4
+  }
+}

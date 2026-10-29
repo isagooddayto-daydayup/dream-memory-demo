@@ -1,0 +1,223 @@
+{
+  "version": 1,
+  "created_beijing": "2026-10-29 09:42 Asia/Shanghai",
+  "title": "NPC 好感三档闲聊加厚 · v8.17 旁路（未接线）",
+  "license_note": "原创手写；公开安全，无私密角色缩写/真名/脸。仅公开 NPC。",
+  "affinity_tiers": {
+    "stranger": {
+      "id": "stranger",
+      "label": "陌生",
+      "score_max": 24,
+      "v7_alias": "stranger"
+    },
+    "familiar": {
+      "id": "familiar",
+      "label": "熟识",
+      "score_min": 25,
+      "score_max": 59,
+      "v7_alias": "known"
+    },
+    "intimate": {
+      "id": "intimate",
+      "label": "亲密",
+      "score_min": 60,
+      "v7_alias": "close",
+      "note": "阿澄 V7.tierOf 亲密阈值≥50；闲聊 banterTierOfScore 亲密≥50。本库档名用 banter 体系。"
+    }
+  },
+  "sources_read": [
+    "dream_v8_public/dream_v7_features.js · TPL stranger/known/close + tierOf",
+    "dream_v8_public/index.html · banterTierOfScore / SCHED / HUB_POI",
+    "dream_v8_public/npc_banter_20261029.json · 既有 6×18 句库（本文件为 extra）"
+  ],
+  "import_hint": {
+    "merge": "对同 id 的 banter[tier] 做 concat 去重；阿澄亦可 mergeAchengBanterIntoTPL",
+    "tier_map": {
+      "stranger": "stranger",
+      "known": "familiar",
+      "close": "intimate",
+      "familiar": "familiar",
+      "intimate": "intimate"
+    }
+  },
+  "characters": [
+    {
+      "id": "xiaoyu",
+      "name": "晓雨",
+      "model": "npc/real/c04_fa11_npc.glb",
+      "role": "小卖部常客 / 木头人裁判",
+      "banter": {
+        "stranger": [
+          "……站远点。我不熟你，木头人规则先别掺和。",
+          "小卖部柜台边这位置是我先占的。你买汽水？",
+          "新来的？广场粉笔线别踩乱，我画的。",
+          "嗯。我叫晓雨。话少，定住的时候嗓门才大。"
+        ],
+        "familiar": [
+          "哟，又来了。熟了也不许偷看木头人起跑。",
+          "汽水我帮你递过一次了吧？这次你自己掏硬币。",
+          "熟识之后可以损你两句：你刚才差点动了。",
+          "广场风有点干。要不要一起等下一轮定住？"
+        ],
+        "intimate": [
+          "亲密档了还装生疏？过来，木头人我让你喊第一声。",
+          "你来了我就安心一点——广场这圈我留着。",
+          "汽水分你半瓶。别跟别人说我嘴软。",
+          "晚上回家门口也能坐。你来的话，花盆我挪开。"
+        ]
+      },
+      "note": "extra pool · 每档 4 条 · 可并入 characters.banter 或单独抽"
+    },
+    {
+      "id": "xiaoqing",
+      "name": "小晴",
+      "model": "npc/real/d01_fa12_npc.glb",
+      "role": "矿车站守望 / 沙包一端",
+      "banter": {
+        "stranger": [
+          "……你好。这班还没检票，别挤到黄线里。",
+          "我是小晴。时刻表我看得多，人我认得慢。",
+          "沙包在包里。不熟的人，先别抢着扔。",
+          "矿车汽笛一响我会抬头。你有事等会儿再说。"
+        ],
+        "familiar": [
+          "熟了就别假装不懂班次——午后那趟会挤。",
+          "沙包要不要对练一轮？输了请我一支冰棍。",
+          "你回来得刚好。检票口风有点冷，袖口扣上。",
+          "熟识之后我可以多说一句：别把票夹在湿口袋里。"
+        ],
+        "intimate": [
+          "你来了我才肯把沙包借出去。亲密档，规矩也松一点。",
+          "夜色这班灯火好看。想坐矿车的话，我帮你看时刻。",
+          "回家那条路我走过。你若迷，跟我并排就行。",
+          "把雨和班次都跟我说。亲密之后，我会优先记你的。"
+        ]
+      },
+      "note": "extra pool · 每档 4 条 · 可并入 characters.banter 或单独抽"
+    },
+    {
+      "id": "xiaowen",
+      "name": "小雯",
+      "model": "npc/real/c05_fa03_npc.glb",
+      "role": "五子棋对手 / 甩大绳一端",
+      "banter": {
+        "stranger": [
+          "你好，我叫小雯。树下有棋盘，旁观可以，乱指不行。",
+          "跳绳圈还没铺。不熟的话，先看两局。",
+          "粉笔灰沾在裤脚上了？这儿是广场边，不是教室。",
+          "……陌生人。执黑要排队，我不会破例。"
+        ],
+        "familiar": [
+          "熟识了可以坐对面。别悔棋超过一次。",
+          "跳绳我教过你节拍——一二、一二，别抢。",
+          "树荫正好。你要是累了，棋子先收一边。",
+          "你上次那步其实不错。熟了我就肯夸你。"
+        ],
+        "intimate": [
+          "亲密档了，黑白你先挑。我不怕输给你。",
+          "你来树下，我就把棋盘擦干净。这是我的习惯。",
+          "夜色里棋子声更清楚。坐近一点也没关系。",
+          "跳绳绳我给你留着。亲密之后，这条线是你的。"
+        ]
+      },
+      "note": "extra pool · 每档 4 条 · 可并入 characters.banter 或单独抽"
+    },
+    {
+      "id": "xiaoyue",
+      "name": "小悦",
+      "model": "npc/real/d02_fa15_npc.glb",
+      "role": "家门口闲坐 / 傍晚车站",
+      "banter": {
+        "stranger": [
+          "……嗨。我是小悦。门口石阶可以坐，别踩花盆。",
+          "早上我多半在家。不熟的人，敲门轻一点。",
+          "傍晚会去车站看看灯。现在还早。",
+          "嗯。话不多。你若只是路过，点头也行。"
+        ],
+        "familiar": [
+          "又见面了。熟识之后，石阶我给你留半边。",
+          "小卖部那趟我刚回来。要不要一起走走？",
+          "花盆我浇过了。你上次夸过的那盆还活着。",
+          "熟了就可以说夜色的事。车站风比门口大。"
+        ],
+        "intimate": [
+          "你来了。亲密之后，门口灯我多留一会儿。",
+          "想坐就坐。花盆挪开了，别客气。",
+          "傍晚车站我等过你一次。下次也可以。",
+          "把今天的事跟我说。亲密档，我听得更认真。"
+        ]
+      },
+      "note": "extra pool · 每档 4 条 · 可并入 characters.banter 或单独抽"
+    },
+    {
+      "id": "acheng",
+      "name": "阿澄",
+      "model": "npc/real/d03_fp01_npc.glb",
+      "role": "梦境守望者 / 主线任务板",
+      "banter": {
+        "stranger": [
+          "……新来的梦游人？我叫阿澄。入口这边风稳一点。",
+          "陌生档话少。矿区是回忆，不是我随口编的。",
+          "金环亮着就可以走近。我不会躲开，但也不会多问。",
+          "你慢慢说。我记性一般，重要的句子我会留。"
+        ],
+        "familiar": [
+          "回来了。熟识之后，我可以把话接得长一点。",
+          "你去过的门和矿车，我大致有数。继续说也行。",
+          "好感三档：陌生、熟识、亲密。我们现在算熟识。",
+          "广场这圈我守着。你若累了，先坐石阶再聊。"
+        ],
+        "intimate": [
+          "你来了。亲密之后，看见你我会安心一点。",
+          "主线不会改：我是阿澄，这里是矿区回忆。闲聊随便。",
+          "你说过的句子我放得很近。愿意的话，再留一句。",
+          "靠近一点也没关系。亲密档，入口灯为你亮着。"
+        ]
+      },
+      "note": "extra pool · 每档 4 条 · 可并入 characters.banter 或单独抽"
+    },
+    {
+      "id": "vivi",
+      "name": "Vivi",
+      "model": "npc/real/d04_fp02_npc.glb",
+      "role": "ARES / 打纸片对手",
+      "banter": {
+        "stranger": [
+          "嗨，我是 Vivi。机库这边风跟矿区不一样。",
+          "不熟的话，先别摸控制台。看一眼就行。",
+          "打纸片？规则我可以说，赌注你自己定。",
+          "……陌生人。ARES 的灯有点刺，眯一下眼。"
+        ],
+        "familiar": [
+          "熟了就可以多问两句。机库门别反锁。",
+          "纸片局要不要再来？熟识之后我少让你两张。",
+          "矿区入口归阿澄，这边归我。你两边都来过吧。",
+          "风口有点吵。熟了我就给你递耳塞——开玩笑的。"
+        ],
+        "intimate": [
+          "你来机库，灯我调暗一点。亲密档的特权。",
+          "纸片我收着你的胜局。下次想翻盘随时。",
+          "ARES 外面是边疆，里面是我们说话的地方。",
+          "靠近控制台也没关系。亲密之后，我不会躲。"
+        ]
+      },
+      "note": "extra pool · 每档 4 条 · 可并入 characters.banter 或单独抽"
+    }
+  ],
+  "stats": {
+    "character_count": 6,
+    "lines_per_tier": 4,
+    "tiers": 3,
+    "lines_per_character": {
+      "晓雨": 12,
+      "小晴": 12,
+      "小雯": 12,
+      "小悦": 12,
+      "阿澄": 12,
+      "Vivi": 12
+    },
+    "total_lines": 72
+  },
+  "wired": true,
+  "wired_beijing": "2026-10-29 Asia/Shanghai"
+}

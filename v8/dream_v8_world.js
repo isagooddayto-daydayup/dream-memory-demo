@@ -1,5 +1,5 @@
 /** Dream v8.13 world helpers (魂系气质: fog/camera/cold light): physical entrances (doors / storefronts / cave mouths / station mine carts), char cards. No paid APIs. */
-export const VERSION = 'v8.16';
+export const VERSION = 'v8.17';
 
 /**
  * Hub door definitions (local offsets relative to scene A spawn).
@@ -24,6 +24,13 @@ export const DOORS = [
   // 矿车站里的矿车：走进矿车 = 上车 → 短过场 → 远处场景；那边的矿车停靠点坐回来
   { id: 'cart_mars', label: '火星边疆', from: 'I', to: 'C', hubLocal: [3.2, -0.9], hubYaw: 0, destLocal: [1.5, 0], destYaw: Math.PI, exitLocal: [4.6, 0], color: 0xff8a6a, facade: 'cart', exitFacade: 'cartstop', ride: true },
   { id: 'cart_campus', label: '矿区校园', from: 'I', to: 'B', hubLocal: [-3.6, -0.9], hubYaw: 0, destLocal: [2.4, 1.0], destYaw: 0, exitLocal: [4.4, 2.6], color: 0x9dffc2, facade: 'cart', exitFacade: 'cartstop', ride: true },
+  // v8.17 机场候车 L / 火星地表庇护所 M（白盒；勿覆盖 cart_mars→C）
+  { id: 'hub_airport', label: '机场候车', from: 'A', to: 'L', hubLocal: [6.8, 5.2], destLocal: [0, 4.2], destYaw: Math.PI, exitLocal: [0, 6.6], color: 0xa8c8ff, facade: 'hangar', exitFacade: 'exitdoor' },
+  { id: 'airport_ares', label: '登机口 · ARES', from: 'L', to: 'E', hubLocal: [0.0, -5.2], hubYaw: 0, destLocal: [7, 16], destYaw: Math.PI, exitLocal: [7, 22], color: 0xc8b0ff, facade: 'hangar', exitFacade: 'hangar' },
+  { id: 'airport_mars_shelter', label: '火星地表舱', from: 'L', to: 'M', hubLocal: [5.5, -4.0], destLocal: [0, 2.0], destYaw: Math.PI, exitLocal: [0, 3.8], color: 0xff8a6a, facade: 'hangar', exitFacade: 'exitdoor' },
+  { id: 'station_airport', label: '联运通道', from: 'I', to: 'L', hubLocal: [-6.5, 2.0], destLocal: [-5.0, 0.0], destYaw: Math.PI/2, exitLocal: [-6.8, 0.0], color: 0xffb07a, facade: 'station', exitFacade: 'exitdoor', weathered: true },
+  { id: 'hub_mars_shelter', label: '火星地表舱', from: 'A', to: 'M', hubLocal: [9.2, 3.2], destLocal: [0, 2.0], destYaw: Math.PI, exitLocal: [0, 3.8], color: 0xff8a6a, facade: 'hangar', exitFacade: 'exitdoor' },
+  { id: 'cart_mars_shelter', label: '火星地表舱', from: 'I', to: 'M', hubLocal: [4.8, -0.9], hubYaw: 0, destLocal: [1.2, 0], destYaw: Math.PI, exitLocal: [3.6, 0], color: 0xff8a6a, facade: 'cart', exitFacade: 'cartstop', ride: true },
 ];
 
 /** @deprecated v8.3: community hubs are real doors now; kept empty for old callers. */
