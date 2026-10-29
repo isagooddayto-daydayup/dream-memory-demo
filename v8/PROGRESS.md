@@ -1,1 +1,1 @@
-v8.20 · 横屏触控重排 + 程序化音效 + 音量开关 · 2026-10-29 Asia/Shanghai
+v8.21 · HUD开关态·跑腿进度条·小游戏win/fail playProcCue · 2026-10-29 Asia/Shanghai

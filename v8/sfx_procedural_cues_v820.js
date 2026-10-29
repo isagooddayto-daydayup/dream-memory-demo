@@ -267,6 +267,42 @@ function cueJianziKick(opts) {
   });
 }
 
+
+/** 小游戏胜利（v8.21） */
+function cueMgWin(opts) {
+  opts = opts || {};
+  var ok1 = procBeep({
+    freq: opts.freq != null ? opts.freq : 523,
+    slideTo: 784,
+    dur: opts.dur != null ? opts.dur : 0.22,
+    type: 'triangle',
+    gain: opts.gain != null ? opts.gain : 0.14,
+    pan: opts.pan
+  });
+  procBeep({
+    freq: 659,
+    slideTo: 988,
+    dur: 0.28,
+    type: 'triangle',
+    gain: 0.1,
+    pan: opts.pan
+  });
+  return ok1;
+}
+
+/** 小游戏失败 / 出局（v8.21） */
+function cueMgFail(opts) {
+  opts = opts || {};
+  return procBeep({
+    freq: opts.freq != null ? opts.freq : 220,
+    slideTo: 90,
+    dur: opts.dur != null ? opts.dur : 0.32,
+    type: 'sawtooth',
+    gain: opts.gain != null ? opts.gain : 0.1,
+    pan: opts.pan
+  });
+}
+
 /** 打牌翻面 / 出牌脆响（可选第 9 感；仍无外部 wav） */
 function cueCardSnap(opts) {
   opts = opts || {};
@@ -290,7 +326,9 @@ var PROC_SFX_CATALOG = {
   door_wood: cueDoorWood,
   hop_land: cueHopLand,
   jianzi_kick: cueJianziKick,
-  card_snap: cueCardSnap
+  card_snap: cueCardSnap,
+  mg_win: cueMgWin,
+  mg_fail: cueMgFail
 };
 
 var PROC_SFX_CORE_IDS = [
@@ -331,7 +369,9 @@ if (typeof window !== 'undefined') {
       door_wood: cueDoorWood,
       hop_land: cueHopLand,
       jianzi_kick: cueJianziKick,
-      card_snap: cueCardSnap
+      card_snap: cueCardSnap,
+      mg_win: cueMgWin,
+      mg_fail: cueMgFail
     }
   };
 }
@@ -349,7 +389,9 @@ if (typeof module !== 'undefined' && module.exports) {
     cueDoorWood: cueDoorWood,
     cueHopLand: cueHopLand,
     cueJianziKick: cueJianziKick,
-    cueCardSnap: cueCardSnap
+    cueCardSnap: cueCardSnap,
+    cueMgWin: cueMgWin,
+    cueMgFail: cueMgFail
   };
 }
 

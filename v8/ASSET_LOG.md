@@ -10,7 +10,7 @@
 | Kenney trees + Textures | scenes/forest/*.glb + Textures/*.png | 林间小路 | Kenney CC0（city-kit-suburban + retro-urban） |
 | Rocketbox public | npc/real/c04,c05,d01–d04 | 可玩 | MIT |
 | public jog clips | npc/anim/*_jog.glb | run | Quaternius UAL1 CC0 → Rocketbox 重定向，动画-only GLB |
-| YY 仿真人 | dream_v8_local/npc/yy/*.glb | 仅本地 | **禁止** Pages |
+| YY 仿真人 | dream_v8_local/npc/<private>/*.glb | 仅本地 | **禁止** Pages |
 | local-only humans | c02/c03/c06/d06 | 仅本地 | Renderpeople / 未核实 → 不公开 |
 
 ## v8.5 (2026-10-27)

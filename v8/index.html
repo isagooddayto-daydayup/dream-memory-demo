@@ -4,7 +4,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="梦境矿山">
 <meta name="theme-color" content="#07060c"><link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
-<title>回忆与梦境 · v8.20 矿山世界 · 横屏触控·程序化音效</title>
+<title>回忆与梦境 · v8.21 矿山世界 · HUD开关·跑腿进度·小游戏音效</title>
 <style>
 html,body{margin:0;height:100%;overflow:hidden;background:#0a0e12;font-family:"Microsoft YaHei","PingFang SC",sans-serif}
 canvas{display:block}
@@ -23,7 +23,7 @@ canvas{display:block}
 <script type="importmap">{"imports":{"three":"./lib/three.module.js","three/addons/":"./lib/addons/","@sparkjsdev/spark":"./lib/spark.module.js","@pixiv/three-vrm":"./lib/three-vrm.module.js","MG":"./minigames.js","V7":"./dream_v7_features.js","V8":"./dream_v8_world.js"}}</script>
 </head><body>
 <div id="tint"></div><div id="vig"></div><div id="flash"></div><div id="title"></div><div id="cross"></div>
-<div id="hud"><b>回忆与梦境 · v8.20 矿山世界 · 横屏触控·程序化音效·破败贴花·社区跑腿</b><br>走进<strong>实体门口</strong>：家 / 小卖部 / 教室 / 小房间 / <strong>飞船口·ARES</strong>，<strong>山洞</strong>（校园）/ <strong>矿洞</strong>（林间），进<strong>矿车站</strong>后走进矿车「上车」去火星边疆 / 矿区校园；返回也走门 / 洞口 / 矿车（数字键仅快进）；手机：左摇杆走、右半屏拖视角、点「角色」换人；<b>E</b> 阿澄交谈；地上淡圈=小游戏<br>
+<div id="hud"><b>回忆与梦境 · v8.21 矿山世界 · HUD开关态·跑腿进度·小游戏音效</b><br>走进<strong>实体门口</strong>：家 / 小卖部 / 教室 / 小房间 / <strong>飞船口·ARES</strong>，<strong>山洞</strong>（校园）/ <strong>矿洞</strong>（林间），进<strong>矿车站</strong>后走进矿车「上车」去火星边疆 / 矿区校园；返回也走门 / 洞口 / 矿车（数字键仅快进）；手机：左摇杆走、右半屏拖视角、点「角色」换人；<b>E</b> 阿澄交谈；地上淡圈=小游戏<br>
 点击画面锁定鼠标 · 鼠标转视角 · <b>WASD</b> 走 · <b>Shift</b> 跑<br>
 <b>空格</b> 按住起飞/上升 · <b>Ctrl/Q</b> 下降 · <b>F</b> 飞行/步行切换<br>
 <b>M</b> 菜单（结束这局→梦境回忆）· <b>G</b> 切换角色（前任留在原地当 NPC · 菜单看角色卡）· <b>1-9</b> 仍可快切场景 · <b>C</b> 镜头 · <b>V</b> 第一人称<br>
@@ -434,7 +434,7 @@ async function loadMeshScene(S){
    root.add(new THREE.Points(new THREE.BufferGeometry().setAttribute('position',new THREE.BufferAttribute(pos,3)),new THREE.PointsMaterial({color:0x9a9288,size:0.05,transparent:true,opacity:0.45,depthWrite:false})));
    // v8.19 decay decals on station platform + floor
    try{
-     if(!Q.has('nodecay') && typeof applyDecayPreset==='function'){
+     if(decayEnabled() && typeof applyDecayPreset==='function'){
        const low=(typeof GFX!=='undefined'&&GFX.low);
        applyDecayPreset(root,'stationPlatform', low?{count:10}:{});
        applyDecayPreset(root,'stationFloor', low?{count:8}:{});
@@ -645,7 +645,7 @@ async function loadScene(key,prog){
   const path=new THREE.Mesh(new THREE.PlaneGeometry(3.2,28),new THREE.MeshStandardMaterial({map:(()=>{const t=O.brick().clone();t.needsUpdate=true;t.repeat.set(1,8);return t;})(),roughness:1,color:0x9a9088}));path.rotation.x=-Math.PI/2;path.position.set(0,0.015,-4);g.add(path);
   // v8.19 decay decals on hub floor
   try{
-    if(!Q.has('nodecay') && typeof applyDecayPreset==='function'){
+    if(decayEnabled() && typeof applyDecayPreset==='function'){
       const low=(typeof GFX!=='undefined'&&GFX.low);
       applyDecayPreset(g,'hubFloor', low?{count:12}:{});
       window.__decayHub=true;
@@ -1214,15 +1214,18 @@ function blurbOfRoster(name){try{const m=window.__rosterBlurbsByName;if(m&&m[nam
 function menuRender(){const tier=V7.tierOf(V7MEM.affinity);const card=PL.name?V8.ensureCharCard(PL.name):null;const flavor=blurbOfRoster(PL.name||'');const cardHtml=card?('当前：'+card.name+'\n经历：'+(card.经历||[]).join(' → ')+'\n技能：'+Object.entries(card.技能||{}).map(([k,v])=>k+' '+v).join(' · ')+(flavor?('\n——\n'+flavor):'')):'（切换角色后显示）';menu.innerHTML='<b style="font-size:18px">梦境菜单 (M 关闭)</b><br><span style="color:#ffd9a0">场景 · 数字键</span><br>'+
  ORDER.map((k,i)=>'<div data-s="'+k+'" style="cursor:pointer;'+(k===cur?'color:#ffd28a':'')+'">'+(i+1)+'. '+SC[k].name+(SC[k].loaded?'':' <small style="color:#9a90c0">(首次进入时加载)</small>')+'</div>').join('')+
  '<span style="color:#ffd9a0">角色 · G 切换</span><br>'+ROSTER.map((r,i)=>'<span data-c="'+i+'" style="cursor:pointer;margin-right:14px;'+(i===PL.idx?'color:#ffd28a;text-decoration:underline':'')+'">'+r.name+'</span>').join('')+
- '<br><span style="color:#ffd9a0">v8.20 · 横屏触控·程序化音效·音量开关</span><br><div style="font-size:13px;color:#cfc6ff">家 / 小卖部 / 教室 / 小房间 走实体门；校园走<b>山洞</b>、林间走<b>矿洞</b>；火星边疆 / 校园也可在<b>矿车站坐矿车</b>。数字键 1–9 快进；手机点「角色」换人</div><div data-close="1" style="cursor:pointer;color:#ffd28a;text-decoration:underline">📷 近景特写（Z）· 正面看人物</div><br><span style="color:#ffd9a0">角色卡</span><br><div id="v8cardpanel" style="font-size:13px;color:#cfc6ff;white-space:pre-wrap">'+cardHtml+'</div><br><span style="color:#ffd9a0">记事NPC</span><br><div style="font-size:13px;color:#cfc6ff">阿澄好感：'+tier.name+' ('+tier.score+') · 走近金环按 E 交谈</div>'+
+ '<br><span style="color:#ffd9a0">v8.21 · HUD开关态一眼可见 · 跑腿进度 · 小游戏win/fail音效</span><br><div style="font-size:13px;color:#cfc6ff">家 / 小卖部 / 教室 / 小房间 走实体门；校园走<b>山洞</b>、林间走<b>矿洞</b>；火星边疆 / 校园也可在<b>矿车站坐矿车</b>。数字键 1–9 快进；手机点「角色」换人</div><div data-close="1" style="cursor:pointer;color:#ffd28a;text-decoration:underline">📷 近景特写（Z）· 正面看人物</div><br><span style="color:#ffd9a0">角色卡</span><br><div id="v8cardpanel" style="font-size:13px;color:#cfc6ff;white-space:pre-wrap">'+cardHtml+'</div><br><span style="color:#ffd9a0">记事NPC</span><br><div style="font-size:13px;color:#cfc6ff">阿澄好感：'+tier.name+' ('+tier.score+') · 走近金环按 E 交谈</div>'+
  '<div data-quest="1" style="cursor:pointer;margin-top:8px;color:#d8c8ff;text-decoration:underline">阿澄主线任务板 ('+V7.questStatus().doneCount+'/'+V7.QUEST_BEATS.length+')</div>'+
- '<div data-errand="1" style="cursor:pointer;margin-top:4px;color:#c8e8c0;text-decoration:underline">社区小事 ('+((V7.errandStatus&&V7.errandStatus().doneCount)|0)+'/'+((V7.ERRAND_BEATS&&V7.ERRAND_BEATS.length)||8)+')</div>'+
+ (function(){try{const er=V7.errandStatus?V7.errandStatus():null;const dn=(er&&er.doneCount)|0;const tot=(er&&er.total)||((V7.ERRAND_BEATS&&V7.ERRAND_BEATS.length)||8);const act=(er&&er.active)||null;const pct=tot?Math.round(100*dn/tot):0;const bar='<div style="margin-top:3px;height:6px;background:#2a3028;border-radius:4px;overflow:hidden;max-width:220px"><div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,#6dbf6a,#c8f0a8)"></div></div>';const sub=act?('<div style="font-size:11px;color:#9ab090;margin-top:2px">▶ 进行中：'+act.title+'</div>'):(er&&er.all?'<div style="font-size:11px;color:#9dffc2;margin-top:2px">✓ 全部完成</div>':'<div style="font-size:11px;color:#7a8870;margin-top:2px">点开任务板查看列表</div>');return '<div data-errand="1" style="cursor:pointer;margin-top:4px;color:#c8e8c0;text-decoration:underline">社区小事 · 跑腿 '+dn+'/'+tot+'（'+pct+'%）</div>'+bar+sub;}catch(_){return '<div data-errand="1" style="cursor:pointer;margin-top:4px;color:#c8e8c0;text-decoration:underline">社区小事</div>';}})()+
  '<div data-questcopy="1" style="cursor:pointer;margin-top:4px;color:#c8e0ff;text-decoration:underline">节拍文案：'+((window.__questCopy&&window.__questCopy.label)||'默认节拍')+'（点切）</div>'+
- '<div data-weather="1" style="cursor:pointer;margin-top:8px;color:#9ec8ff;text-decoration:underline">天气：'+WEATHER.label()+'（点切 雨夜/自动）</div>'+
- '<div data-pa="1" style="cursor:pointer;margin-top:4px;color:#c8d8e8;text-decoration:underline">车站广播：'+(stationPAEnabled()?'开':'关')+'（点切）</div>'+
- '<div data-sfx="1" style="cursor:pointer;margin-top:4px;color:#e8d8b0;text-decoration:underline">音量：'+(sfxEnabled()?'开':'关')+'（点切 · 程序化短 cue）</div>'+
- '<div data-atmo="1" style="cursor:pointer;margin-top:4px;color:#a8c0d8;text-decoration:underline">雨夜加深：'+(atmoDeepEnabled()?'开':'关')+'（点切）</div>'+
-'<div data-postfx="1" style="cursor:pointer;margin-top:4px;color:#b8c8e0;text-decoration:underline">轻量后期 POSTFX：'+(POSTFX.enabled?'开':'关')+'（默认关）</div>'+'<div data-feel="1" style="cursor:pointer;margin-top:4px;color:#b8c8e0;text-decoration:underline">轻量手感 FEEL：'+(feelEnabled()?'开':'关')+'（fog dens↑·camD≈5.2·冷FILL；非主机级）</div>'+
+ '<div style="margin-top:10px;padding:8px 10px;background:rgba(20,24,36,.55);border:1px solid rgba(140,160,200,.25);border-radius:10px"><div style="font-size:12px;color:#a8b8d0;margin-bottom:4px">开关（点切 · 状态一眼可见）</div>'+
+ '<div data-weather="1" style="cursor:pointer;margin-top:2px;color:#9ec8ff">天气 '+WEATHER.label()+' <span style="float:right;font-size:11px;padding:1px 8px;border-radius:8px;background:rgba(80,120,180,.35)">点切</span></div>'+
+ '<div data-pa="1" style="cursor:pointer;margin-top:4px;color:#c8d8e8">车站广播 <span style="float:right;font-size:11px;padding:1px 8px;border-radius:8px;background:'+(stationPAEnabled()?'rgba(80,180,120,.45)':'rgba(120,80,80,.45)')+';color:#fff">'+(stationPAEnabled()?'● 开':'○ 关')+'</span></div>'+
+ '<div data-sfx="1" style="cursor:pointer;margin-top:4px;color:#e8d8b0">音量 <span style="float:right;font-size:11px;padding:1px 8px;border-radius:8px;background:'+(sfxEnabled()?'rgba(80,180,120,.45)':'rgba(120,80,80,.45)')+';color:#fff">'+(sfxEnabled()?'● 开':'○ 关')+'</span></div>'+
+ '<div data-atmo="1" style="cursor:pointer;margin-top:4px;color:#a8c0d8">雨夜加深 <span style="float:right;font-size:11px;padding:1px 8px;border-radius:8px;background:'+(atmoDeepEnabled()?'rgba(80,180,120,.45)':'rgba(120,80,80,.45)')+';color:#fff">'+(atmoDeepEnabled()?'● 开':'○ 关')+'</span></div>'+
+ '<div data-postfx="1" style="cursor:pointer;margin-top:4px;color:#b8c8e0">POSTFX <span style="float:right;font-size:11px;padding:1px 8px;border-radius:8px;background:'+(POSTFX.enabled?'rgba(80,180,120,.45)':'rgba(120,80,80,.45)')+';color:#fff">'+(POSTFX.enabled?'● 开':'○ 关')+'</span></div>'+
+ '<div data-feel="1" style="cursor:pointer;margin-top:4px;color:#b8c8e0">FEEL <span style="float:right;font-size:11px;padding:1px 8px;border-radius:8px;background:'+(feelEnabled()?'rgba(80,180,120,.45)':'rgba(120,80,80,.45)')+';color:#fff">'+(feelEnabled()?'● 开':'○ 关')+'</span></div>'+
+ '<div data-decay="1" style="cursor:pointer;margin-top:4px;color:#c8b8a0">破败贴花 decay <span style="float:right;font-size:11px;padding:1px 8px;border-radius:8px;background:'+(decayEnabled()?'rgba(80,180,120,.45)':'rgba(120,80,80,.45)')+';color:#fff">'+(decayEnabled()?'● 开':'○ 关')+'</span></div></div>'+
 '<div data-sched="1" style="cursor:pointer;margin-top:4px;color:#c8e0c8;text-decoration:underline">社区作息：'+CLOCK.label()+(window.__sched&&window.__sched.n?' · 可见'+(window.__sched.n.length)+'人':'')+'（点看锚点）</div>'+
  '<div data-memhooks="1" style="cursor:pointer;margin-top:4px;color:#e0d0ff;text-decoration:underline">回忆卡钩预览（'+(window.__memHooksN||0)+'）</div>'+
 '<div data-recalltpl="1" style="cursor:pointer;margin-top:4px;color:#e8d8c0;text-decoration:underline">回忆模板预览（'+(window.__dreamRecallN||0)+'）</div>'+
@@ -1242,6 +1245,7 @@ function menuRender(){const tier=V7.tierOf(V7MEM.affinity);const card=PL.name?V8
  menu.querySelector('[data-atmo]')?.addEventListener('click',()=>toggleAtmoDeep());
  menu.querySelector('[data-postfx]')?.addEventListener('click',()=>{try{POSTFX.setEnabled(!POSTFX.enabled);window.__postfx=POSTFX;setSt('POSTFX：'+(POSTFX.enabled?'开':'关')+(GFX.low?'（低画质强制关）':''));menuRender();}catch(e){setSt('POSTFX失败');}});
  menu.querySelector('[data-feel]')?.addEventListener('click',()=>{try{toggleFeel();menuRender();}catch(e){setSt('FEEL失败');}});
+ menu.querySelector('[data-decay]')?.addEventListener('click',()=>{try{toggleDecay();menuRender();}catch(e){setSt('decay失败');}});
  menu.querySelector('[data-sched]')?.addEventListener('click',()=>{try{scheduleUpdate();const s=window.__sched||{};const lines=(s.n||[]).map(x=>x.name.replace('(闲逛)','')+'→'+(x.poi||'?')).join(' · ')||'（枢纽无人）';setSt('作息 '+s.label+'：'+lines);const el=$('title');el.innerHTML='社区作息 · '+s.label+'<small>'+lines+'</small>';el.style.opacity='1';clearTimeout(showTitle.h);showTitle.h=setTimeout(()=>el.style.opacity='0',4200);window.__schedShown={t:Date.now(),label:s.label,n:(s.n||[]).length};}catch(e){setSt('作息查看失败');}});
  menu.querySelector('[data-memhooks]')?.addEventListener('click',()=>{try{const hs=(V7.pickMemoryHooks?V7.pickMemoryHooks(3,{place:'station',weather:'rain'}):[]);window.__memHooks=hs;const body=hs.map(h=>'· '+h.text).join('\n')||'（无）';setSt('回忆卡钩\n'+body);const el=$('title');el.innerHTML='回忆卡钩<small style="white-space:pre-wrap">'+body+'</small>';el.style.opacity='1';clearTimeout(showTitle.h);showTitle.h=setTimeout(()=>el.style.opacity='0',4500);}catch(e){setSt('回忆卡钩失败');}});
  menu.querySelector('[data-recalltpl]')?.addEventListener('click',()=>{try{const line=V7.pickDreamRecallLine?V7.pickDreamRecallLine(V7SESS,{weather:WEATHER.forceRain()?'雨夜':'冷雾'}):null;const t=line||'（未加载）';setSt('回忆模板\n'+t);const el=$('title');el.innerHTML='回忆模板<small>'+t+'</small>';el.style.opacity='1';clearTimeout(showTitle.h);showTitle.h=setTimeout(()=>el.style.opacity='0',4200);window.__recallPreview={t:Date.now(),line:t};}catch(e){setSt('回忆模板失败');}});
@@ -2006,6 +2010,20 @@ function toggleAtmoDeep(force){
   return on;
 }
 
+// ---- v8.21 decay toggle (default on; ?nodecay or localStorage off) ----
+function decayEnabled(){
+  try{if(Q.has('nodecay'))return false;return localStorage.getItem('dream_v821_decay')!=='0';}catch(_){return !Q.has('nodecay');}
+}
+function toggleDecay(force){
+  const on=(force==null)?!decayEnabled():!!force;
+  try{localStorage.setItem('dream_v821_decay',on?'1':'0');}catch(_){}
+  window.__decayOn=on;
+  setSt('破败贴花 decay：'+(on?'开（重进场景生效）':'关（重进场景生效）'));
+  try{menuRender();}catch(_){}
+  return on;
+}
+window.__decayOn=decayEnabled();
+
 // ---- v8.18 light feel (honest: not console-grade souls; dens+cam nudge) ----
 const FEEL={on:true, hubDensMul:1.0, camFarAdd:0.0, camLowAdd:0.06, coolGray:0x5e6870, camD:5.2, pitch:-0.30, minCd:3.8, lookK:0.46, pitchClamp:-0.24, yNudge:0.18, fillThird:0.18, fillClose:1.55, sunI:1.75, src:'souls_feel_tweaks_v818'};
 function feelEnabled(){
@@ -2283,13 +2301,16 @@ function renderQuestBoard(force){
  try{
   const er=V7.errandStatus?V7.errandStatus():null;
   if(er&&er.beats&&er.beats.length){
-   html+='<div style="margin-top:10px"><b style="color:#b8e0b0">社区小事</b> <span style="color:#9a90c0">'+er.doneCount+'/'+er.total+'</span></div>';
+   const _ep=er.total?Math.round(100*er.doneCount/er.total):0;
+   html+='<div style="margin-top:10px"><b style="color:#b8e0b0">社区小事 · 跑腿</b> <span style="color:#c8f0a8;font-weight:600">'+er.doneCount+'/'+er.total+'</span> <span style="color:#9a90c0">'+_ep+'%</span></div>';
+   html+='<div style="margin-top:4px;height:7px;background:#2a3028;border-radius:4px;overflow:hidden"><div style="height:100%;width:'+_ep+'%;background:linear-gradient(90deg,#6dbf6a,#c8f0a8)"></div></div>';
+   if(er.active)html+='<div style="margin-top:6px;padding:4px 8px;background:rgba(80,120,60,.25);border-radius:6px;color:#e8f8d0;font-size:12px">▶ 当前：'+er.active.title+'<div style="font-size:11px;color:#9ab090;margin-top:2px">'+er.active.hint+'</div></div>';
    html+=er.beats.map(b=>{
     const mark=b.state==='done'?'✓':(b.state==='active'?'▶':'·');
     const col=b.state==='done'?'#9dffc2':(b.state==='active'?'#c8f0a8':'#8a9880');
     return '<div style="color:'+col+';margin-top:3px;font-size:12px">'+mark+' '+b.title+(b.state==='active'||b.state==='open'?'<div style="font-size:11px;color:#7a8870;margin-left:14px">'+b.hint+'</div>':'')+'</div>';
    }).join('');
-   if(er.all)html+='<div style="margin-top:6px;color:#b8e0b0">社区小事齐了</div>';
+   if(er.all)html+='<div style="margin-top:6px;color:#b8e0b0">✓ 社区小事齐了</div>';
    window.__errands=er;
   }
  }catch(_){}
@@ -2548,7 +2569,7 @@ function placeDoors(){
    const fac=makeEntranceFacade(door.facade||'room',door.color,door.ride?door.label:(door.facade==='cave'||door.facade==='mine'?door.label.split(' · ').pop():''));f.add(fac);f.userData.cart=fac.userData.cart||null;
    // v8.19 decay on weathered / station / mine door frames
    try{
-     if(!Q.has('nodecay') && !door.ride && typeof scatterDecayOnDoorFrame==='function' && (door.weathered || door.facade==='station' || door.facade==='mine')){
+     if(decayEnabled() && !door.ride && typeof scatterDecayOnDoorFrame==='function' && (door.weathered || door.facade==='station' || door.facade==='mine')){
        const low=(typeof GFX!=='undefined'&&GFX.low);
        const base=(typeof DECAY_PRESETS!=='undefined'&&DECAY_PRESETS.doorFrame)||{count:12,radius:0.6,height:2.5,cy0:0.2,cz:0.08,size:0.26};
        scatterDecayOnDoorFrame(f,Object.assign({},base,{count:low?5:(base.count||12),seed:81900+(DOOR_VIS.length|0),yaw:0}));
@@ -2563,7 +2584,7 @@ function placeDoors(){
    const back=door.ride?'矿车站':(door.from==='A'?'矿山小镇':SC[door.from].name);
    const fac2=makeEntranceFacade(door.exitFacade||'exitdoor',door.color,door.ride?'回矿车站':'回'+back);f2.add(fac2);f2.userData.cart=fac2.userData.cart||null;
    try{
-     if(!Q.has('nodecay') && !door.ride && typeof scatterDecayOnDoorFrame==='function' && (door.weathered || door.facade==='station' || door.facade==='mine')){
+     if(decayEnabled() && !door.ride && typeof scatterDecayOnDoorFrame==='function' && (door.weathered || door.facade==='station' || door.facade==='mine')){
        const low=(typeof GFX!=='undefined'&&GFX.low);
        const base=(typeof DECAY_PRESETS!=='undefined'&&DECAY_PRESETS.doorFrame)||{count:12,radius:0.6,height:2.5,cy0:0.2,cz:0.08,size:0.26};
        scatterDecayOnDoorFrame(f2,Object.assign({},base,{count:low?3:Math.max(4,((base.count||12)/2)|0),seed:82900+(DOOR_VIS.length|0),yaw:0}));
@@ -2775,7 +2796,7 @@ addEventListener('keydown',e=>{if(MGM.MG.active||CS.on||V7_CHAT)return;
  if(e.code==='Escape'&&document.getElementById('v7card').style.display==='flex'){document.getElementById('v7card').style.display='none';}
 });
 // test hooks (headless capture)
-window.__G={loadScene,loadMeshScene,DOOR_VIS,PLA,RIDE,doorVisRefresh,toggleClose,FILL,SkeletonUtils,applySceneMood,SCENE_MOOD,HEMI,SUN,get fog(){return scene.fog;},get exposure(){return renderer.toneMappingExposure;},MGM,MGX,mgEnter,mgUpdate,SHOP,shopBuy,placeHubDensity,HUB_DENS,CLOCK,scheduleUpdate,GFX,toggleLowQ,applyGfxMode,placeRain,WEATHER,setWeather,applyNightLights,SIT,sitToggle,showArriveCard,arriveDiv,sleepInBed,talkClerk,renderTimetable,renderQuestBoard,questHook,BED,CLERK,questDiv,timetableDiv,readCalendar,toggleLamp,playQuestReward,calendarBlurb,CAL,LAMP,rewardDiv,questPinBtn,talkBanter,BANTER_NEAR,get BANTER(){return BANTER;},loadBanterAff,bumpBanterAff,banterScore,banterTierOfScore,banterContextKeys,pickBanterLine,readPoster,posterBlurb,POSTER,playBeep,sfxPlay,sfxEnabled,toggleSfx,spawnRewardParticles,banterNeverHit,cycleQuestCopy,get QUEST_ALT(){return QUEST_ALT;},questHookExt,toggleHomeRadio,loreQuestTick,placeHubFurnitureExtra,mergeBanterExtra,speakStationPA,toggleStationPA,toggleAtmoDeep,maybeStationPATip,get POSTFX(){return POSTFX;},get FEEL(){return FEEL;},feelEnabled,toggleFeel,placeInteriorPropsLM,get __lmProps(){return window.__lmProps;},errandHook,errandTick,get __errands(){return window.__errands;},blurbOfRoster,get __rosterBlurbs(){return window.__rosterBlurbs;},get __decay(){return {hub:!!window.__decayHub,station:!!window.__decayStation,doors:window.__decayDoors|0};},pickMemoryHooks:(n,o)=>V7.pickMemoryHooks&&V7.pickMemoryHooks(n,o),get HUB_FURN(){return HUB_FURN;},get TOUCH_FEEL(){return (typeof TOUCH_FEEL!=='undefined'?TOUCH_FEEL:null);},get __sfx(){return window.__sfx||null;},get relayoutTouch(){return window.__relayoutTouch||null},get scene(){return scene;},get RAIN(){return RAIN;},PL,ROSTER,setChar,goScene,V8,DOORS:V8.DOORS,PARKED,placeDoors,placeCommunity,useDoor,COMM_VIS,CAMS,toggleMenu,ORDER,NPCS,CS,playCutscene,enterDream,THREE,P,SC,AV,TR,keys,update,startDissolve,place,makePortal,removePortal,camera,player,body,portals,get cur(){return cur;},set cur(v){cur=v;},groundW,poseAvatar,avatarBones,showTitle,V7,get V7MEM(){return V7MEM;},get V7SESS(){return V7SESS;},v7OpenChat,v7CloseChat,v7EndSession,get V7_NEAR(){return V7_NEAR;}};
+window.__G={loadScene,loadMeshScene,DOOR_VIS,PLA,RIDE,doorVisRefresh,toggleClose,FILL,SkeletonUtils,applySceneMood,SCENE_MOOD,HEMI,SUN,get fog(){return scene.fog;},get exposure(){return renderer.toneMappingExposure;},MGM,MGX,mgEnter,mgUpdate,SHOP,shopBuy,placeHubDensity,HUB_DENS,CLOCK,scheduleUpdate,GFX,toggleLowQ,applyGfxMode,placeRain,WEATHER,setWeather,applyNightLights,SIT,sitToggle,showArriveCard,arriveDiv,sleepInBed,talkClerk,renderTimetable,renderQuestBoard,questHook,BED,CLERK,questDiv,timetableDiv,readCalendar,toggleLamp,playQuestReward,calendarBlurb,CAL,LAMP,rewardDiv,questPinBtn,talkBanter,BANTER_NEAR,get BANTER(){return BANTER;},loadBanterAff,bumpBanterAff,banterScore,banterTierOfScore,banterContextKeys,pickBanterLine,readPoster,posterBlurb,POSTER,playBeep,sfxPlay,sfxEnabled,toggleSfx,spawnRewardParticles,banterNeverHit,cycleQuestCopy,get QUEST_ALT(){return QUEST_ALT;},questHookExt,toggleHomeRadio,loreQuestTick,placeHubFurnitureExtra,mergeBanterExtra,speakStationPA,toggleStationPA,toggleAtmoDeep,maybeStationPATip,get POSTFX(){return POSTFX;},get FEEL(){return FEEL;},feelEnabled,toggleFeel,decayEnabled,toggleDecay,placeInteriorPropsLM,get __lmProps(){return window.__lmProps;},errandHook,errandTick,get __errands(){return window.__errands;},blurbOfRoster,get __rosterBlurbs(){return window.__rosterBlurbs;},get __decay(){return {hub:!!window.__decayHub,station:!!window.__decayStation,doors:window.__decayDoors|0};},pickMemoryHooks:(n,o)=>V7.pickMemoryHooks&&V7.pickMemoryHooks(n,o),get HUB_FURN(){return HUB_FURN;},get TOUCH_FEEL(){return (typeof TOUCH_FEEL!=='undefined'?TOUCH_FEEL:null);},get __sfx(){return window.__sfx||null;},get relayoutTouch(){return window.__relayoutTouch||null},get scene(){return scene;},get RAIN(){return RAIN;},PL,ROSTER,setChar,goScene,V8,DOORS:V8.DOORS,PARKED,placeDoors,placeCommunity,useDoor,COMM_VIS,CAMS,toggleMenu,ORDER,NPCS,CS,playCutscene,enterDream,THREE,P,SC,AV,TR,keys,update,startDissolve,place,makePortal,removePortal,camera,player,body,portals,get cur(){return cur;},set cur(v){cur=v;},groundW,poseAvatar,avatarBones,showTitle,V7,get V7MEM(){return V7MEM;},get V7SESS(){return V7SESS;},v7OpenChat,v7CloseChat,v7EndSession,get V7_NEAR(){return V7_NEAR;}};
 window.__step=(sec,dt=1/30)=>{for(let t=0;t<sec-1e-6;t+=dt)update(dt);};
 
 // ---------------- boot ----------------
