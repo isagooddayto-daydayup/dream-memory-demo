@@ -135,6 +135,93 @@ export function questPhaseLine(q) {
 }
 
 
+/** v8.14 Acheng second-segment 4 beats (separate key; does not overwrite dream_v810_quest). */
+export const QUEST_KEY_EXT = 'dream_v814_quest_ext';
+export const QUEST_BEATS_EXT = [
+  { id: 'shelter_rain', title: '雨里找一处屋檐', hint: '雨夜时走近家门口或小卖部檐下停住。', check: 'shelter' },
+  { id: 'home_radio', title: '打开家里的收音机', hint: '走进家门，按 E 打开收音机。', check: 'radio' },
+  { id: 'read_station_sign', title: '看清车站 1987', hint: '进矿车站，走近站牌或时刻表。', check: 'sign' },
+  { id: 'tell_rain_year', title: '把雨和年份告诉阿澄', hint: '回到枢纽入口找阿澄按 E，提起雨夜和车站 1987。', check: 'talk_lore' },
+];
+export const QUEST_PHASE_LINES_EXT = {
+  shelter_rain: [
+    '你躲过一阵雨。煤灰被冲出深浅痕。下一拍：回家把收音机打开听听。',
+    '屋檐下的沉默我也记得。去家里坐一会儿——日历和串台还在。',
+  ],
+  home_radio: [
+    '串台里有半句「请旅客注意」。下一拍：去站台看清那块 1987 的站牌。',
+    '收音机音量别太大。站牌在矿车站——白漆被煤灰盖住一角。',
+  ],
+  read_station_sign: [
+    '一九八七。通车那年的锈还在。下一拍：回来入口，把雨和站牌跟我说一声。',
+    '站牌你看见了。梦会把年份写进短笺——先回来回话。',
+  ],
+  tell_rain_year: [
+    '雨、屋檐、串台、一九八七——我都记下了。结束这局，回忆卡会多一行冷灰。',
+    '第二段四拍齐了。你愿意的话，短笺里会有站牌和收音机。',
+  ],
+};
+export function loadQuestExt() {
+  const q = loadRaw(QUEST_KEY_EXT, null);
+  if (q && q.version === 1 && Array.isArray(q.done)) return q;
+  return { version: 1, done: [], active: 0, completedAt: 0, startedAt: Date.now() };
+}
+export function saveQuestExt(q) { saveRaw(QUEST_KEY_EXT, q); }
+export function questStatusExt(q) {
+  q = q || loadQuestExt();
+  const beats = QUEST_BEATS_EXT.map((b, i) => ({
+    ...b,
+    state: q.done.includes(b.id) ? 'done' : (i === q.done.length ? 'active' : 'locked'),
+  }));
+  const all = q.done.length >= QUEST_BEATS_EXT.length;
+  return { beats, active: beats.find((b) => b.state === 'active') || null, all, doneCount: q.done.length };
+}
+export function questAdvanceExt(flag, detail) {
+  const q = loadQuestExt();
+  if (q.done.length >= QUEST_BEATS_EXT.length) return { q, advanced: false, status: questStatusExt(q) };
+  const next = QUEST_BEATS_EXT[q.done.length];
+  let ok = false;
+  if (next.check === 'shelter' && flag === 'shelter') ok = true;
+  if (next.check === 'radio' && flag === 'radio') ok = true;
+  if (next.check === 'sign' && flag === 'sign') ok = true;
+  if (next.check === 'talk_lore' && (flag === 'talk_lore' || flag === 'talk')) ok = true;
+  if (!ok) return { q, advanced: false, status: questStatusExt(q), waiting: next };
+  q.done.push(next.id);
+  if (q.done.length >= QUEST_BEATS_EXT.length) q.completedAt = Date.now();
+  saveQuestExt(q);
+  return { q, advanced: true, beat: next, status: questStatusExt(q), justFinished: q.done.length >= QUEST_BEATS_EXT.length };
+}
+export function clearQuestExt() {
+  const q = { version: 1, done: [], active: 0, completedAt: 0, startedAt: Date.now() };
+  saveQuestExt(q);
+  return q;
+}
+export function questPhaseLineExt(q) {
+  q = q || loadQuestExt();
+  if (!q.done.length) return null;
+  const last = q.done[q.done.length - 1];
+  const pool = QUEST_PHASE_LINES_EXT[last];
+  if (!pool || !pool.length) return null;
+  return pool[(q.done.length + (q.completedAt | 0)) % pool.length];
+}
+
+/** v8.14 lore snippets pool (filled by index fetch). */
+export let LORE_SNIPPETS = [];
+export function setLoreSnippets(list) {
+  LORE_SNIPPETS = Array.isArray(list) ? list.slice() : [];
+  return LORE_SNIPPETS.length;
+}
+export function pickLoreSnippet(tag) {
+  const pool = tag
+    ? LORE_SNIPPETS.filter((s) => (s.tags || []).includes(tag))
+    : LORE_SNIPPETS;
+  const src = pool.length ? pool : LORE_SNIPPETS;
+  if (!src.length) return null;
+  return src[(Math.random() * src.length) | 0];
+}
+
+
+
 const POS_WORDS = ['谢谢', '感谢', '喜欢', '开心', '高兴', '想你', '朋友', '记得', '陪我', '真好', '可爱', '漂亮', '厉害', '爱', '温暖', '安心'];
 const NEG_WORDS = ['讨厌', '滚', '无聊', '傻', '笨', '烦', '走开'];
 const LORE_ASK = ['你是谁', '你叫什么', '这里是', '这是哪', '矿区', '小镇', '学校', '火星', '教室', '梦', '回忆', '传送门', '飞行', '飞船', 'ARES', '机场', '主线'];
@@ -451,7 +538,7 @@ const SCENE_NAME = {
 };
 const MG_NAME = {
   gunlhuan: '滚铁环', shabao: '丢沙包', wuziqi: '五子棋', paizhipian: '打纸片',
-  mutouren: '一二三木头人', tiaosheng: '跳大绳', caijidan: '踩鸡蛋', moxiazi: '摸瞎子',
+  mutouren: '一二三木头人', tiaosheng: '跳大绳', caijidan: '踩鸡蛋', moxiazi: '摸瞎子', tiaofangzi: '跳房子', tijianzi: '踢毽子',
   // legacy aliases
   hoop: '滚铁环', sandbag: '丢沙包', go: '五子棋', paper: '打纸片',
   statue: '一二三木头人', rope: '跳大绳', egg: '踩鸡蛋', blind: '摸瞎子',
@@ -506,6 +593,17 @@ export function buildDreamCard(sess, mem) {
     } else {
       lines.push('阿澄主线任务板还空着，四节拍还没开始。');
     }
+  } catch (_) {}
+  try {
+    const qe = questStatusExt(loadQuestExt());
+    if (qe.doneCount) {
+      const names = qe.beats.filter((b) => b.state === 'done').map((b) => b.title);
+      lines.push('阿澄第二段：已完成 ' + qe.doneCount + '/' + QUEST_BEATS_EXT.length + (names.length ? ('（' + names.join(' → ') + '）') : '') + (qe.all ? '。' : '。'));
+    }
+  } catch (_) {}
+  try {
+    const sn = pickLoreSnippet();
+    if (sn && sn.text) lines.push(sn.text);
   } catch (_) {}
   if (buys.length) {
     lines.push(`小卖部柜台上，你买过：${buys.map((id) => BUY_NAME[id] || id).join('、')}。塑料瓶还带着一点凉意。`);

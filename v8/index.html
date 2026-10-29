@@ -23,7 +23,7 @@ canvas{display:block}
 <script type="importmap">{"imports":{"three":"./lib/three.module.js","three/addons/":"./lib/addons/","@sparkjsdev/spark":"./lib/spark.module.js","@pixiv/three-vrm":"./lib/three-vrm.module.js","MG":"./minigames.js","V7":"./dream_v7_features.js","V8":"./dream_v8_world.js"}}</script>
 </head><body>
 <div id="tint"></div><div id="vig"></div><div id="flash"></div><div id="title"></div><div id="cross"></div>
-<div id="hud"><b>回忆与梦境 · v8.13 矿山世界 · 育儿所教室·扩闲聊·车站凳·节拍文案切换</b><br>走进<strong>实体门口</strong>：家 / 小卖部 / 教室 / 小房间 / <strong>飞船口·ARES</strong>，<strong>山洞</strong>（校园）/ <strong>矿洞</strong>（林间），进<strong>矿车站</strong>后走进矿车「上车」去火星边疆 / 矿区校园；返回也走门 / 洞口 / 矿车（数字键仅快进）；手机：左摇杆走、右半屏拖视角、点「角色」换人；<b>E</b> 阿澄交谈；地上淡圈=小游戏<br>
+<div id="hud"><b>回忆与梦境 · v8.14 矿山世界 · 跳房子踢毽·触控手感·阿澄二段·lore</b><br>走进<strong>实体门口</strong>：家 / 小卖部 / 教室 / 小房间 / <strong>飞船口·ARES</strong>，<strong>山洞</strong>（校园）/ <strong>矿洞</strong>（林间），进<strong>矿车站</strong>后走进矿车「上车」去火星边疆 / 矿区校园；返回也走门 / 洞口 / 矿车（数字键仅快进）；手机：左摇杆走、右半屏拖视角、点「角色」换人；<b>E</b> 阿澄交谈；地上淡圈=小游戏<br>
 点击画面锁定鼠标 · 鼠标转视角 · <b>WASD</b> 走 · <b>Shift</b> 跑<br>
 <b>空格</b> 按住起飞/上升 · <b>Ctrl/Q</b> 下降 · <b>F</b> 飞行/步行切换<br>
 <b>M</b> 菜单（结束这局→梦境回忆）· <b>G</b> 切换角色（前任留在原地当 NPC · 菜单看角色卡）· <b>1-9</b> 仍可快切场景 · <b>C</b> 镜头 · <b>V</b> 第一人称<br>
@@ -374,6 +374,12 @@ async function loadMeshScene(S){
    root.userData.lamp={on:true,local:[2.0,1.0],light:lamp};
    root.userData.calendars=[{id:'cal',name:'墙上日历',local:[-3.6,-1.5],lines:null}];
    root.userData.posters=[{id:'poster',name:'墙上海报',local:[3.5,-1.2]}];
+   // v8.14 home radio (阿澄二段 home_radio)
+   {const radio=box(0.55,0.32,0.28,0x4a5560, -2.6,1.05, -3.2);
+    const dial=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,0.03,12),new THREE.MeshStandardMaterial({color:0xffaa44,emissive:0x221100,emissiveIntensity:0.15,roughness:0.4}));
+    dial.rotation.x=Math.PI/2;dial.position.set(-2.6,1.12,-3.05);root.add(dial);
+    root.userData.radio={mesh:radio,dial,on:false,local:[-2.6,-3.2]};}
+
    root.userData._furnJobs=[
      ['bed',-1.7,0,-1.3,Math.PI/2],
      ['table',2.0,0,1.0,0],
@@ -733,6 +739,9 @@ async function enterDream(){if(CS.on||TR.on)return;await playCutscene('dream_tra
 let LOWQ=Q.has('lowq')||(TOUCH.on&&!Q.has('hiq')); // 手机默认低画质，?hiq 开阴影；菜单可切换
 try{if(localStorage.getItem('dream_v88_gfx')==='low')LOWQ=true;if(localStorage.getItem('dream_v88_gfx')==='hi')LOWQ=false;}catch(_){}
 const GFX={low:!!LOWQ, basePR:TEST?1:Q.has('emu')?0.3:(TOUCH.on?Math.min(devicePixelRatio,1.0)*0.85:Math.min(devicePixelRatio,1.25))};
+// v8.14 POSTFX_MOBILE stub (default off; full composer needs vendored addons — see v8work/POSTFX_MOBILE)
+const POSTFX={enabled:false,ready:false,reason:'stub',setEnabled(v){this.enabled=!!v&&!GFX.low;try{localStorage.setItem('dream_v8_postfx',this.enabled?'1':'0');}catch(_){}},render(){return false;}};
+if(Q.get('postfx')==='1'&&!GFX.low){POSTFX.reason='requested_no_addons';window.__postfx=POSTFX;}
 function applyGfxMode(){
  LOWQ=!!GFX.low;
  renderer.shadowMap.enabled=!LOWQ;
@@ -1064,7 +1073,7 @@ const menu=document.createElement('div');menu.id='menu';menu.style.cssText='posi
 function menuRender(){const tier=V7.tierOf(V7MEM.affinity);const card=PL.name?V8.ensureCharCard(PL.name):null;const cardHtml=card?('当前：'+card.name+'\n经历：'+(card.经历||[]).join(' → ')+'\n技能：'+Object.entries(card.技能||{}).map(([k,v])=>k+' '+v).join(' · ')):'（切换角色后显示）';menu.innerHTML='<b style="font-size:18px">梦境菜单 (M 关闭)</b><br><span style="color:#ffd9a0">场景 · 数字键</span><br>'+
  ORDER.map((k,i)=>'<div data-s="'+k+'" style="cursor:pointer;'+(k===cur?'color:#ffd28a':'')+'">'+(i+1)+'. '+SC[k].name+(SC[k].loaded?'':' <small style="color:#9a90c0">(首次进入时加载)</small>')+'</div>').join('')+
  '<span style="color:#ffd9a0">角色 · G 切换</span><br>'+ROSTER.map((r,i)=>'<span data-c="'+i+'" style="cursor:pointer;margin-right:14px;'+(i===PL.idx?'color:#ffd28a;text-decoration:underline':'')+'">'+r.name+'</span>').join('')+
- '<br><span style="color:#ffd9a0">v8.13 · 育儿所·扩闲聊·站凳·节拍文案</span><br><div style="font-size:13px;color:#cfc6ff">家 / 小卖部 / 教室 / 小房间 走实体门；校园走<b>山洞</b>、林间走<b>矿洞</b>；火星边疆 / 校园也可在<b>矿车站坐矿车</b>。数字键 1–9 快进；手机点「角色」换人</div><div data-close="1" style="cursor:pointer;color:#ffd28a;text-decoration:underline">📷 近景特写（Z）· 正面看人物</div><br><span style="color:#ffd9a0">角色卡</span><br><div id="v8cardpanel" style="font-size:13px;color:#cfc6ff;white-space:pre-wrap">'+cardHtml+'</div><br><span style="color:#ffd9a0">记事NPC</span><br><div style="font-size:13px;color:#cfc6ff">阿澄好感：'+tier.name+' ('+tier.score+') · 走近金环按 E 交谈</div>'+
+ '<br><span style="color:#ffd9a0">v8.14 · 跳房子/踢毽·触控·二段阿澄·lore</span><br><div style="font-size:13px;color:#cfc6ff">家 / 小卖部 / 教室 / 小房间 走实体门；校园走<b>山洞</b>、林间走<b>矿洞</b>；火星边疆 / 校园也可在<b>矿车站坐矿车</b>。数字键 1–9 快进；手机点「角色」换人</div><div data-close="1" style="cursor:pointer;color:#ffd28a;text-decoration:underline">📷 近景特写（Z）· 正面看人物</div><br><span style="color:#ffd9a0">角色卡</span><br><div id="v8cardpanel" style="font-size:13px;color:#cfc6ff;white-space:pre-wrap">'+cardHtml+'</div><br><span style="color:#ffd9a0">记事NPC</span><br><div style="font-size:13px;color:#cfc6ff">阿澄好感：'+tier.name+' ('+tier.score+') · 走近金环按 E 交谈</div>'+
  '<div data-quest="1" style="cursor:pointer;margin-top:8px;color:#d8c8ff;text-decoration:underline">阿澄主线任务板 ('+V7.questStatus().doneCount+'/'+V7.QUEST_BEATS.length+')</div>'+
  '<div data-questcopy="1" style="cursor:pointer;margin-top:4px;color:#c8e0ff;text-decoration:underline">节拍文案：'+((window.__questCopy&&window.__questCopy.label)||'默认节拍')+'（点切）</div>'+
  '<div data-weather="1" style="cursor:pointer;margin-top:8px;color:#9ec8ff;text-decoration:underline">天气：'+WEATHER.label()+'（点切 雨夜/自动）</div>'+
@@ -1080,7 +1089,7 @@ function menuRender(){const tier=V7.tierOf(V7MEM.affinity);const card=PL.name?V8
  menu.querySelector('[data-weather]')?.addEventListener('click',()=>{setWeather(WEATHER.mode==='rainnight'?'auto':'rainnight');});
  menu.querySelector('[data-questcopy]')?.addEventListener('click',()=>cycleQuestCopy());
  menu.querySelector('[data-quest]')?.addEventListener('click',()=>{window.__questPinned=true;renderQuestBoard(true);toggleMenu(false);setSt('任务板已钉在左上');});
- menu.querySelector('[data-resetquest]')?.addEventListener('click',()=>{V7.clearQuest();renderQuestBoard(true);menuRender();setSt('主线任务已重置');});
+ menu.querySelector('[data-resetquest]')?.addEventListener('click',()=>{V7.clearQuest();try{V7.clearQuestExt();}catch(_){}renderQuestBoard(true);menuRender();setSt('主线+第二段已重置');});
  menu.querySelector('[data-close]')?.addEventListener('click',()=>{toggleMenu(false);toggleClose();});
  menu.querySelector('[data-resetmem]')?.addEventListener('click',()=>{V7MEM=V7.clearMem();V7.renderLog(V7MEM);menuRender();setSt('阿澄记忆已清空');});}
 function toggleMenu(on){on=on===undefined?menu.style.display==='none':on;menu.style.display=on?'block':'none';if(on){menuRender();document.exitPointerLock?.();}}
@@ -1118,19 +1127,31 @@ if(!TOUCH.on){
 }
 // ---------------- touch controls (auto when touch device or ?touch) ----------------
 Object.assign(TOUCH,{jx:0,jy:0,jm:0,jid:null,lid:null,lx:0,ly:0,jcx:0,jcy:0});
+// --- TOUCH_FEEL v8.14 (from v8work/snippets/touch_feel_v814.js) ---
+const TOUCH_FEEL={dead:0.18,walkStart:0.18,walkFull:0.55,runStart:0.82,runFull:0.95,stickRadiusPx:64,lookYaw:0.0052,lookPitch:0.0042,lookScaleByWidth:true,lookRefWidth:390,lookScaleMin:0.75,lookScaleMax:1.25,knobReturn:0.28,btnMin:60,btnGap:12,btnStep:72,pressLockMs:180,leftFrac:0.44,deadRingAlpha:0.22,talkDimOpacity:0.35};
+function touchLookScale(){if(!TOUCH_FEEL.lookScaleByWidth)return 1;const s=TOUCH_FEEL.lookRefWidth/Math.max(320,innerWidth||TOUCH_FEEL.lookRefWidth);return Math.max(TOUCH_FEEL.lookScaleMin,Math.min(TOUCH_FEEL.lookScaleMax,s));}
+function stickMag(jm){if(jm<TOUCH_FEEL.dead)return 0;const t=(jm-TOUCH_FEEL.dead)/(1-TOUCH_FEEL.dead);const u=Math.max(0,Math.min(1,t));return u*u*(3-2*u);}
+function stickSpeedMul(jm){const m=stickMag(jm);if(m<=0)return 0;if(jm<TOUCH_FEEL.walkFull){const span=TOUCH_FEEL.walkFull-TOUCH_FEEL.dead;const w=span>0?(jm-TOUCH_FEEL.dead)/span:1;return m*Math.max(0,Math.min(1,w));}if(jm<TOUCH_FEEL.runStart)return 1.0;const spanR=TOUCH_FEEL.runFull-TOUCH_FEEL.runStart;const r=spanR>0?(jm-TOUCH_FEEL.runStart)/spanR:1;return 1.0+0.55*Math.max(0,Math.min(1,r));}
+function stickIsRun(jm){return jm>=TOUCH_FEEL.runStart;}
+function touchFeelMoveFactors(jm){const mag=stickMag(jm);return{run:stickIsRun(jm),touchMul:stickSpeedMul(jm),touchActive:mag>0};}
+function touchFeelKnobReturn(dt,setKnob){if(TOUCH.jid!==null)return;if(!(TOUCH.jx||TOUCH.jy||TOUCH.jm))return;const k=Math.min(1,dt/TOUCH_FEEL.knobReturn);TOUCH.jx*=(1-k);TOUCH.jy*=(1-k);TOUCH.jm=Math.hypot(TOUCH.jx,TOUCH.jy);if(TOUCH.jm<0.02){TOUCH.jx=TOUCH.jy=TOUCH.jm=0;}if(setKnob)setKnob();}
+window.__TOUCH_FEEL=TOUCH_FEEL;window.__stickMag=stickMag;window.__stickSpeedMul=stickSpeedMul;
 if(TOUCH.on){
  const css=document.createElement('style');css.textContent=`#hud{display:none!important}#cross{display:none!important}
  html,body{touch-action:none;overscroll-behavior:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
  input,textarea{-webkit-user-select:text;user-select:text;touch-action:auto}
  #tc{position:fixed;inset:0;z-index:30;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;pointer-events:none}
  #joy{position:absolute;left:calc(16px + env(safe-area-inset-left));bottom:calc(16px + env(safe-area-inset-bottom));width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.10);border:2px solid rgba(255,255,255,.38);pointer-events:auto;touch-action:none}
+ #joyDead{position:absolute;left:50%;top:50%;width:36%;height:36%;margin-left:-18%;margin-top:-18%;border-radius:50%;border:2px solid rgba(255,220,170,.22);pointer-events:none;box-sizing:border-box}
  #knob{position:absolute;left:45px;top:45px;width:50px;height:50px;border-radius:50%;background:rgba(255,220,170,.6);pointer-events:none}
- .tb{position:absolute;width:52px;height:52px;padding:0 4px;border-radius:16px;background:rgba(20,14,40,.66);border:2px solid rgba(255,220,170,.6);color:#ffe9c4;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.1;pointer-events:auto;box-sizing:border-box;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+ .tb{position:absolute;width:60px;height:60px;padding:0 4px;border-radius:16px;background:rgba(20,14,40,.66);border:2px solid rgba(255,220,170,.6);color:#ffe9c4;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.1;pointer-events:auto;box-sizing:border-box;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
  .tb.dn{background:rgba(255,190,120,.62);color:#2a1830}
  .tb.round{border-radius:50%}
- .tb.wide{width:84px}
+ .tb.wide{width:96px}
  .tb.sm{font-size:12px}
  .tb.hi{border-color:rgba(255,210,140,.95);box-shadow:0 0 12px rgba(255,180,100,.35)}
+ .tb.dim{opacity:0.35;pointer-events:none}
+ @media (orientation:landscape){.tb{width:56px;height:56px}.tb.wide{width:88px}}
  #st{left:50%!important;right:auto!important;transform:translateX(-50%);top:calc(6px + env(safe-area-inset-top))!important;font-size:11px!important;text-align:center!important;max-width:40vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.8}
  #v8doorhint{z-index:35!important;max-width:max(200px,min(60vw,calc(100vw - 440px)))!important;min-width:180px;font-size:16px!important}
  #v8tip,#v8rot{position:fixed;left:50%;transform:translateX(-50%);z-index:34;pointer-events:none;background:rgba(14,10,28,.72);color:#ffe9c4;border-radius:14px;padding:8px 14px;font-size:13px;text-align:center;transition:opacity 1.2s;max-width:max(200px,min(70vw,calc(100vw - 440px)));min-width:200px}
@@ -1154,13 +1175,13 @@ if(TOUCH.on){
  addEventListener('contextmenu',e=>{if(!(e.target&&e.target.closest&&e.target.closest('input,textarea')))e.preventDefault();});
 
  const tc=document.createElement('div');tc.id='tc';
- tc.innerHTML='<div id="joy"><div id="knob"></div></div>';
+ tc.innerHTML='<div id="joy"><div id="joyDead" title="推过环才走"></div><div id="knob"></div></div>';
  document.body.appendChild(tc);
 
  // helper: bind pressable control (pointer + touch + click) — v8.4: one fire per press (pointer+touch+click used to fire 2–3×)
  function bindBtn(b,key,fn){
   let lastFire=0;
-  const fire=()=>{const n=performance.now();if(n-lastFire<400)return;lastFire=n;try{fn&&fn();}catch(err){console.error(err);}};
+  const fire=()=>{const n=performance.now();if(n-lastFire<(TOUCH_FEEL.pressLockMs||180))return;lastFire=n;try{fn&&fn();}catch(err){console.error(err);}};
   const down=e=>{e.preventDefault();e.stopPropagation();b.classList.add('dn');if(key)keys[key]=true;if(fn)fire();};
   const up=e=>{e.preventDefault();e.stopPropagation();b.classList.remove('dn');if(key)keys[key]=false;};
   b.addEventListener('pointerdown',down,{passive:false});
@@ -1177,11 +1198,11 @@ if(TOUCH.on){
  }
  // v8.4 layout: 3×3 grid bottom-right (52px, 10px gap) + top corners; safe-area aware; nothing over the joystick
  const SR='env(safe-area-inset-right)',SB='env(safe-area-inset-bottom)',SL='env(safe-area-inset-left)',ST='env(safe-area-inset-top)';
- const gp=(c,r)=>'right:calc('+(12+c*62)+'px + '+SR+');bottom:calc('+(12+r*62)+'px + '+SB+')';
+ const gp=(c,r)=>{const step=(innerWidth>innerHeight)?68:(TOUCH_FEEL.btnStep||72);return 'right:calc('+(12+c*step)+'px + '+SR+');bottom:calc('+(12+r*step)+'px + '+SB+')';};
  mk('上升',gp(0,0),'Space',null,'round');
  mk('下降',gp(1,0),'KeyQ',null,'round');
  mk('溶解',gp(2,0),null,()=>goScene(cur==='A'?'B':'A'),'round');
- mk('交谈',gp(0,1),null,()=>{if(LAMP.near)toggleLamp();else if(POSTER.near)readPoster();else if(CAL.near)readCalendar();else if(BED.near)sleepInBed();else if(SIT.on||SIT.near)sitToggle();else if(CLERK.near)talkClerk();else if(V7_NEAR)v7OpenChat();else if(BANTER_NEAR.n)talkBanter(BANTER_NEAR.n);else if(SHOP.near)shopBuy(SHOP.near.id);else if(MGX.near)mgEnter(MGX.near.userData.id);else setSt('走近阿澄、闲聊NPC、货架、老板娘、日历/油灯、床/椅或发光圈后再点');},'hi');
+ mk('交谈',gp(0,1),null,()=>{if(LAMP.near)toggleLamp();else if(POSTER.near)readPoster();else if(CAL.near)readCalendar();else if(window.__homeRadioNear)toggleHomeRadio();else if(BED.near)sleepInBed();else if(SIT.on||SIT.near)sitToggle();else if(CLERK.near)talkClerk();else if(V7_NEAR)v7OpenChat();else if(BANTER_NEAR.n)talkBanter(BANTER_NEAR.n);else if(SHOP.near)shopBuy(SHOP.near.id);else if(MGX.near)mgEnter(MGX.near.userData.id);else setSt('走近阿澄、闲聊NPC、货架、老板娘、日历/油灯、收音机、床/椅或发光圈后再点');},'hi');
  mk('飞行',gp(1,1),null,()=>{P.fly=!P.fly;setSt(P.fly?'飞行':'步行');try{if(P.fly)V7.markFlight(V7SESS);}catch(_){}},'round');
  mk('梦境',gp(2,1),null,()=>enterDream(),'round');
  mk('角色',gp(0,2),null,()=>setChar((PL.idx+1)%ROSTER.length),'hi','v8btnChar');
@@ -1205,10 +1226,10 @@ if(TOUCH.on){
   TOUCH.jid=id;const r=joy.getBoundingClientRect();TOUCH.jcx=r.left+r.width/2;TOUCH.jcy=r.top+r.height/2;
   if(Math.hypot(x-TOUCH.jcx,y-TOUCH.jcy)>100){TOUCH.jcx=x;TOUCH.jcy=y;}
  }
- function moveStick(x,y){let dx=(x-TOUCH.jcx)/60,dy=(y-TOUCH.jcy)/60;const m=Math.hypot(dx,dy);if(m>1){dx/=m;dy/=m;}TOUCH.jx=dx;TOUCH.jy=dy;TOUCH.jm=Math.min(1,m);setKnob();}
- function endStick(){TOUCH.jid=null;TOUCH.jx=TOUCH.jy=TOUCH.jm=0;setKnob();}
+ function moveStick(x,y){const R=TOUCH_FEEL.stickRadiusPx||64;let dx=(x-TOUCH.jcx)/R,dy=(y-TOUCH.jcy)/R;const m=Math.hypot(dx,dy);if(m>1){dx/=m;dy/=m;}TOUCH.jx=dx;TOUCH.jy=dy;TOUCH.jm=Math.min(1,m);setKnob();}
+ function endStick(){TOUCH.jid=null;/* knob return in update via touchFeelKnobReturn */}
  function beginLook(id,x,y){TOUCH.lid=id;TOUCH.lx=x;TOUCH.ly=y;}
- function moveLook(x,y){P.yaw-=(x-TOUCH.lx)*0.0065;P.pitch=Math.max(-1.2,Math.min(0.9,P.pitch-(y-TOUCH.ly)*0.005));TOUCH.lx=x;TOUCH.ly=y;}
+ function moveLook(x,y){const sc=touchLookScale();P.yaw-=(x-TOUCH.lx)*TOUCH_FEEL.lookYaw*sc;P.pitch=Math.max(-1.2,Math.min(0.9,P.pitch-(y-TOUCH.ly)*TOUCH_FEEL.lookPitch*sc));TOUCH.lx=x;TOUCH.ly=y;}
  function endLook(){TOUCH.lid=null;}
  joy.addEventListener('pointerdown',e=>{if(TOUCH.jid!==null)return;e.preventDefault();e.stopPropagation();beginStick(e.pointerId,e.clientX,e.clientY);try{joy.setPointerCapture(e.pointerId);}catch(_){}});
 
@@ -1219,7 +1240,7 @@ if(TOUCH.on){
   if(V7_CHAT||menu.style.display==='block'||document.getElementById('v7card')?.style.display==='flex'||CS.on||(window.__MG&&window.__MG.active)||MGM.MG.active)return;
   if(isUITarget(e.target))return;
   // left half → stick; right half → look. No pointer lock required.
-  const left=e.clientX<innerWidth*0.46;
+  const left=e.clientX<innerWidth*(TOUCH_FEEL.leftFrac||0.44);
   if(left&&TOUCH.jid===null){beginStick(e.pointerId,e.clientX,e.clientY);try{renderer.domElement.setPointerCapture?.(e.pointerId);}catch(_){}e.preventDefault();}
   else if(!left&&TOUCH.lid===null){beginLook(e.pointerId,e.clientX,e.clientY);try{renderer.domElement.setPointerCapture?.(e.pointerId);}catch(_){}e.preventDefault();}
  };
@@ -1243,7 +1264,7 @@ if(TOUCH.on){
   if(V7_CHAT||menu.style.display==='block')return;
   for(const t of e.changedTouches){
    if(isUITarget(document.elementFromPoint(t.clientX,t.clientY))||isUITarget(t.target))continue;
-   if(t.clientX<innerWidth*0.46&&TOUCH.jid===null){beginStick(t.identifier,t.clientX,t.clientY);e.preventDefault();}
+   if(t.clientX<innerWidth*(TOUCH_FEEL.leftFrac||0.44)&&TOUCH.jid===null){beginStick(t.identifier,t.clientX,t.clientY);e.preventDefault();}
    else if(TOUCH.lid===null){beginLook(t.identifier,t.clientX,t.clientY);e.preventDefault();}
   }
  },{passive:false});
@@ -1258,8 +1279,10 @@ if(TOUCH.on){
 
  // keep talk button highlight when near
  const talkBtn=[...tc.querySelectorAll('.tb')].find(b=>b.textContent==='交谈');
+ window.__touchSetKnob=setKnob;
+ function touchFeelTalkDim(){if(!talkBtn)return;const near=!!(V7_NEAR||(BANTER_NEAR&&BANTER_NEAR.n)||(MGX&&MGX.near)||(SHOP&&SHOP.near)||(CLERK&&CLERK.near)||(LAMP&&LAMP.near)||(BED&&BED.near)||(SIT&&(SIT.on||SIT.near))||(CAL&&CAL.near)||(POSTER&&POSTER.near)||(window.__homeRadioNear));if(near){talkBtn.classList.remove('dim');talkBtn.classList.add('hi');}else{talkBtn.classList.add('dim');talkBtn.classList.remove('hi');}}
  const _v7NearPrev=v7NearUpdate;
- v7NearUpdate=function(){_v7NearPrev();if(talkBtn){if(V7_NEAR||MGX.near)talkBtn.classList.add('hi');else talkBtn.classList.remove('hi');}};
+ v7NearUpdate=function(){_v7NearPrev();touchFeelTalkDim();};
 
  // prevent accidental pointer-lock requirement: click canvas does not need lock on touch
  renderer.domElement.addEventListener('click',e=>{if(TOUCH.on){e.preventDefault();document.exitPointerLock?.();}},true);
@@ -1518,6 +1541,7 @@ function bumpBanterAff(name,d){const m=loadBanterAff();m[name]=Math.max(0,Math.m
 fetch('npc_banter_20261029.json').then(r=>r.json()).then(j=>{BANTER=j;window.__banterLoaded=true;window.__banterChars=(j.characters||[]).map(c=>c.name);
  try{window.__banterTPLMerged=!!(V7.mergeAchengBanterIntoTPL&&V7.mergeAchengBanterIntoTPL(j));}catch(e){console.warn('banterTPL',e);}
 }).catch(e=>{console.warn('banter',e);window.__banterLoaded=false;});
+fetch('lore_snippets.json').then(r=>r.json()).then(j=>{const sn=(j&&j.snippets)||[];try{V7.setLoreSnippets(sn);}catch(_){ }window.__loreSnippets=sn;window.__loreLoaded=true;}).catch(e=>{console.warn('lore',e);window.__loreLoaded=false;window.__loreSnippets=[];});
 
 let QUEST_ALT=null; const QUEST_ALT_KEY='dream_v813_quest_copy';
 fetch('quest_copy_alt_20261029.json').then(r=>r.json()).then(j=>{QUEST_ALT=j;window.__questAltLoaded=true;
@@ -1745,7 +1769,8 @@ function renderTimetable(){
 const questDiv=(()=>{const d=document.createElement('div');d.id='v8quest';d.style.cssText='position:fixed;left:12px;top:70px;display:none;z-index:34;background:rgba(14,10,28,.84);color:#e8e0ff;padding:12px 14px;border-radius:12px;border:1px solid rgba(180,150,255,.35);font-size:13px;line-height:1.5;min-width:220px;max-width:280px';document.body.appendChild(d);return d;})();
 function renderQuestBoard(force){
  const st=V7.questStatus();
- const show=force||(cur==='A')||!!st.active;
+ const sx=V7.questStatusExt?V7.questStatusExt():{doneCount:0,beats:[],all:false,active:null};
+ const show=force||(cur==='A')||!!st.active||!!(sx&&sx.active);
  if(!show&&!force){/* keep if open via menu */}
  let html='<b style="color:#ffd28a">阿澄 · 主线任务板</b> <span style="color:#9a90c0">'+st.doneCount+'/'+st.beats.length+'</span><br>';
  html+=st.beats.map(b=>{
@@ -1753,10 +1778,19 @@ function renderQuestBoard(force){
   const col=b.state==='done'?'#9dffc2':(b.state==='active'?'#ffe08a':'#6a6280');
   return '<div style="color:'+col+';margin-top:4px">'+mark+' '+b.title+(b.state==='active'?'<div style="font-size:11px;color:#9a90c0;margin-left:14px">'+b.hint+'</div>':'')+'</div>';
  }).join('');
- if(st.all)html+='<div style="margin-top:8px;color:#ffd28a">全部完成 · 结束这局可写入回忆卡</div>';
+ if(st.all)html+='<div style="margin-top:8px;color:#ffd28a">第一段完成 · 可开第二段</div>';
+ if(sx&&sx.beats&&sx.beats.length){
+  html+='<div style="margin-top:10px"><b style="color:#c8b0ff">第二段 · 雨与年份</b> <span style="color:#9a90c0">'+sx.doneCount+'/'+sx.beats.length+'</span></div>';
+  html+=sx.beats.map(b=>{
+   const mark=b.state==='done'?'✓':(b.state==='active'?'▶':'·');
+   const col=b.state==='done'?'#9dffc2':(b.state==='active'?'#e0c8ff':'#6a6280');
+   return '<div style="color:'+col+';margin-top:4px">'+mark+' '+b.title+(b.state==='active'?'<div style="font-size:11px;color:#9a90c0;margin-left:14px">'+b.hint+'</div>':'')+'</div>';
+  }).join('');
+  if(sx.all)html+='<div style="margin-top:8px;color:#c8b0ff">第二段齐了 · 回忆卡会多一行</div>';
+ }
  questDiv.innerHTML=html;
  if(force||cur==='A')questDiv.style.display='block';
- window.__quest=st;
+ window.__quest=st;window.__questExt=sx;
 }
 function questHook(flag, detail){
  const r=V7.questAdvance(flag, detail);
@@ -1767,19 +1801,90 @@ function questHook(flag, detail){
    try{
     V7MEM=V7.loadMem();
     V7MEM.lines.push({role:'user',text:'（主线）阿澄，四节拍我都走完了。',at:Date.now()});
-    V7MEM.lines.push({role:'npc',text:'【'+(V7.tierOf(V7MEM.affinity).name)+'】我看见了。矿区的门、游戏、矿车、回来回话——都记下了。',at:Date.now()});
+    V7MEM.lines.push({role:'npc',text:'【'+(V7.tierOf(V7MEM.affinity).name)+'】我看见了。矿区的门、游戏、矿车、回来回话——都记下了。下一页是雨与年份。',at:Date.now()});
     V7.saveMem(V7MEM);
    }catch(_){}
    try{playQuestReward();}catch(_){}
   }
  }
+ // v8.14 second segment
+ try{
+  let f2=flag,d2=detail;
+  if(flag==='talk'){f2='talk_lore';}
+  const rx=V7.questAdvanceExt&&V7.questAdvanceExt(f2,d2);
+  if(rx&&rx.advanced){
+   setSt('第二段：'+rx.beat.title+' ✓'+(rx.justFinished?' · 雨与年份齐了！':''));
+   renderQuestBoard(true);
+   if(rx.justFinished){try{playQuestReward();}catch(_){}}
+  }
+ }catch(_){}
  return r;
+}
+function questHookExt(flag, detail){
+ try{
+  const rx=V7.questAdvanceExt(flag, detail);
+  if(rx&&rx.advanced){setSt('第二段：'+rx.beat.title+' ✓');renderQuestBoard(true);if(rx.justFinished){try{playQuestReward();}catch(_){}}}
+  return rx;
+ }catch(e){return null;}
 }
 const SHOP={near:null,counts:null};
 const SIT={on:false,near:null,yaw:0};
 function shopLoad(){try{return JSON.parse(localStorage.getItem('dream_v87_shop')||'{"soda":0,"bread":0,"candy":0,"gum":0}');}catch(e){return{soda:0,bread:0,candy:0,gum:0};}}
 function shopSave(c){try{localStorage.setItem('dream_v87_shop',JSON.stringify(c));}catch(e){}}
 SHOP.counts=shopLoad();
+
+function toggleHomeRadio(){
+ const S=SC.H;const rd=S&&S.mesh&&S.mesh.userData.radio;if(!rd)return;
+ rd.on=!rd.on;if(rd.dial&&rd.dial.material){rd.dial.material.emissiveIntensity=rd.on?1.2:0.15;rd.dial.material.emissive.setHex(rd.on?0xffaa44:0x221100);}
+ setSt(rd.on?'📻 家里的收音机打开了 · 串台里有半句「请旅客注意」':'家里的收音机关上了');
+ window.__radio={on:rd.on,home:true,t:Date.now()};
+ try{questHookExt('radio');}catch(_){}
+}
+function loreQuestTick(){
+ try{
+  // shelter: rain + near home/shop door facade on hub
+  if(cur==='A'&&WEATHER&&WEATHER.forceRain&&WEATHER.forceRain()){
+   for(const dv of DOOR_VIS){
+    const door=dv.userData&&dv.userData.door; const kind=dv.userData&&dv.userData.kind;
+    if(!door||kind!=='enter')continue;
+    if(door.id!=='hub_home'&&door.id!=='hub_shop')continue;
+    if(!dv.visible)continue;
+    const d=Math.hypot(P.pos.x-dv.position.x,P.pos.z-dv.position.z);
+    if(d<2.4){questHookExt('shelter');break;}
+   }
+  }
+  // also shelter under station roof when raining
+  if(cur==='I'&&WEATHER&&WEATHER.forceRain&&WEATHER.forceRain()){
+   questHookExt('shelter');
+  }
+  // sign: near station sign / timetable3d
+  if(cur==='I'){
+   const S=SC.I;if(S&&S.mesh){
+    const board=S.mesh.userData.timetable3d;
+    // sign at local ~0,-0.56 relative to mesh; approximate spawn-based
+    const sx=S.off.x+S.spawn[0], sz=S.off.z+S.spawn[1]-0.5;
+    const d=Math.hypot(P.pos.x-sx,P.pos.z-sz);
+    if(d<2.8) questHookExt('sign');
+    if(board){const wp=new THREE.Vector3();board.getWorldPosition(wp);if(Math.hypot(P.pos.x-wp.x,P.pos.z-wp.z)<2.5)questHookExt('sign');}
+   }
+  }
+  // home radio near
+  window.__homeRadioNear=false;
+  if(cur==='H'){
+   const S=SC.H;const rd=S&&S.mesh&&S.mesh.userData.radio;
+   if(rd){
+    const x=S.off.x+rd.local[0], z=S.off.z+rd.local[1];
+    const d=Math.hypot(P.pos.x-x,P.pos.z-z);
+    if(d<1.5){window.__homeRadioNear=true;
+     if(!MGX.near&&!BED.near&&!SIT.near&&!CAL.near&&!LAMP.near&&!POSTER.near){
+      MGM.setPrompt((TOUCH.on?'👆 ':'按 E ')+(rd.on?'关掉':'打开')+'「家里收音机」',()=>toggleHomeRadio());
+     }
+    }
+   }
+  }
+ }catch(e){/* ignore */}
+}
+
 function shopBuy(id){
  const names={soda:'汽水',bread:'面包',candy:'糖豆',gum:'口香糖',radio:'收音机'};
  if(!names[id])return;
@@ -1787,7 +1892,7 @@ function shopBuy(id){
   const S=SC.J;const rd=S&&S.mesh&&S.mesh.userData.radio;if(!rd)return;
   rd.on=!rd.on;if(rd.dial&&rd.dial.material){rd.dial.material.emissiveIntensity=rd.on?1.2:0.15;rd.dial.material.emissive.setHex(rd.on?0xffaa44:0x221100);}
   setSt(rd.on?'📻 收音机打开了 · 沙沙的矿区晚间节目':'收音机关上了');
-  window.__radio={on:rd.on,t:Date.now()};try{V7.markBuy(V7SESS,'radio');}catch(_){}
+  window.__radio={on:rd.on,t:Date.now()};try{V7.markBuy(V7SESS,'radio');}catch(_){}try{if(rd.on)questHookExt('radio');}catch(_){}
   return;
  }
  SHOP.counts[id]=(SHOP.counts[id]|0)+1;shopSave(SHOP.counts);
@@ -2005,15 +2110,17 @@ function toggleClose(){const ci=CAMS.indexOf('close');if(CAMS[P.cam]==='close'){
 const _f=new THREE.Vector3(),_r=new THREE.Vector3(),_mv=new THREE.Vector3(),_look=new THREE.Vector3(),_cam=new THREE.Vector3();
 function update(dt){if(typeof SIT!=='undefined'&&SIT.on){for(const k in keys)keys[k]=false;P.vel=0;}
  if(CS.on)return;
+ if(TOUCH.on){try{touchFeelKnobReturn(dt,window.__touchSetKnob);}catch(_){}}
  P.t+=dt;const prev=P.pos.clone();
- const run=keys.ShiftLeft||keys.ShiftRight||TOUCH.jm>0.92;
+ const tf=touchFeelMoveFactors(TOUCH.jm||0);
+ const run=keys.ShiftLeft||keys.ShiftRight||tf.run;
  _f.set(-Math.sin(P.yaw),0,-Math.cos(P.yaw));_r.set(-_f.z,0,_f.x);
  _mv.set(0,0,0);if(keys.KeyW||keys.ArrowUp)_mv.add(_f);if(keys.KeyS||keys.ArrowDown)_mv.sub(_f);if(keys.KeyD||keys.ArrowRight)_mv.add(_r);if(keys.KeyA||keys.ArrowLeft)_mv.sub(_r);
- if(TOUCH.jm>0.08){_mv.addScaledVector(_f,-TOUCH.jy).addScaledVector(_r,TOUCH.jx);}
+ if(tf.touchActive){_mv.addScaledVector(_f,-TOUCH.jy).addScaledVector(_r,TOUCH.jx);}
  const mv=_mv.lengthSq()>0;if(mv)_mv.normalize();
  if(keys.Space&&!P.fly){P.fly=true;try{V7.markFlight(V7SESS);}catch(_){}}
  const gy=groundW(cur,P.pos.x,P.pos.z,P.pos.y);
- let sp=(P.fly?(run?11:5.5):(run?RUNV:WALKV))*(TOUCH.jm>0.08?Math.min(1,TOUCH.jm*1.3):1);
+ let sp=(P.fly?(run?11:5.5):(run?RUNV:WALKV))*(tf.touchActive?tf.touchMul:1);
  const riding=rideUpdate(dt);
  if(!riding)P.pos.addScaledVector(_mv,sp*dt);
  if(P.fly){let vy=0;if(keys.Space)vy+=3.2;if(keys.ControlLeft||keys.KeyQ)vy-=3.2;P.pos.y+=vy*dt;
@@ -2082,16 +2189,16 @@ const MGX={marks:[],near:null};
 function mgPlace(){for(const k of ['A','B','G']){const S=SC[k];for(const [id,dx,dz] of MGM.SPOTS[k]){const m=MGM.makeMarker(THREE,id);const x=S.off.x+S.spawn[0]+dx,z=S.off.z+S.spawn[1]+dz;m.position.set(x,0,z);m.userData.key=k;m.visible=false;scene.add(m);MGX.marks.push(m);}}}
 function mgEnter(id){for(const k in keys)keys[k]=false;MGX.near=null;MGM.setPrompt(null);document.exitPointerLock?.();try{V7.markMinigame(V7SESS,id);}catch(_){}MGM.enter(id,{touch:TOUCH.on,lowq:LOWQ});window.__mgWatch=id;}
 MGM.MG.onExit=()=>{for(const k in keys)keys[k]=false;last=performance.now();if(TEST)portals.render();};
-function mgUpdate(){try{rainUpdate(0.016);}catch(_){}try{shopUpdate();}catch(_){}try{banterUpdate();}catch(_){}try{if(window.__mgEnd&&!window.__mgEnd._mem){window.__mgEnd._mem=1;const e=window.__mgEnd;V7MEM=V7.loadMem();V7.rememberMinigame(V7MEM,e.id,!!e.win,e.score|0);V7MEM=V7.loadMem();window.__mgMem=e;try{questHook('minigame',e.id);}catch(_){};}}catch(_){}let best=null,bd=2.0;for(const m of MGX.marks){const k=m.userData.key,S=SC[k];const vis=k===cur&&!!S.mesh&&S.mesh.visible&&!TR.on;m.visible=vis;if(!vis)continue;
+function mgUpdate(){try{rainUpdate(0.016);}catch(_){}try{shopUpdate();}catch(_){}try{banterUpdate();}catch(_){}try{loreQuestTick();}catch(_){}try{if(window.__mgEnd&&!window.__mgEnd._mem){window.__mgEnd._mem=1;const e=window.__mgEnd;V7MEM=V7.loadMem();V7.rememberMinigame(V7MEM,e.id,!!e.win,e.score|0);V7MEM=V7.loadMem();window.__mgMem=e;try{questHook('minigame',e.id);}catch(_){};}}catch(_){}let best=null,bd=2.0;for(const m of MGX.marks){const k=m.userData.key,S=SC[k];const vis=k===cur&&!!S.mesh&&S.mesh.visible&&!TR.on;m.visible=vis;if(!vis)continue;
   if(!m.userData.ys&&S.g){m.position.y=groundW(k,m.position.x,m.position.z);m.userData.ys=1;}
   m.userData.ring.material.opacity=0.2+0.07*Math.sin(P.t*3); /* v8.5 地面淡提示 */const d=Math.hypot(m.position.x-P.pos.x,m.position.z-P.pos.z);if(d<bd){bd=d;best=m;}}
  if(V7_NEAR){MGX.near=null;MGM.setPrompt(null);return;} if(best!==MGX.near){MGX.near=best;MGM.setPrompt(best?(TOUCH.on?'👆 点这里进入「'+best.userData.name+'」':'按 E 进入「'+best.userData.name+'」'):null,best?()=>mgEnter(best.userData.id):null);}}
 addEventListener('keydown',e=>{if(MGM.MG.active||CS.on||V7_CHAT)return;
- if(e.code==='KeyE'){if(LAMP.near){toggleLamp();return;}if(POSTER.near){readPoster();return;}if(CAL.near){readCalendar();return;}if(BED.near){sleepInBed();return;}if(SIT.on||SIT.near){sitToggle();return;}if(CLERK.near){talkClerk();return;}if(V7_NEAR){v7OpenChat();return;}if(BANTER_NEAR.n){talkBanter(BANTER_NEAR.n);return;}if(SHOP.near){shopBuy(SHOP.near.id);return;}if(MGX.near)mgEnter(MGX.near.userData.id);}
+ if(e.code==='KeyE'){if(LAMP.near){toggleLamp();return;}if(POSTER.near){readPoster();return;}if(CAL.near){readCalendar();return;}if(window.__homeRadioNear){toggleHomeRadio();return;}if(BED.near){sleepInBed();return;}if(SIT.on||SIT.near){sitToggle();return;}if(CLERK.near){talkClerk();return;}if(V7_NEAR){v7OpenChat();return;}if(BANTER_NEAR.n){talkBanter(BANTER_NEAR.n);return;}if(SHOP.near){shopBuy(SHOP.near.id);return;}if(MGX.near)mgEnter(MGX.near.userData.id);}
  if(e.code==='Escape'&&document.getElementById('v7card').style.display==='flex'){document.getElementById('v7card').style.display='none';}
 });
 // test hooks (headless capture)
-window.__G={loadScene,loadMeshScene,DOOR_VIS,PLA,RIDE,doorVisRefresh,toggleClose,FILL,SkeletonUtils,applySceneMood,SCENE_MOOD,HEMI,SUN,get fog(){return scene.fog;},get exposure(){return renderer.toneMappingExposure;},MGM,MGX,mgEnter,mgUpdate,SHOP,shopBuy,placeHubDensity,HUB_DENS,CLOCK,scheduleUpdate,GFX,toggleLowQ,applyGfxMode,placeRain,WEATHER,setWeather,applyNightLights,SIT,sitToggle,showArriveCard,arriveDiv,sleepInBed,talkClerk,renderTimetable,renderQuestBoard,questHook,BED,CLERK,questDiv,timetableDiv,readCalendar,toggleLamp,playQuestReward,calendarBlurb,CAL,LAMP,rewardDiv,questPinBtn,talkBanter,BANTER_NEAR,get BANTER(){return BANTER;},loadBanterAff,bumpBanterAff,banterScore,banterTierOfScore,banterContextKeys,pickBanterLine,readPoster,posterBlurb,POSTER,playBeep,spawnRewardParticles,banterNeverHit,cycleQuestCopy,get QUEST_ALT(){return QUEST_ALT;},get scene(){return scene;},get RAIN(){return RAIN;},PL,ROSTER,setChar,goScene,V8,DOORS:V8.DOORS,PARKED,placeDoors,placeCommunity,useDoor,COMM_VIS,CAMS,toggleMenu,ORDER,NPCS,CS,playCutscene,enterDream,THREE,P,SC,AV,TR,keys,update,startDissolve,place,makePortal,removePortal,camera,player,body,portals,get cur(){return cur;},set cur(v){cur=v;},groundW,poseAvatar,avatarBones,showTitle,V7,get V7MEM(){return V7MEM;},get V7SESS(){return V7SESS;},v7OpenChat,v7CloseChat,v7EndSession,get V7_NEAR(){return V7_NEAR;}};
+window.__G={loadScene,loadMeshScene,DOOR_VIS,PLA,RIDE,doorVisRefresh,toggleClose,FILL,SkeletonUtils,applySceneMood,SCENE_MOOD,HEMI,SUN,get fog(){return scene.fog;},get exposure(){return renderer.toneMappingExposure;},MGM,MGX,mgEnter,mgUpdate,SHOP,shopBuy,placeHubDensity,HUB_DENS,CLOCK,scheduleUpdate,GFX,toggleLowQ,applyGfxMode,placeRain,WEATHER,setWeather,applyNightLights,SIT,sitToggle,showArriveCard,arriveDiv,sleepInBed,talkClerk,renderTimetable,renderQuestBoard,questHook,BED,CLERK,questDiv,timetableDiv,readCalendar,toggleLamp,playQuestReward,calendarBlurb,CAL,LAMP,rewardDiv,questPinBtn,talkBanter,BANTER_NEAR,get BANTER(){return BANTER;},loadBanterAff,bumpBanterAff,banterScore,banterTierOfScore,banterContextKeys,pickBanterLine,readPoster,posterBlurb,POSTER,playBeep,spawnRewardParticles,banterNeverHit,cycleQuestCopy,get QUEST_ALT(){return QUEST_ALT;},questHookExt,toggleHomeRadio,loreQuestTick,get TOUCH_FEEL(){return (typeof TOUCH_FEEL!=='undefined'?TOUCH_FEEL:null);},get scene(){return scene;},get RAIN(){return RAIN;},PL,ROSTER,setChar,goScene,V8,DOORS:V8.DOORS,PARKED,placeDoors,placeCommunity,useDoor,COMM_VIS,CAMS,toggleMenu,ORDER,NPCS,CS,playCutscene,enterDream,THREE,P,SC,AV,TR,keys,update,startDissolve,place,makePortal,removePortal,camera,player,body,portals,get cur(){return cur;},set cur(v){cur=v;},groundW,poseAvatar,avatarBones,showTitle,V7,get V7MEM(){return V7MEM;},get V7SESS(){return V7SESS;},v7OpenChat,v7CloseChat,v7EndSession,get V7_NEAR(){return V7_NEAR;}};
 window.__step=(sec,dt=1/30)=>{for(let t=0;t<sec-1e-6;t+=dt)update(dt);};
 
 // ---------------- boot ----------------

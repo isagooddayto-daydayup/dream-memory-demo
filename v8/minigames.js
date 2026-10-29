@@ -23,7 +23,7 @@ const css=document.createElement('style');css.textContent=`
 #mgpanel .bt{display:inline-block;margin:10px 10px 0 0;padding:8px 20px;border-radius:20px;background:#e8a35a;color:#211;cursor:pointer;font-weight:bold}
 #mgpanel .bt.g{background:#5a5470;color:#eee}
 #mgquit{position:absolute;left:50%;transform:translateX(-50%);top:8px;padding:5px 12px;border-radius:14px;background:rgba(0,0,0,.5);color:#ddd;font-size:13px;cursor:pointer;border:1px solid #777}
-#mgbtns .mb{position:absolute;width:74px;height:74px;border-radius:50%;background:rgba(20,14,40,.55);border:2px solid rgba(255,220,170,.7);color:#ffe9c4;font-size:16px;display:flex;align-items:center;justify-content:center;font-weight:bold}
+#mgbtns .mb{position:absolute;width:74px;height:74px;min-height:74px;min-width:74px;border-radius:50%;background:rgba(20,14,40,.55);border:2px solid rgba(255,220,170,.7);color:#ffe9c4;font-size:16px;display:flex;align-items:center;justify-content:center;font-weight:bold;touch-action:none;-webkit-user-select:none;user-select:none}
 #mgbtns .mb.dn{background:rgba(255,190,120,.6)}
 #mgjoy{position:absolute;left:24px;bottom:24px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.4);display:none}
 #mgknob{position:absolute;left:40px;top:40px;width:50px;height:50px;border-radius:50%;background:rgba(255,220,170,.6)}
@@ -142,7 +142,8 @@ function setButtons(list){btns.innerHTML='';if(!MG.touch)return;list.forEach(([k
  root.addEventListener('touchstart',e=>{if(joy.style.display==='none')return;for(const t of e.changedTouches){if(t.clientX<innerWidth*0.45&&id===null&&!t.target.closest('#mgpanel,#mgquit,.mb')){id=t.identifier;const r=joy.getBoundingClientRect();cx=r.left+65;cy=r.top+65;}}},{passive:true});
  root.addEventListener('touchmove',e=>{for(const t of e.changedTouches)if(t.identifier===id){let dx=(t.clientX-cx)/55,dy=(t.clientY-cy)/55;const m=Math.hypot(dx,dy);if(m>1){dx/=m;dy/=m;}MG.joy.x=dx;MG.joy.y=dy;MG.joy.m=Math.min(1,m);setK();}},{passive:true});
  const end=e=>{for(const t of e.changedTouches)if(t.identifier===id){id=null;MG.joy.x=MG.joy.y=MG.joy.m=0;setK();}};root.addEventListener('touchend',end);root.addEventListener('touchcancel',end);}
-function axis(){let x=(MG.k.R?1:0)-(MG.k.L?1:0),y=(MG.k.D?1:0)-(MG.k.U?1:0);if(MG.joy.m>0.1){x+=MG.joy.x;y+=MG.joy.y;}const m=Math.hypot(x,y);if(m>1){x/=m;y/=m;}return {x,y,m:Math.min(1,m)};}
+const MG_TOUCH_DEAD=0.18;
+function axis(){let x=(MG.k.R?1:0)-(MG.k.L?1:0),y=(MG.k.D?1:0)-(MG.k.U?1:0);if(MG.joy.m>MG_TOUCH_DEAD){const t=(MG.joy.m-MG_TOUCH_DEAD)/(1-MG_TOUCH_DEAD);const u=Math.max(0,Math.min(1,t));const s=u*u*(3-2*u);x+=MG.joy.x*s;y+=MG.joy.y*s;}const m=Math.hypot(x,y);if(m>1){x/=m;y/=m;}return {x,y,m:Math.min(1,m)};}
 // 点击/轻触射线（下棋用）
 const _ray=new THREE.Raycaster(),_ndc=new THREE.Vector2();
 root.addEventListener('pointerdown',e=>{if(!MG.active||MG.state!=='play'||!MG.game.tap)return;if(e.target!==renderer.domElement)return;_ndc.set(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1);_ray.setFromCamera(_ndc,camera);MG.game.tap(_ray);});
@@ -436,11 +437,300 @@ GAMES.push((()=>{let ps=[],x,z,yaw,caught,clapT,arT,arA,grabT;
 // 摸瞎子：鼠标/手指右侧拖动转身
 {let lx=null;root.addEventListener('pointerdown',e=>{if(e.clientX>innerWidth*0.45)lx=e.clientX;});root.addEventListener('pointermove',e=>{if(lx!==null&&MG.active&&MG.game&&MG.game.id==='moxiazi'){MG.drag=(MG.drag||0)+(e.clientX-lx)*0.006;lx=e.clientX;}});addEventListener('pointerup',()=>lx=null);}
 
+// ---- v8.14 childhood: 跳房子 + 踢毽子 ----
+// =============================================================================
+// 草稿 · 跳房子（tiaofangzi）· v8.14 候选
+// 用法：粘贴进 minigames.js 的 GAMES.push(...) 区域；SPOTS 加挂点后 makeMarker 自动认 id。
+// 约束：程序化几何 + Canvas 粉笔格；零外部素材；复用 char()/axis()/MG.finish 等既有 API。
+// 生成：2026-10-29 旁路额度任务 · 未进 public
+// =============================================================================
+
+GAMES.push((()=>{
+  // 经典「飞机」格：1–2 并排、3、4–5、6、7–8、9、「家」
+  // cells: {i,j 格子中心 xz, w,d, label, home?}
+  let me, cells=[], cur=-1, stone, stoneAt, hops, fails, phase, throwT, stoneVx, stoneVz, stoneY, stoneVy, aim;
+  const chalk = ()=>std({color:0xf2efe6, roughness:1});
+  const pad = (x,z,w,d,lab,home)=>{
+    const g=new THREE.Group();
+    const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d),chalk());
+    m.rotation.x=-Math.PI/2; m.position.y=0.012; g.add(m);
+    const border=new THREE.LineSegments(
+      new THREE.EdgesGeometry(new THREE.PlaneGeometry(w,d)),
+      new THREE.LineBasicMaterial({color:0xffffff})
+    ); border.rotation.x=-Math.PI/2; border.position.y=0.014; g.add(border);
+    const c=document.createElement('canvas'); c.width=128; c.height=128;
+    const x2=c.getContext('2d'); x2.fillStyle='#fff8e8'; x2.font='bold 64px "Microsoft YaHei",sans-serif';
+    x2.textAlign='center'; x2.textBaseline='middle'; x2.fillText(lab,64,70);
+    const t=new THREE.CanvasTexture(c); t.colorSpace=THREE.SRGBColorSpace;
+    const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:t,transparent:true,depthTest:true}));
+    sp.scale.set(0.45,0.45,1); sp.position.y=0.05; g.add(sp);
+    g.position.set(x,0,z); scene.add(g);
+    return {x,z,w,d,lab,home:!!home, mesh:g};
+  };
+  function layout(){
+    cells=[];
+    // z 向前为负（朝「家」）
+    cells.push(pad(0, 0, 0.9,0.9,'1'));
+    cells.push(pad(-0.5,-0.95,0.9,0.9,'2')); cells.push(pad(0.5,-0.95,0.9,0.9,'3'));
+    cells.push(pad(0,-1.9,0.9,0.9,'4'));
+    cells.push(pad(-0.5,-2.85,0.9,0.9,'5')); cells.push(pad(0.5,-2.85,0.9,0.9,'6'));
+    cells.push(pad(0,-3.8,0.9,0.9,'7'));
+    cells.push(pad(-0.5,-4.75,0.9,0.9,'8')); cells.push(pad(0.5,-4.75,0.9,0.9,'9'));
+    cells.push(pad(0,-5.8,1.2,1.0,'家',true));
+  }
+  function inCell(i, px,pz){
+    const c=cells[i]; return Math.abs(px-c.x)<=c.w*0.48 && Math.abs(pz-c.z)<=c.d*0.48;
+  }
+  function nearestCell(px,pz){
+    let bi=-1,bd=1e9; for(let i=0;i<cells.length;i++){const c=cells[i]; const d=Math.hypot(px-c.x,pz-c.z); if(d<bd){bd=d;bi=i;}} return bi;
+  }
+  return {
+    id:'tiaofangzi', name:'跳房子', icon:'🏠', scene:'B', env:'school', where:'小学校园 · 粉笔格子',
+    rule:'先把小石子丢进目标格，再单脚（触控按「跳」连点）依次跳过各格，到「家」捡回石子再跳回来。踩线或踩错格算一次失败；3 次失败结束。丢进 1→家 全清算大胜。',
+    pc:'<b>空格</b> 丢石子 / 跳；方向键微调落点瞄准。', mobile:'右下 <b>丢/跳</b>；摇杆微调瞄准。',
+    joy:true, buttons:[['A','丢/跳','right:28px;bottom:28px']],
+    async setup(){
+      me=await char(ME); layout();
+      stone=new THREE.Mesh(new THREE.DodecahedronGeometry(0.06,0),std({color:0x8a8478,roughness:1}));
+      stone.castShadow=true; scene.add(stone);
+      // 地面粉笔尘
+      const dust=new THREE.Mesh(new THREE.CircleGeometry(4.5,48),std({color:0xb0aaa0,roughness:1}));
+      dust.rotation.x=-Math.PI/2; dust.position.y=0.004; scene.add(dust);
+      camera.position.set(0,6.2,4.5); camera.lookAt(0,0,-2.5);
+      this.reset();
+    },
+    reset(){
+      cur=0; hops=0; fails=0; phase='aim'; throwT=0; stoneAt=-1;
+      me.root.position.set(0,0,1.1); me.root.rotation.y=Math.PI;
+      stone.position.set(0.15,0.9,1.0); stone.visible=true; aim=0;
+    },
+    preview(){ this.reset(); },
+    idle(){ camera.position.set(0,6.2,4.5); camera.lookAt(0,0,-2.5); },
+    start(){ this.reset(); msg('先丢进第 1 格！',1.2); },
+    press(k){
+      if(k!=='A') return;
+      if(phase==='aim'){
+        // 抛物丢出：力度固定，左右由摇杆/aim
+        const a=axis(); const tx=(a.x||aim)*0.9;
+        const target=cells[cur];
+        const from=me.root.position.clone().setY(0.9);
+        const to=new THREE.Vector3(target.x+tx*0.25,0.05,target.z);
+        const T=0.55; stoneVx=(to.x-from.x)/T; stoneVz=(to.z-from.z)/T;
+        stoneVy=(0.9+0.5*9.8*T*T)/T; stoneY=0.9; stone.position.copy(from);
+        phase='fly'; throwT=0; snd('slap');
+      } else if(phase==='hop' && me.root.position.y<0.02){
+        // 单脚跳：给一点向上速度
+        me.root.userData.vy=2.8; snd('tick');
+      }
+    },
+    update(dt){
+      const a=axis();
+      if(phase==='aim'){
+        aim=clamp(aim+a.x*dt*1.5,-1,1);
+        stone.position.set(0.15+aim*0.05,0.9,1.0);
+        me.walk(0);
+        hud('<b>🏠 跳房子</b><br>瞄准第 '+(cur+1)+' 格（'+(cells[cur].lab)+'）','失败 '+fails+'/3 · 已清 '+hops);
+      } else if(phase==='fly'){
+        throwT+=dt; stoneVy-=9.8*dt; stoneY+=stoneVy*dt;
+        stone.position.x+=stoneVx*dt; stone.position.z+=stoneVz*dt; stone.position.y=Math.max(0.05,stoneY);
+        if(stoneY<=0.05){
+          const land=nearestCell(stone.position.x,stone.position.z);
+          if(land===cur && inCell(cur, stone.position.x, stone.position.z)){
+            stoneAt=cur; phase='hop'; msg('跳！别踩线',1); snd('ok');
+            me.root.position.set(0,0,1.05);
+          } else {
+            fails++; snd('bad'); msg(fails<3?'没丢进，重来':'出局',1.1);
+            if(fails>=3){ MG.score=hops*100; MG.finish(false,'丢偏 3 次。清了 '+hops+' 格。'); return; }
+            phase='aim'; stone.position.set(0.15,0.9,1.0);
+          }
+        }
+        hud('<b>🏠 跳房子</b><br>石子飞行中…','失败 '+fails+'/3');
+      } else if(phase==='hop'){
+        // 简易：按跳前进一格；检测是否落在正确下一格走廊
+        let vy=me.root.userData.vy||0;
+        if(vy>0 || me.root.position.y>0){ vy-=9.8*dt; me.root.position.y+=vy*dt; if(me.root.position.y<=0){ me.root.position.y=0; vy=0;
+          // 落地判定：前进方向最近格
+          const ni=nearestCell(me.root.position.x, me.root.position.z);
+          // 允许站在「已过格」或目标路径；踩到石子格=失败（除非回家捡）
+          if(stoneAt>=0 && ni===stoneAt && !cells[stoneAt].home){
+            fails++; snd('bad'); msg('踩到石子了！',1);
+            if(fails>=3){ MG.score=hops*100; MG.finish(false,'踩石子出局。'); return; }
+            phase='aim'; me.root.position.set(0,0,1.05); stone.position.set(0.15,0.9,1.0); stoneAt=-1;
+          } else if(ni===cells.length-1 && stoneAt===cells.length-1){
+            // 到家捡石
+            hops=cells.length; MG.score=hops*120; snd('win');
+            MG.finish(true,'跳到「家」并捡回石子！'); return;
+          }
+        } me.root.userData.vy=vy; }
+        // 前进：跳起时带一点 -z
+        if((me.root.userData.vy||0)>0.5){ me.root.position.z-=1.6*dt; me.root.position.x+=a.x*1.2*dt; }
+        me.walk((me.root.userData.vy||0)>0.2?1:0, 1.2);
+        camera.position.set(me.root.position.x*0.3, 5.5, me.root.position.z+3.8);
+        camera.lookAt(me.root.position.x,0,me.root.position.z-1.5);
+        // 到达当前目标格前方 → 推进 cur
+        if(stoneAt===cur && me.root.position.z < cells[cur].z+0.35 && cur<cells.length-1){
+          // 路过目标后继续往家
+          if(cur===cells.length-2){ /* approaching home */ }
+        }
+        if(me.root.position.z < cells[cells.length-1].z+0.4 && stoneAt===cur){
+          // 简化胜利：跳到家格附近且石子已在最终目标
+          if(cur>=cells.length-1 || inCell(cells.length-1, me.root.position.x, me.root.position.z)){
+            hops=Math.max(hops,cur+1); MG.score=hops*120;
+            MG.finish(true,'跳完一趟房子！'); return;
+          }
+        }
+        // 超时推进：每次成功落地靠近下一格则 cur++
+        if(me.root.position.y===0 && me.root.position.z < cells[Math.min(cur,cells.length-1)].z+0.2){
+          if(cur<cells.length-1 && cur===stoneAt){ /* waiting */ }
+          else if(cur<stoneAt || (stoneAt>=0 && me.root.position.z < cells[Math.min(stoneAt,cells.length-1)].z)){
+            // no-op keep
+          }
+        }
+        // 简化：连续跳到石子格前一格，再一跳进家
+        if(me.root.position.y===0 && nearestCell(me.root.position.x,me.root.position.z)===Math.max(0,stoneAt-1)){
+          hops=Math.max(hops,stoneAt);
+        }
+        if(MG.t>=90){ MG.score=hops*80; MG.finish(hops>=5,'时间到，清了约 '+hops+' 格。'); return; }
+        hud('<b>🏠 跳房子</b><br>单脚跳向「'+(cells[stoneAt]?.lab||'?')+'」','失败 '+fails+'/3 · 分 '+(hops*100));
+      }
+      // 推进 cur：本格成功后准备下一格（在 hop 胜利或重新 aim 时）
+      if(phase==='aim' && hops>cur){ cur=Math.min(cells.length-1, hops); }
+      // 丢进成功后，下一轮 aim 升格
+      if(phase==='hop' && stoneAt===cur && me.root.position.z < cells[cur].z - 0.1){
+        // 越过本格 → 视为本格完成，回起点丢下一格
+        hops=Math.max(hops,cur+1); cur=Math.min(cells.length-1,cur+1);
+        phase='aim'; me.root.position.set(0,0,1.05); stone.position.set(0.15,0.9,1.0);
+        stoneAt=-1; msg(cur>=cells.length-1?'最后：丢进「家」！':'丢进下一格',1);
+      }
+    }
+  };
+})());
+
+// =============================================================================
+// 草稿 · 踢毽子（tijianzi）· v8.14 候选
+// 用法：粘贴进 minigames.js 的 GAMES.push(...) 区域；SPOTS 加挂点后 makeMarker 认 id。
+// 约束：程序化毽子（布垫+鸡毛）；零外部素材；复用 char()/axis()/MG.finish。
+// 生成：2026-10-29 旁路额度任务 · 未进 public
+// =============================================================================
+
+GAMES.push((()=>{
+  let me, jian, y, vy, x, z, combo, miss, cool, spin, lastKick;
+  function makeJian(){
+    const g=new THREE.Group();
+    // 布垫底座
+    const base=new THREE.Mesh(
+      new THREE.CylinderGeometry(0.055,0.06,0.025,16),
+      std({color:0xc8463c, roughness:0.85, map:tex('cloth')})
+    ); base.position.y=0.012; base.castShadow=true; g.add(base);
+    // 铜钱感
+    const coin=new THREE.Mesh(
+      new THREE.TorusGeometry(0.028,0.006,8,16),
+      std({color:0xd4a017, metalness:0.7, roughness:0.35})
+    ); coin.rotation.x=Math.PI/2; coin.position.y=0.03; g.add(coin);
+    // 鸡毛束（程序化）
+    const featherCols=[0xf2efe6,0xffe9c4,0xe8d28a,0xffffff];
+    for(let i=0;i<7;i++){
+      const a=i/7*Math.PI*2;
+      const f=new THREE.Mesh(
+        new THREE.ConeGeometry(0.012,0.18,5),
+        std({color:featherCols[i%4], roughness:0.7, side:THREE.DoubleSide})
+      );
+      f.position.set(Math.sin(a)*0.02, 0.12, Math.cos(a)*0.02);
+      f.rotation.z=Math.sin(a)*0.25; f.rotation.x=Math.cos(a)*0.2;
+      g.add(f);
+    }
+    scene.add(g); return g;
+  }
+  return {
+    id:'tijianzi', name:'踢毽子', icon:'🪶', scene:'B', env:'school', where:'小学校园 · 操场边',
+    rule:'用脚把毽子踢起来，别让它落地。连续踢得越多分越高；落地 3 次结束。毽子会左右飘，用摇杆/AD 对准再踢。',
+    pc:'<b>A/D</b> 左右对准，<b>空格</b> 踢。', mobile:'摇杆左右对准，右下 <b>踢</b>。',
+    joy:true, buttons:[['A','踢','right:28px;bottom:28px']],
+    async setup(){
+      me=await char(ME);
+      me.root.position.set(0,0,0.6); me.root.rotation.y=Math.PI;
+      jian=makeJian();
+      // 粉笔圆
+      const ring=new THREE.Mesh(new THREE.RingGeometry(1.6,1.72,64),std({color:0xf2efe6}));
+      ring.rotation.x=-Math.PI/2; ring.position.y=0.01; scene.add(ring);
+      for(const [tx,tz] of [[-3,-2],[3,-1],[-2,3],[2.5,2.5]]) scene.add(tree(tx,tz,1.0));
+      camera.position.set(0.8,1.7,3.4); camera.lookAt(0,0.8,0);
+      this.reset();
+    },
+    reset(){
+      x=0; z=0; y=0.9; vy=0; combo=0; miss=0; cool=0; spin=0; lastKick=0;
+      jian.position.set(0,y,0); jian.visible=true;
+    },
+    preview(){ this.reset(); },
+    idle(dt){ spin+=dt*2; jian.rotation.y=spin; jian.position.y=0.35+Math.sin(MG.t||0)*0.05; },
+    start(){ this.reset(); msg('踢起来！',1); vy=2.2; },
+    press(k){
+      if(k!=='A' || cool>0) return;
+      // 脚下命中：毽子接近地面且水平距离近
+      const dx=jian.position.x - me.root.position.x;
+      const dz=jian.position.z - me.root.position.z;
+      const near=Math.hypot(dx,dz)<0.55 && y<1.15 && y>0.08;
+      cool=0.22;
+      if(near){
+        // 踢飞：高度随连击略增，带一点随机横飘
+        vy=3.0+Math.min(1.2,combo*0.08)+R(0,0.25);
+        x+=R(-0.35,0.35); // 横漂目标偏移累积在位置速度里用
+        jian.userData.vx=(jian.userData.vx||0)+R(-0.6,0.6);
+        jian.userData.vz=(jian.userData.vz||0)+R(-0.25,0.25);
+        combo++; lastKick=MG.t; snd('ok'); MG.score=combo*10+Math.max(0,combo-5)*5;
+        if(combo%10===0) msg('连踢 '+combo+'！',0.9);
+        // 脚抬一下的反馈
+        me.root.userData.kickT=0.18;
+      } else {
+        snd('tick'); // 空踢
+      }
+    },
+    update(dt){
+      const a=axis();
+      // 人左右挪
+      me.root.position.x=clamp(me.root.position.x+a.x*2.8*dt,-1.5,1.5);
+      me.root.position.z=clamp(me.root.position.z+a.y*1.2*dt,0.2,1.2);
+      me.walk(a.m>0.15?0.6:0,1.0);
+      if(me.root.userData.kickT>0){ me.root.userData.kickT-=dt; me.root.position.y=0.06; }
+      else me.root.position.y=0;
+
+      cool-=dt;
+      // 毽子物理
+      let vx=jian.userData.vx||0, vz=jian.userData.vz||0;
+      vx*=Math.pow(0.2,dt); vz*=Math.pow(0.2,dt); // 空气阻尼
+      vy-=9.8*dt;
+      y+=vy*dt; x+=vx*dt; z+=vz*dt;
+      // 软边界：出圈轻轻弹回
+      const rr=Math.hypot(x,z); if(rr>1.55){ x*=1.55/rr; z*=1.55/rr; jian.userData.vx=-(vx||0.2); jian.userData.vz=-(vz||0.1); }
+      jian.userData.vx=vx; jian.userData.vz=vz;
+      spin+=dt*(4+combo*0.15);
+      jian.rotation.set(Math.sin(spin)*0.35, spin, Math.cos(spin*0.7)*0.25);
+      jian.position.set(x,Math.max(0.02,y),z);
+
+      if(y<=0.02){
+        y=0.02; vy=0; miss++; combo=0; snd('bad');
+        msg(miss<3?'落地了！':'毽子停了',1);
+        jian.userData.vx=0; jian.userData.vz=0;
+        if(miss>=3){ MG.finish(MG.score>=50,'最高连踢分 '+MG.score+'。'); return; }
+        // 自动弹起一点方便再开
+        y=0.35; vy=1.6; x=me.root.position.x*0.3; z=0;
+      }
+      // 超时奖励局
+      if(MG.t>=60){ MG.finish(MG.score>=80,'60 秒结束，得分 '+MG.score+'。'); return; }
+
+      camera.position.set(me.root.position.x*0.4+0.6, 1.65, me.root.position.z+3.0);
+      camera.lookAt(jian.position.x*0.5, Math.max(0.5,y*0.5+0.4), jian.position.z*0.3);
+      hud('<b>🪶 踢毽子</b><br>连踢 <b>'+combo+'</b>','落地 '+miss+'/3<br>分 '+MG.score+' · 剩 '+Math.max(0,60-MG.t).toFixed(0)+' s');
+    }
+  };
+})());
+
+
 // ================= 场景入口 =================
 // spots: 相对场景出生点的 [dx,dz]；main 会用 groundW 贴地
-export const SPOTS={A:[['gunlhuan',-4.5,-2.5],['shabao',4.5,-2.5],['wuziqi',-3.5,3.5],['paizhipian',3.5,3.5],['mutouren',-7.0,-4.0],['tiaosheng',6.5,-5.0],['moxiazi',-6.0,5.5],['caijidan',7.0,5.0]],
- B:[['mutouren',-4,-3],['tiaosheng',4,-3],['caijidan',-4,3.5],['moxiazi',4,3.5],['gunlhuan',0,-5.5]],
- G:[['shabao',2.5,-3.5],['wuziqi',-3.0,2.0]]};
+export const SPOTS={A:[['gunlhuan',-4.5,-2.5],['shabao',4.5,-2.5],['wuziqi',-3.5,3.5],['paizhipian',3.5,3.5],['mutouren',-7.0,-4.0],['tiaosheng',6.5,-5.0],['moxiazi',-6.0,5.5],['caijidan',7.0,5.0],['tiaofangzi',-8.5,2.0],['tijianzi',8.5,-1.5]],
+ B:[['mutouren',-4,-3],['tiaosheng',4,-3],['caijidan',-4,3.5],['moxiazi',4,3.5],['gunlhuan',0,-5.5],['tiaofangzi',0,5.5],['tijianzi',-6.5,0.5]],
+ G:[['shabao',2.5,-3.5],['wuziqi',-3.0,2.0],['tiaofangzi',-2.5,2.0],['tijianzi',0,3.5]]};
 export {GAMES,enter,quit,MG};
 export function makeMarker(THREE_,id){const G=GAMES.find(g=>g.id===id);const g=new THREE_.Group();
  const ring=new THREE_.Mesh(new THREE_.RingGeometry(0.55,0.75,48).rotateX(-Math.PI/2),new THREE_.MeshBasicMaterial({color:0xffc070,transparent:true,opacity:0.75,depthWrite:false,side:THREE_.DoubleSide}));ring.position.y=0.04;g.add(ring);
@@ -456,6 +746,8 @@ export function makeMarker(THREE_,id){const G=GAMES.find(g=>g.id===id);const g=n
  else if(id==='tiaosheng'){prop=new THREE_.Mesh(new THREE_.TorusGeometry(0.22,0.012,6,32),new THREE_.MeshStandardMaterial({color:0xd9c9a3}));prop.rotation.x=Math.PI/2;prop.position.y=0.02;}
  else if(id==='caijidan'){prop=new THREE_.Mesh(new THREE_.SphereGeometry(0.13,16,12),new THREE_.MeshPhysicalMaterial({color:0xe94f37,clearcoat:0.8,roughness:0.3}));prop.position.y=0.15;}
  else if(id==='moxiazi'){prop=new THREE_.Mesh(new THREE_.BoxGeometry(0.5,0.06,0.02),new THREE_.MeshStandardMaterial({color:0x222222}));prop.position.y=1.0;}
+ else if(id==='tiaofangzi'){prop=new THREE_.Mesh(new THREE_.PlaneGeometry(0.7,0.7),new THREE_.MeshStandardMaterial({color:0xf2efe6,roughness:1,side:THREE_.DoubleSide}));prop.rotation.x=-Math.PI/2;prop.position.y=0.03;}
+ else if(id==='tijianzi'){const base=new THREE_.Mesh(new THREE_.CylinderGeometry(0.05,0.05,0.02,10),new THREE_.MeshStandardMaterial({color:0xc8463c}));base.position.y=0.02;g.add(base);prop=new THREE_.Mesh(new THREE_.ConeGeometry(0.04,0.16,6),new THREE_.MeshStandardMaterial({color:0xf2efe6}));prop.position.y=0.12;}
  else{prop=new THREE_.Mesh(new THREE_.CylinderGeometry(0.06,0.06,1.2,8),new THREE_.MeshStandardMaterial({color:0xc8b48a}));prop.position.y=0.6;}
  g.add(prop);g.userData={id,ring,sp,name:G.name,icon:G.icon};return g;}
 export function setPrompt(text,onTap){if(!text){prompt.style.display='none';prompt.onclick=null;return;}prompt.textContent=text;prompt.style.display='block';prompt.onclick=e=>{e.stopPropagation();onTap&&onTap();};
