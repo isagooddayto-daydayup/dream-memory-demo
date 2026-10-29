@@ -1,14 +1,12 @@
-# DONE criteria — v8.10
+# v8.11 done criteria (machine-checkable)
 
-| # | Criterion | Evidence |
-|---|-----------|----------|
-| 1 | VERSION v8.10 title/HUD/world | shots_v810 log boot.ver |
-| 2 | Home bed sleep fade + weather flip | 04_sleep_fade / 04b_after_sleep |
-| 3 | Home window rain in rainnight | 03_home_window_rain |
-| 4 | Furniture GLBs (bed/chair/table/lamp/calendar/radio) | furniture fetch 200 |
-| 5 | Shop clerk second-counter dialogue | 05_shop_clerk |
-| 6 | Acheng quest board 4 beats + localStorage + dream card | 01_hub_quest_rain / 06_quest_complete |
-| 7 | Station timetable next-3 + 检票 | 02_station_timetable |
-| 8 | Campus B + gunlhuan spot | 07_campus_gunlhuan |
-| 9 | Privacy zero yy / Renderpeople | LIVE + source scan |
-|10 | Pages /v8/ serves v8.10 | curl VERSION + index |
+1. VERSION==='v8.11' (file + V8.VERSION + title/HUD)
+2. SPOTS.G has >=1 playable id; mgPlace includes G; mark visible on G
+3. Rainnight on G: fog dens > clear G dens (deeper)
+4. Home: calendar near → short date copy; oil_lamp toggle changes PointLight intensity
+5. Shop: calendar wall readable (or shared home calendar OK if shop has interact)
+6. Quest board pin via HUD/menu; 4/4 triggers reward overlay + auto dream card
+7. Timetable shows CLOCK-linked status 即将发车/已离开
+8. Acheng reply changes by quest beat progress
+9. Pages /v8/ 200 + v8.11; runtime privacy zero /yy/
+10. shots_v811/ evidence + log.json PASS

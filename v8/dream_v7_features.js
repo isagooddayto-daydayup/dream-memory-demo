@@ -85,6 +85,33 @@ export function clearQuest() {
   return q;
 }
 
+/** v8.11 Acheng lines by quest progress (after completing beat id). */
+export const QUEST_PHASE_LINES = {
+  buy_soda: [
+    '汽水买到了？矿区的玻璃瓶还是那种凉。下一拍：去地上淡圈玩一局童年游戏。',
+    '嗯，柜台上的汽水你拿走了。玩完游戏再来找我。',
+  ],
+  play_mg: [
+    '铁环声我听见了。下一拍：进矿车站，坐一班矿车去火星、校园或 ARES。',
+    '玩过了就好。矿车时刻表会变——看清「即将发车」再检票。',
+  ],
+  ride_cart: [
+    '你坐车回来了。风里还有煤灰味。过来按 E 跟我说一声，四节拍就齐了。',
+    '矿车门又关上了。回来回话吧——我就在入口守着。',
+  ],
+  report_acheng: [
+    '四节拍都记下了。梦会写成回忆卡；你愿意的话，结束这局就能看见。',
+  ],
+};
+export function questPhaseLine(q) {
+  q = q || loadQuest();
+  if (!q.done.length) return null;
+  const last = q.done[q.done.length - 1];
+  const pool = QUEST_PHASE_LINES[last];
+  if (!pool || !pool.length) return null;
+  return pool[(q.done.length + (q.completedAt | 0)) % pool.length];
+}
+
 
 const POS_WORDS = ['谢谢', '感谢', '喜欢', '开心', '高兴', '想你', '朋友', '记得', '陪我', '真好', '可爱', '漂亮', '厉害', '爱', '温暖', '安心'];
 const NEG_WORDS = ['讨厌', '滚', '无聊', '傻', '笨', '烦', '走开'];
@@ -282,6 +309,13 @@ export function replyTo(mem, text) {
   // v8.8: 语气档可见前缀，方便截图/日志验三档
   const tag = tier.id === 'close' ? '【亲密】' : tier.id === 'known' ? '【熟识】' : '【陌生】';
   if (!ans.startsWith('【')) ans = tag + ans;
+  // v8.11 quest-phase lines (after soda / game / ride)
+  try {
+    const ql = questPhaseLine();
+    if (ql && (intent === 'greet' || intent === 'default' || intent === 'mem' || /任务|汽水|游戏|矿车|回来|主线/.test(t))) {
+      ans = (ans.startsWith('【') ? ans.slice(0, 4) : tag) + ql;
+    }
+  } catch (_) {}
   // mainline hook
   if (/主线|你是谁|守望/.test(t) && MAINLINE.length) {
     const beat = MAINLINE[(mem.affinity / 25 | 0) % MAINLINE.length];

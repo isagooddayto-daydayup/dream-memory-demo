@@ -4,7 +4,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="梦境矿山">
 <meta name="theme-color" content="#07060c"><link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
-<title>回忆与梦境 · v8.10 矿山世界 · 任务板·时刻表·睡觉·家具</title>
+<title>回忆与梦境 · v8.11 矿山世界 · 林间点·油灯日历·任务钉·时刻表联动</title>
 <style>
 html,body{margin:0;height:100%;overflow:hidden;background:#0a0e12;font-family:"Microsoft YaHei","PingFang SC",sans-serif}
 canvas{display:block}
@@ -23,7 +23,7 @@ canvas{display:block}
 <script type="importmap">{"imports":{"three":"./lib/three.module.js","three/addons/":"./lib/addons/","@sparkjsdev/spark":"./lib/spark.module.js","@pixiv/three-vrm":"./lib/three-vrm.module.js","MG":"./minigames.js","V7":"./dream_v7_features.js","V8":"./dream_v8_world.js"}}</script>
 </head><body>
 <div id="tint"></div><div id="vig"></div><div id="flash"></div><div id="title"></div><div id="cross"></div>
-<div id="hud"><b>回忆与梦境 · v8.10 矿山世界 · 主线任务板·时刻表·床睡觉·窗雨·校园加挂</b><br>走进<strong>实体门口</strong>：家 / 小卖部 / 教室 / 小房间 / <strong>飞船口·ARES</strong>，<strong>山洞</strong>（校园）/ <strong>矿洞</strong>（林间），进<strong>矿车站</strong>后走进矿车「上车」去火星边疆 / 矿区校园；返回也走门 / 洞口 / 矿车（数字键仅快进）；手机：左摇杆走、右半屏拖视角、点「角色」换人；<b>E</b> 阿澄交谈；地上淡圈=小游戏<br>
+<div id="hud"><b>回忆与梦境 · v8.11 矿山世界 · 林间童年·油灯日历·任务钉·班次联动·阿澄节拍台词</b><br>走进<strong>实体门口</strong>：家 / 小卖部 / 教室 / 小房间 / <strong>飞船口·ARES</strong>，<strong>山洞</strong>（校园）/ <strong>矿洞</strong>（林间），进<strong>矿车站</strong>后走进矿车「上车」去火星边疆 / 矿区校园；返回也走门 / 洞口 / 矿车（数字键仅快进）；手机：左摇杆走、右半屏拖视角、点「角色」换人；<b>E</b> 阿澄交谈；地上淡圈=小游戏<br>
 点击画面锁定鼠标 · 鼠标转视角 · <b>WASD</b> 走 · <b>Shift</b> 跑<br>
 <b>空格</b> 按住起飞/上升 · <b>Ctrl/Q</b> 下降 · <b>F</b> 飞行/步行切换<br>
 <b>M</b> 菜单（结束这局→梦境回忆）· <b>G</b> 切换角色（前任留在原地当 NPC · 菜单看角色卡）· <b>1-9</b> 仍可快切场景 · <b>C</b> 镜头 · <b>V</b> 第一人称<br>
@@ -340,6 +340,9 @@ async function loadMeshScene(S){
    const lamp=new THREE.PointLight(0xffc080,0.85,9);lamp.position.set(2.0,1.7,1.0);root.add(lamp);
    root.userData.sits=[{id:'chair',name:'木椅',local:[2.15,1.9]}];
    root.userData.beds=[{id:'bed',name:'床',local:[-1.7,-1.3]}];
+   root.userData.lampLight=lamp;lamp.userData.baseI=0.85;
+   root.userData.lamp={on:true,local:[2.0,1.0],light:lamp};
+   root.userData.calendars=[{id:'cal',name:'墙上日历',local:[-3.6,-1.5],lines:null}];
    root.userData._furnJobs=[
      ['bed',-1.7,0,-1.3,Math.PI/2],
      ['table',2.0,0,1.0,0],
@@ -415,13 +418,14 @@ async function loadMeshScene(S){
      '阿澄还守在入口吧？跟他说声，我这儿灯一直亮着。',
      '坐矿车的话，记得看时刻表，别上错车。',
    ], i:0};
-   root.userData._shopFurn=[['radio',2.4,1.05,-1.5,0]];
+   root.userData.calendars=[{id:'cal',name:'小卖日历',local:[3.5,-0.5],lines:null}];
+   root.userData._shopFurn=[['radio',2.4,1.05,-1.5,0],['calendar',3.6,1.3,-0.4,-Math.PI/2]];
   }
   // v8.10 load procedural-furniture GLBs
   if(root.userData._furnJobs){
    for(const [name,x,y,z,ry] of root.userData._furnJobs){
     const o=await loadFurn(name);
-    if(o) placeFurn(root,o,x,y,z,ry);
+    if(o){const m=placeFurn(root,o,x,y,z,ry); if(name==='oil_lamp'&&root.userData.lamp)root.userData.lamp.mesh=m; if(name==='calendar'&&root.userData.calendars)root.userData.calendars[0].mesh=m;}
     else if(name==='bed'){box(2.4,0.9,1.1,0x8b5a3c,x,0.45,z);}
     else if(name==='table'){box(1.2,0.7,0.7,0x6b4428,x,0.35,z);}
     else if(name==='chair'){box(0.55,0.45,0.55,0x6b4428,x,0.22,z);box(0.5,0.55,0.08,0x5a3820,x,0.72,z+0.23);}
@@ -688,7 +692,10 @@ scene.add(SUN);scene.add(SUN.target);
 const SCENE_LIGHT={A:{c:0xc8d4dc,i:2.15,h:0.42},B:{c:0xd0dae0,i:2.0,h:0.48},C:{c:0xe0c8b0,i:2.1,h:0.40},D:{c:0xd8d4cc,i:1.45,h:0.55},E:{c:0xd0d8e0,i:2.0,h:0.45},F:{c:0xd4d8dc,i:1.9,h:0.5},G:{c:0xc8d4c8,i:2.0,h:0.48},H:{c:0xd8d0c4,i:1.55,h:0.5},I:{c:0xb8c0c4,i:1.85,h:0.38},J:{c:0xd0d8e0,i:1.55,h:0.5}};
 // v8.6 魂系雾：冷灰/石青 FogExp2；室内更淡
 const SCENE_MOOD={A:{fog:0x6a747a,dens:0.028,clear:0x5e686e,exp:0.94},B:{fog:0x6e7880,dens:0.036,clear:0x5c666c,exp:0.92},C:{fog:0x7a6a5c,dens:0.028,clear:0x5e564c,exp:0.95},D:{fog:0x5a5e62,dens:0.055,clear:0x3a3e42,exp:0.88},E:{fog:0x5a646c,dens:0.038,clear:0x3e464c,exp:0.88},F:{fog:0x6a7074,dens:0.040,clear:0x4a5054,exp:0.90},G:{fog:0x627068,dens:0.038,clear:0x4e5a52,exp:0.92},H:{fog:0x5c5850,dens:0.050,clear:0x3e3a34,exp:0.88},I:{fog:0x5e666c,dens:0.042,clear:0x4a5258,exp:0.90},J:{fog:0x606870,dens:0.048,clear:0x3e464c,exp:0.88}};
-function applySceneMood(key){const m=SCENE_MOOD[key]||SCENE_MOOD.A;const dens=(typeof GFX!=='undefined'&&GFX.low)?m.dens*0.55:m.dens;scene.fog=new THREE.FogExp2(m.fog,dens);renderer.setClearColor(m.clear,1);renderer.toneMappingExposure=m.exp;}
+function applySceneMood(key){const m=SCENE_MOOD[key]||SCENE_MOOD.A;let dens=(typeof GFX!=='undefined'&&GFX.low)?m.dens*0.55:m.dens;
+ // v8.11 雨夜林间雾加深
+ try{if(key==='G'&&typeof WEATHER!=='undefined'&&WEATHER.forceRain()){dens=Math.min(0.12, dens*2.15);scene.fog=new THREE.FogExp2(0x3a4840,dens);renderer.setClearColor(0x2a322c,1);renderer.toneMappingExposure=0.72;window.__forestFog={dens,rain:true};return;}}catch(_){}
+ scene.fog=new THREE.FogExp2(m.fog,dens);renderer.setClearColor(m.clear,1);renderer.toneMappingExposure=m.exp;window.__forestFog={dens,rain:false,key};}
 applySceneMood('A');
 function realify(o){if(!o.isMesh)return;o.castShadow=!LOWQ;o.receiveShadow=false;
  const ms=Array.isArray(o.material)?o.material:[o.material];const out=ms.map(m=>{if(!m)return m;
@@ -983,7 +990,7 @@ const menu=document.createElement('div');menu.id='menu';menu.style.cssText='posi
 function menuRender(){const tier=V7.tierOf(V7MEM.affinity);const card=PL.name?V8.ensureCharCard(PL.name):null;const cardHtml=card?('当前：'+card.name+'\n经历：'+(card.经历||[]).join(' → ')+'\n技能：'+Object.entries(card.技能||{}).map(([k,v])=>k+' '+v).join(' · ')):'（切换角色后显示）';menu.innerHTML='<b style="font-size:18px">梦境菜单 (M 关闭)</b><br><span style="color:#ffd9a0">场景 · 数字键</span><br>'+
  ORDER.map((k,i)=>'<div data-s="'+k+'" style="cursor:pointer;'+(k===cur?'color:#ffd28a':'')+'">'+(i+1)+'. '+SC[k].name+(SC[k].loaded?'':' <small style="color:#9a90c0">(首次进入时加载)</small>')+'</div>').join('')+
  '<span style="color:#ffd9a0">角色 · G 切换</span><br>'+ROSTER.map((r,i)=>'<span data-c="'+i+'" style="cursor:pointer;margin-right:14px;'+(i===PL.idx?'color:#ffd28a;text-decoration:underline':'')+'">'+r.name+'</span>').join('')+
- '<br><span style="color:#ffd9a0">v8.10 · 任务板·时刻表·睡觉·窗雨·家具</span><br><div style="font-size:13px;color:#cfc6ff">家 / 小卖部 / 教室 / 小房间 走实体门；校园走<b>山洞</b>、林间走<b>矿洞</b>；火星边疆 / 校园也可在<b>矿车站坐矿车</b>。数字键 1–9 快进；手机点「角色」换人</div><div data-close="1" style="cursor:pointer;color:#ffd28a;text-decoration:underline">📷 近景特写（Z）· 正面看人物</div><br><span style="color:#ffd9a0">角色卡</span><br><div id="v8cardpanel" style="font-size:13px;color:#cfc6ff;white-space:pre-wrap">'+cardHtml+'</div><br><span style="color:#ffd9a0">记事NPC</span><br><div style="font-size:13px;color:#cfc6ff">阿澄好感：'+tier.name+' ('+tier.score+') · 走近金环按 E 交谈</div>'+
+ '<br><span style="color:#ffd9a0">v8.11 · 林间点·油灯日历·任务钉·班次·节拍台词</span><br><div style="font-size:13px;color:#cfc6ff">家 / 小卖部 / 教室 / 小房间 走实体门；校园走<b>山洞</b>、林间走<b>矿洞</b>；火星边疆 / 校园也可在<b>矿车站坐矿车</b>。数字键 1–9 快进；手机点「角色」换人</div><div data-close="1" style="cursor:pointer;color:#ffd28a;text-decoration:underline">📷 近景特写（Z）· 正面看人物</div><br><span style="color:#ffd9a0">角色卡</span><br><div id="v8cardpanel" style="font-size:13px;color:#cfc6ff;white-space:pre-wrap">'+cardHtml+'</div><br><span style="color:#ffd9a0">记事NPC</span><br><div style="font-size:13px;color:#cfc6ff">阿澄好感：'+tier.name+' ('+tier.score+') · 走近金环按 E 交谈</div>'+
  '<div data-quest="1" style="cursor:pointer;margin-top:8px;color:#d8c8ff;text-decoration:underline">阿澄主线任务板 ('+V7.questStatus().doneCount+'/'+V7.QUEST_BEATS.length+')</div>'+
  '<div data-weather="1" style="cursor:pointer;margin-top:8px;color:#9ec8ff;text-decoration:underline">天气：'+WEATHER.label()+'（点切 雨夜/自动）</div>'+
  '<div data-lowq="1" style="cursor:pointer;margin-top:8px;color:#9ec8ff;text-decoration:underline">画质：'+(GFX.low?'低（点此恢复标准）':'标准（点此降雾/阴影/像素比）')+'</div>'+
@@ -1098,7 +1105,7 @@ if(TOUCH.on){
  mk('上升',gp(0,0),'Space',null,'round');
  mk('下降',gp(1,0),'KeyQ',null,'round');
  mk('溶解',gp(2,0),null,()=>goScene(cur==='A'?'B':'A'),'round');
- mk('交谈',gp(0,1),null,()=>{if(BED.near)sleepInBed();else if(SIT.on||SIT.near)sitToggle();else if(CLERK.near)talkClerk();else if(V7_NEAR)v7OpenChat();else if(SHOP.near)shopBuy(SHOP.near.id);else if(MGX.near)mgEnter(MGX.near.userData.id);else setSt('走近阿澄、货架、老板娘、床/椅或发光圈后再点');},'hi');
+ mk('交谈',gp(0,1),null,()=>{if(LAMP.near)toggleLamp();else if(CAL.near)readCalendar();else if(BED.near)sleepInBed();else if(SIT.on||SIT.near)sitToggle();else if(CLERK.near)talkClerk();else if(V7_NEAR)v7OpenChat();else if(SHOP.near)shopBuy(SHOP.near.id);else if(MGX.near)mgEnter(MGX.near.userData.id);else setSt('走近阿澄、货架、老板娘、日历/油灯、床/椅或发光圈后再点');},'hi');
  mk('飞行',gp(1,1),null,()=>{P.fly=!P.fly;setSt(P.fly?'飞行':'步行');try{if(P.fly)V7.markFlight(V7SESS);}catch(_){}},'round');
  mk('梦境',gp(2,1),null,()=>enterDream(),'round');
  mk('角色',gp(0,2),null,()=>setChar((PL.idx+1)%ROSTER.length),'hi','v8btnChar');
@@ -1312,7 +1319,7 @@ const WEATHER={mode:'auto', // auto | rainnight | clear
  label(){return this.forceRain()?'雨夜':'晴·'+CLOCK.label();}
 };
 function setWeather(mode){WEATHER.mode=mode||'auto';try{localStorage.setItem('dream_v89_weather',WEATHER.mode);}catch(_){}
- applyNightLights();placeRain();menuRender&&menuRender();setSt('天气：'+WEATHER.label());window.__weather={mode:WEATHER.mode,rain:WEATHER.forceRain(),label:WEATHER.label()};}
+ applyNightLights();placeRain();try{applySceneMood(cur);}catch(_){}menuRender&&menuRender();setSt('天气：'+WEATHER.label());window.__weather={mode:WEATHER.mode,rain:WEATHER.forceRain(),label:WEATHER.label()};}
 try{const wm=localStorage.getItem('dream_v89_weather');if(wm==='rainnight'||wm==='clear'||wm==='auto')WEATHER.mode=wm;}catch(_){}
 function placeRain(){
  if(RAIN){RAIN.parent&&RAIN.parent.remove(RAIN);RAIN=null;}
@@ -1346,7 +1353,7 @@ function applyNightLights(){
  const rain=WEATHER.forceRain();
  // cold dim sun / warmer hemi when rainnight
  if(rain){SUN.intensity=Math.min(SUN.intensity,0.85);SUN.color.setHex(0x8a9aaa);HEMI.intensity=0.28;HEMI.color.setHex(0x6a7888);
-  try{const m=SCENE_MOOD[cur]||SCENE_MOOD.A;if(scene.fog){scene.fog.color.setHex(0x4a545c);scene.fog.density=(GFX&&GFX.low)?m.dens*0.7:m.dens*1.35;}renderer.setClearColor(0x2e363c,1);renderer.toneMappingExposure=0.78;}catch(_){}
+  try{const m=SCENE_MOOD[cur]||SCENE_MOOD.A;if(scene.fog){if(cur==='G'){scene.fog.color.setHex(0x3a4840);scene.fog.density=(GFX&&GFX.low)?m.dens*1.2:m.dens*2.2;renderer.setClearColor(0x2a322c,1);renderer.toneMappingExposure=0.70;window.__forestFog={dens:scene.fog.density,rain:true};}else{scene.fog.color.setHex(0x4a545c);scene.fog.density=(GFX&&GFX.low)?m.dens*0.7:m.dens*1.35;renderer.setClearColor(0x2e363c,1);renderer.toneMappingExposure=0.78;}}}catch(_){}
  }else{try{applySceneMood(cur);}catch(_){}}
  // boost hub lamp point lights
  if(HUB_DENS){HUB_DENS.traverse(o=>{if(o.isPointLight){o.intensity=rain?1.35:0.35;o.distance=rain?14:8;o.color.setHex(rain?0xffc070:0xffc070);}
@@ -1420,22 +1427,89 @@ function talkClerk(){
 }
 const CLERK={near:null};
 
+// ---- v8.11 calendar / lamp / quest pin / reward / clock timetable ----
+const CAL={near:null};const LAMP={near:null};
+function calendarBlurb(){
+ const per=CLOCK.period();const lab=CLOCK.label();
+ const d=new Date();const md=(d.getMonth()+1)+'月'+d.getDate()+'日';
+ const lines={
+  morning:['墙上日历翻到 '+md+' · '+lab+'。煤炉还没完全热。','日期：'+md+'。阿澄说矿区的早晨适合买汽水。'],
+  noon:['日历写着 '+md+' · '+lab+'。晒进来的灰光有点懒。','今天是 '+md+'。下午的矿车班次会挤一点。'],
+  evening:['雨夜前的日历：'+md+' · '+lab+'。页角卷了。','日期 '+md+'。夜里适合坐矿车看灯火。'],
+ };
+ const pool=lines[per]||lines.evening;
+ return pool[(d.getDate()+d.getHours())%pool.length];
+}
+function readCalendar(){
+ const line=calendarBlurb();
+ setSt('📅 '+line);
+ try{const el=$('title');el.innerHTML='日历<small>'+line+'</small>';el.style.opacity='1';clearTimeout(showTitle.h);showTitle.h=setTimeout(()=>el.style.opacity='0',3400);}catch(_){}
+ window.__calendar={line,t:Date.now(),period:CLOCK.period()};
+}
+function toggleLamp(){
+ const S=SC.H;const L=S&&S.mesh&&S.mesh.userData.lamp;if(!L||!L.light)return;
+ L.on=!L.on;
+ const base=L.light.userData.baseI||0.85;
+ L.light.intensity=L.on?base:0.08;
+ L.light.distance=L.on?9:3;
+ // dim warm room fill slightly
+ try{S.mesh.traverse(o=>{if(o.isPointLight&&o!==L.light){o.userData._baseI=o.userData._baseI??o.intensity;o.intensity=L.on?(o.userData._baseI):Math.max(0.12,(o.userData._baseI||1)*0.25);}});}catch(_){}
+ setSt(L.on?'油灯点亮了 · 屋子暖了一点':'油灯熄了 · 只剩窗缝一点光');
+ window.__lamp={on:L.on,i:L.light.intensity,t:Date.now()};
+}
+
+const rewardDiv=(()=>{const d=document.createElement('div');d.id='v8reward';d.style.cssText='position:fixed;inset:0;display:none;z-index:42;background:rgba(6,4,14,.82);opacity:0;transition:opacity .9s;align-items:center;justify-content:center;flex-direction:column;color:#f3e8ff;pointer-events:none;text-align:center;padding:24px';d.innerHTML='<div id="v8rewardT" style="font-size:26px;letter-spacing:.08em;color:#ffd28a">主线四节拍 · 完成</div><div id="v8rewardS" style="font-size:15px;color:#cfc6ff;margin-top:14px;max-width:420px;line-height:1.6"></div>';document.body.appendChild(d);return d;})();
+async function playQuestReward(){
+ if(window.__questRewardPlaying)return;window.__questRewardPlaying=true;
+ rewardDiv.style.display='flex';rewardDiv.style.opacity='0';
+ $('v8rewardT').textContent='主线四节拍 · 完成';
+ $('v8rewardS').textContent='矿区的门、童年游戏、矿车风、阿澄的回话——梦把它们叠成一页。';
+ requestAnimationFrame(()=>{rewardDiv.style.opacity='1';});
+ await new Promise(r=>setTimeout(r,1600));
+ $('v8rewardS').textContent='回忆卡正在写下来…';
+ await new Promise(r=>setTimeout(r,900));
+ rewardDiv.style.opacity='0';
+ await new Promise(r=>setTimeout(r,700));
+ rewardDiv.style.display='none';
+ try{
+  const card=V7.buildDreamCard(V7SESS,V7MEM);V7.saveCard(card);V7.showCard(card);
+  window.__questReward={t:Date.now(),cardId:card.id,title:card.title};
+ }catch(e){console.warn(e);}
+ window.__questRewardPlaying=false;
+}
+
+const questPinBtn=(()=>{const b=document.createElement('button');b.id='v8questPin';b.textContent='任务';b.title='钉开/收起阿澄主线任务板';
+ b.style.cssText='position:fixed;left:12px;top:12px;z-index:36;background:rgba(40,28,70,.82);color:#e8d8ff;border:1px solid rgba(180,150,255,.45);border-radius:10px;padding:6px 12px;font-size:13px;cursor:pointer;font-family:inherit';
+ b.onclick=(e)=>{e.stopPropagation();window.__questPinned=!window.__questPinned;if(window.__questPinned){renderQuestBoard(true);questDiv.style.display='block';setSt('任务板已钉开');}else{questDiv.style.display='none';setSt('任务板已收起');}b.style.borderColor=window.__questPinned?'rgba(255,210,140,.8)':'rgba(180,150,255,.45)';};
+ document.body.appendChild(b);return b;})();
+
+
+
 const timetableDiv=(()=>{const d=document.createElement('div');d.id='v8tt';d.style.cssText='position:fixed;right:14px;top:70px;display:none;z-index:34;background:rgba(12,14,18,.82);color:#d8e4f0;padding:12px 14px;border-radius:12px;border:1px solid rgba(160,180,200,.35);font-size:13px;line-height:1.55;min-width:210px;pointer-events:none';document.body.appendChild(d);return d;})();
 function renderTimetable(){
  if(cur!=='I'){timetableDiv.style.display='none';return;}
- const trains=[
-  {id:'cart_mars',name:'火星边疆',eta:'约 1 分',col:'#ff8a6a'},
-  {id:'cart_campus',name:'矿区校园',eta:'约 3 分',col:'#9dffc2'},
-  {id:'cart_ares',name:'ARES 基地',eta:'约 5 分',col:'#c8b0ff'},
+ const per=CLOCK.period();const lab=CLOCK.label();
+ // period → which train is boarding / departed (CLOCK-linked)
+ const roster=[
+  {id:'cart_mars',name:'火星边疆',col:'#ff8a6a',slot:0},
+  {id:'cart_campus',name:'矿区校园',col:'#9dffc2',slot:1},
+  {id:'cart_ares',name:'ARES 基地',col:'#c8b0ff',slot:2},
  ];
- // rotate "next" by minute
- const m=new Date().getMinutes()%3;
- const ordered=trains.slice(m).concat(trains.slice(0,m));
- timetableDiv.innerHTML='<b style="color:#ffe2b8">矿车站 · 时刻表</b><div style="font-size:11px;color:#9ab0c8;margin:2px 0 6px">下三班 · 走进矿车「检票上车」</div>'+
-  ordered.map((t,i)=>'<div style="display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-top:1px solid rgba(255,255,255,.06)"><span style="color:'+t.col+'">'+(i===0?'▶ ':'')+t.name+'</span><span style="color:#9ab0c8">'+t.eta+'</span></div>').join('')+
-  '<div style="margin-top:8px;color:#ffd28a;font-size:12px">提示：走近矿车按提示检票</div>';
+ const focus=({morning:0,noon:1,evening:2}[per]); const focusI=(focus==null?2:focus);
+ const min=new Date().getMinutes();
+ const rows=roster.map((t,i)=>{
+  const dist=(t.slot-focusI+3)%3;
+  let st,stCol;
+  if(dist===0){st=(min%10)<7?'即将发车':'检票中';stCol='#ffe08a';}
+  else if(dist===1){st='约 '+(8+min%5)+' 分后';stCol='#9ab0c8';}
+  else{st='已离开 · 下一轮';stCol='#6a7280';}
+  return {...t,st,stCol,dist};
+ }).sort((a,b)=>a.dist-b.dist);
+ timetableDiv.innerHTML='<b style="color:#ffe2b8">矿车站 · 时刻表</b><div style="font-size:11px;color:#9ab0c8;margin:2px 0 6px">作息：'+lab+' · 与局内 CLOCK 联动</div>'+
+  rows.map((t,i)=>'<div style="display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-top:1px solid rgba(255,255,255,.06)"><span style="color:'+t.col+'">'+(t.dist===0?'▶ ':'')+t.name+'</span><span style="color:'+t.stCol+'">'+t.st+'</span></div>').join('')+
+  '<div style="margin-top:8px;color:#ffd28a;font-size:12px">提示：走近「即将发车」矿车检票上车</div>';
  timetableDiv.style.display='block';
- window.__timetable={ordered:ordered.map(t=>t.id),t:Date.now()};
+ window.__timetable={period:per,label:lab,rows:rows.map(t=>({id:t.id,st:t.st})),t:Date.now()};
 }
 
 const questDiv=(()=>{const d=document.createElement('div');d.id='v8quest';d.style.cssText='position:fixed;left:12px;top:70px;display:none;z-index:34;background:rgba(14,10,28,.84);color:#e8e0ff;padding:12px 14px;border-radius:12px;border:1px solid rgba(180,150,255,.35);font-size:13px;line-height:1.5;min-width:220px;max-width:280px';document.body.appendChild(d);return d;})();
@@ -1463,9 +1537,10 @@ function questHook(flag, detail){
    try{
     V7MEM=V7.loadMem();
     V7MEM.lines.push({role:'user',text:'（主线）阿澄，四节拍我都走完了。',at:Date.now()});
-    V7MEM.lines.push({role:'npc',text:'【'+(V7.tierOf(V7MEM.affinity).name)+'】我看见了。矿区的门、游戏、矿车、回来回话——都记下了。结束这局时，梦会写成回忆卡。',at:Date.now()});
+    V7MEM.lines.push({role:'npc',text:'【'+(V7.tierOf(V7MEM.affinity).name)+'】我看见了。矿区的门、游戏、矿车、回来回话——都记下了。',at:Date.now()});
     V7.saveMem(V7MEM);
    }catch(_){}
+   try{playQuestReward();}catch(_){}
   }
  }
  return r;
@@ -1508,11 +1583,17 @@ function shopUpdate(){
  if(SIT.on){MGM.setPrompt('坐着 · 按 E 起身',()=>sitToggle());return;}
  if(BED.sleeping)return;
  if(cur==='H'){
-  const S=SC.H;if(S&&S.mesh){
-   let bestBed=null,bdB=1.6,bestSit=null,bdS=1.5;
+  const S=SC.H;CAL.near=null;LAMP.near=null;
+  if(S&&S.mesh){
+   let bestBed=null,bdB=1.6,bestSit=null,bdS=1.5,bestCal=null,bdC=1.5,bestLamp=null,bdL=1.45;
    if(S.mesh.userData.beds){for(const s of S.mesh.userData.beds){const d=Math.hypot(P.pos.x-(S.off.x+s.local[0]),P.pos.z-(S.off.z+s.local[1]));if(d<bdB){bdB=d;bestBed=s;}}}
    if(S.mesh.userData.sits){for(const s of S.mesh.userData.sits){const d=Math.hypot(P.pos.x-(S.off.x+s.local[0]),P.pos.z-(S.off.z+s.local[1]));if(d<bdS){bdS=d;bestSit=s;}}}
-   BED.near=bestBed;SIT.near=bestSit;
+   if(S.mesh.userData.calendars){for(const s of S.mesh.userData.calendars){const d=Math.hypot(P.pos.x-(S.off.x+s.local[0]),P.pos.z-(S.off.z+s.local[1]));if(d<bdC){bdC=d;bestCal=s;}}}
+   if(S.mesh.userData.lamp){const s=S.mesh.userData.lamp;const d=Math.hypot(P.pos.x-(S.off.x+s.local[0]),P.pos.z-(S.off.z+s.local[1]));if(d<bdL){bdL=d;bestLamp=s;}}
+   BED.near=bestBed;SIT.near=bestSit;CAL.near=bestCal;LAMP.near=bestLamp;
+   // priority: lamp/cal if closer than bed/sit slightly for interact
+   if(bestLamp&&bdL<=1.35&&bdL<=bdB&&bdL<=bdS){MGM.setPrompt((TOUCH.on?'👆 ':'按 E ')+(bestLamp.on?'熄灭':'点亮')+'「油灯」',()=>toggleLamp());return;}
+   if(bestCal&&bdC<=1.4&&bdC<=bdB&&bdC<=bdS){MGM.setPrompt((TOUCH.on?'👆 ':'按 E ')+'查看「'+bestCal.name+'」',()=>readCalendar());return;}
    if(bestBed&&bdB<=bdS){MGM.setPrompt((TOUCH.on?'👆 ':'按 E ')+'睡觉「'+bestBed.name+'」',()=>sleepInBed());return;}
    if(bestSit){MGM.setPrompt((TOUCH.on?'👆 坐下':'按 E 坐下')+'「'+bestSit.name+'」',()=>sitToggle());return;}
   }
@@ -1520,7 +1601,12 @@ function shopUpdate(){
   return;
  }
  if(cur!=='J'){if(prev)MGM.setPrompt(null);return;}
- const S=SC.J;if(!S||!S.mesh)return;
+ const S=SC.J;if(!S||!S.mesh)return;CAL.near=null;
+ if(S.mesh.userData.calendars){
+  let bestCal=null,bdC=1.5;
+  for(const s of S.mesh.userData.calendars){const d=Math.hypot(P.pos.x-(S.off.x+s.local[0]),P.pos.z-(S.off.z+s.local[1]));if(d<bdC){bdC=d;bestCal=s;}}
+  if(bestCal){CAL.near=bestCal;MGM.setPrompt((TOUCH.on?'👆 ':'按 E ')+'查看「'+bestCal.name+'」',()=>readCalendar());return;}
+ }
  // clerk priority near second counter
  if(S.mesh.userData.clerk){
   const c=S.mesh.userData.clerk;const d=Math.hypot(P.pos.x-(S.off.x+c.local[0]),P.pos.z-(S.off.z+c.local[1]));
@@ -1737,7 +1823,7 @@ window.__snap=()=>renderer.domElement.toDataURL('image/jpeg',0.9);
 
 // ---------------- v5 童年小游戏入口（发光圈 + 走近提示 + E/点击进入，结束回到原地）----------------
 const MGX={marks:[],near:null};
-function mgPlace(){for(const k of ['A','B']){const S=SC[k];for(const [id,dx,dz] of MGM.SPOTS[k]){const m=MGM.makeMarker(THREE,id);const x=S.off.x+S.spawn[0]+dx,z=S.off.z+S.spawn[1]+dz;m.position.set(x,0,z);m.userData.key=k;m.visible=false;scene.add(m);MGX.marks.push(m);}}}
+function mgPlace(){for(const k of ['A','B','G']){const S=SC[k];for(const [id,dx,dz] of MGM.SPOTS[k]){const m=MGM.makeMarker(THREE,id);const x=S.off.x+S.spawn[0]+dx,z=S.off.z+S.spawn[1]+dz;m.position.set(x,0,z);m.userData.key=k;m.visible=false;scene.add(m);MGX.marks.push(m);}}}
 function mgEnter(id){for(const k in keys)keys[k]=false;MGX.near=null;MGM.setPrompt(null);document.exitPointerLock?.();try{V7.markMinigame(V7SESS,id);}catch(_){}MGM.enter(id,{touch:TOUCH.on,lowq:LOWQ});window.__mgWatch=id;}
 MGM.MG.onExit=()=>{for(const k in keys)keys[k]=false;last=performance.now();if(TEST)portals.render();};
 function mgUpdate(){try{rainUpdate(0.016);}catch(_){}try{shopUpdate();}catch(_){}try{if(window.__mgEnd&&!window.__mgEnd._mem){window.__mgEnd._mem=1;const e=window.__mgEnd;V7MEM=V7.loadMem();V7.rememberMinigame(V7MEM,e.id,!!e.win,e.score|0);V7MEM=V7.loadMem();window.__mgMem=e;try{questHook('minigame',e.id);}catch(_){};}}catch(_){}let best=null,bd=2.0;for(const m of MGX.marks){const k=m.userData.key,S=SC[k];const vis=k===cur&&!!S.mesh&&S.mesh.visible&&!TR.on;m.visible=vis;if(!vis)continue;
@@ -1745,11 +1831,11 @@ function mgUpdate(){try{rainUpdate(0.016);}catch(_){}try{shopUpdate();}catch(_){
   m.userData.ring.material.opacity=0.2+0.07*Math.sin(P.t*3); /* v8.5 地面淡提示 */const d=Math.hypot(m.position.x-P.pos.x,m.position.z-P.pos.z);if(d<bd){bd=d;best=m;}}
  if(V7_NEAR){MGX.near=null;MGM.setPrompt(null);return;} if(best!==MGX.near){MGX.near=best;MGM.setPrompt(best?(TOUCH.on?'👆 点这里进入「'+best.userData.name+'」':'按 E 进入「'+best.userData.name+'」'):null,best?()=>mgEnter(best.userData.id):null);}}
 addEventListener('keydown',e=>{if(MGM.MG.active||CS.on||V7_CHAT)return;
- if(e.code==='KeyE'){if(BED.near){sleepInBed();return;}if(SIT.on||SIT.near){sitToggle();return;}if(CLERK.near){talkClerk();return;}if(V7_NEAR){v7OpenChat();return;}if(SHOP.near){shopBuy(SHOP.near.id);return;}if(MGX.near)mgEnter(MGX.near.userData.id);}
+ if(e.code==='KeyE'){if(LAMP.near){toggleLamp();return;}if(CAL.near){readCalendar();return;}if(BED.near){sleepInBed();return;}if(SIT.on||SIT.near){sitToggle();return;}if(CLERK.near){talkClerk();return;}if(V7_NEAR){v7OpenChat();return;}if(SHOP.near){shopBuy(SHOP.near.id);return;}if(MGX.near)mgEnter(MGX.near.userData.id);}
  if(e.code==='Escape'&&document.getElementById('v7card').style.display==='flex'){document.getElementById('v7card').style.display='none';}
 });
 // test hooks (headless capture)
-window.__G={loadScene,loadMeshScene,DOOR_VIS,PLA,RIDE,doorVisRefresh,toggleClose,FILL,SkeletonUtils,applySceneMood,SCENE_MOOD,HEMI,SUN,get fog(){return scene.fog;},get exposure(){return renderer.toneMappingExposure;},MGM,MGX,mgEnter,mgUpdate,SHOP,shopBuy,placeHubDensity,HUB_DENS,CLOCK,scheduleUpdate,GFX,toggleLowQ,applyGfxMode,placeRain,WEATHER,setWeather,applyNightLights,SIT,sitToggle,showArriveCard,arriveDiv,sleepInBed,talkClerk,renderTimetable,renderQuestBoard,questHook,BED,CLERK,questDiv,timetableDiv,PL,ROSTER,setChar,goScene,V8,DOORS:V8.DOORS,PARKED,placeDoors,placeCommunity,useDoor,COMM_VIS,CAMS,toggleMenu,ORDER,NPCS,CS,playCutscene,enterDream,THREE,P,SC,AV,TR,keys,update,startDissolve,place,makePortal,removePortal,camera,player,body,portals,get cur(){return cur;},set cur(v){cur=v;},groundW,poseAvatar,avatarBones,showTitle,V7,get V7MEM(){return V7MEM;},get V7SESS(){return V7SESS;},v7OpenChat,v7CloseChat,v7EndSession,get V7_NEAR(){return V7_NEAR;}};
+window.__G={loadScene,loadMeshScene,DOOR_VIS,PLA,RIDE,doorVisRefresh,toggleClose,FILL,SkeletonUtils,applySceneMood,SCENE_MOOD,HEMI,SUN,get fog(){return scene.fog;},get exposure(){return renderer.toneMappingExposure;},MGM,MGX,mgEnter,mgUpdate,SHOP,shopBuy,placeHubDensity,HUB_DENS,CLOCK,scheduleUpdate,GFX,toggleLowQ,applyGfxMode,placeRain,WEATHER,setWeather,applyNightLights,SIT,sitToggle,showArriveCard,arriveDiv,sleepInBed,talkClerk,renderTimetable,renderQuestBoard,questHook,BED,CLERK,questDiv,timetableDiv,readCalendar,toggleLamp,playQuestReward,calendarBlurb,CAL,LAMP,rewardDiv,questPinBtn,PL,ROSTER,setChar,goScene,V8,DOORS:V8.DOORS,PARKED,placeDoors,placeCommunity,useDoor,COMM_VIS,CAMS,toggleMenu,ORDER,NPCS,CS,playCutscene,enterDream,THREE,P,SC,AV,TR,keys,update,startDissolve,place,makePortal,removePortal,camera,player,body,portals,get cur(){return cur;},set cur(v){cur=v;},groundW,poseAvatar,avatarBones,showTitle,V7,get V7MEM(){return V7MEM;},get V7SESS(){return V7SESS;},v7OpenChat,v7CloseChat,v7EndSession,get V7_NEAR(){return V7_NEAR;}};
 window.__step=(sec,dt=1/30)=>{for(let t=0;t<sec-1e-6;t+=dt)update(dt);};
 
 // ---------------- boot ----------------

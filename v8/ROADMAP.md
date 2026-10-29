@@ -1,3 +1,6 @@
+## v8.11 (done)
+- G shabao + rain fog; lamp/calendar; quest pin+reward; CLOCK TT; beat lines
+
 ## v8.10 (done)
 - Indoor2: sleep / clerk / window rain / furniture GLB
 - Quest board 4 beats + timetable + B gunlhuan
