@@ -438,7 +438,7 @@ GAMES.push((()=>{let ps=[],x,z,yaw,caught,clapT,arT,arA,grabT;
 
 // ================= 场景入口 =================
 // spots: 相对场景出生点的 [dx,dz]；main 会用 groundW 贴地
-export const SPOTS={A:[['gunlhuan',-4.5,-2.5],['shabao',4.5,-2.5],['wuziqi',-3.5,3.5],['paizhipian',3.5,3.5]],
+export const SPOTS={A:[['gunlhuan',-4.5,-2.5],['shabao',4.5,-2.5],['wuziqi',-3.5,3.5],['paizhipian',3.5,3.5],['mutouren',-7.0,-4.0],['tiaosheng',6.5,-5.0]],
  B:[['mutouren',-4,-3],['tiaosheng',4,-3],['caijidan',-4,3.5],['moxiazi',4,3.5]]};
 export {GAMES,enter,quit,MG};
 export function makeMarker(THREE_,id){const G=GAMES.find(g=>g.id===id);const g=new THREE_.Group();

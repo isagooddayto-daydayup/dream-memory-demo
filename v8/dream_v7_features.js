@@ -33,9 +33,17 @@ export const PERSONA = {
   ],
 };
 
+/** Hand-written main-line beats (v8.8). Free chat must not contradict these. */
+export const MAINLINE = [
+  { id: 'm1', title: '守望', line: '主线一：我守在矿区入口，等愿意走进回忆的人。' },
+  { id: 'm2', title: '碎片', line: '主线二：校园、火星边疆、小房间、ARES 飞船口、教室——都是同一场梦的碎片。' },
+  { id: 'm3', title: '好感', line: '主线三：好感分陌生、熟识、亲密三档；多聊会升温，语气也会变软。' },
+  { id: 'm4', title: '回忆卡', line: '主线四：结束一局时，梦会写成一张「这局梦境回忆」短笺。' },
+];
+
 const POS_WORDS = ['谢谢', '感谢', '喜欢', '开心', '高兴', '想你', '朋友', '记得', '陪我', '真好', '可爱', '漂亮', '厉害', '爱', '温暖', '安心'];
 const NEG_WORDS = ['讨厌', '滚', '无聊', '傻', '笨', '烦', '走开'];
-const LORE_ASK = ['你是谁', '你叫什么', '这里是', '这是哪', '矿区', '小镇', '学校', '火星', '教室', '梦', '回忆', '传送门', '飞行'];
+const LORE_ASK = ['你是谁', '你叫什么', '这里是', '这是哪', '矿区', '小镇', '学校', '火星', '教室', '梦', '回忆', '传送门', '飞行', '飞船', 'ARES', '机场', '主线'];
 const MEM_ASK = ['记得', '上次', '我说', '我说过', '还记得', '忘了'];
 const BYE = ['再见', '拜拜', '走了', '下次', '结束', '晚安'];
 const GREET = ['你好', '嗨', '哈喽', '早上好', '晚上好', '在吗', '嘿'];
@@ -73,13 +81,30 @@ export function tierOf(score) {
   return { id: 'stranger', name: '陌生', score };
 }
 export function bumpAffinity(mem, text) {
-  let d = 1;
-  for (const w of POS_WORDS) if (text.includes(w)) { d += 2; break; }
-  for (const w of NEG_WORDS) if (text.includes(w)) { d -= 2; break; }
-  for (const w of LORE_ASK) if (text.includes(w)) { d += 1; break; }
-  if (text.length >= 12) d += 1;
+  let d = 2; // v8.8: slightly faster so三档可试
+  for (const w of POS_WORDS) if (text.includes(w)) { d += 3; break; }
+  for (const w of NEG_WORDS) if (text.includes(w)) { d -= 3; break; }
+  for (const w of LORE_ASK) if (text.includes(w)) { d += 2; break; }
+  if (/主线|飞船|ARES|作息|守望/.test(text)) d += 2;
+  if (text.length >= 8) d += 1;
   mem.affinity = Math.max(0, Math.min(100, (mem.affinity || 0) + d));
   return d;
+}
+export function setAffinity(mem, score) {
+  mem.affinity = Math.max(0, Math.min(100, score|0));
+  saveMem(mem);
+  return tierOf(mem.affinity);
+}
+export function probeTier() {
+  const out = [];
+  for (const score of [0, 25, 60]) {
+    const m = { version: 1, affinity: score, lines: [{ role: 'user', text: '你好，还记得我吗？矿区主线', at: Date.now() }], met: true, lastAt: 0 };
+    const tier = tierOf(score);
+    const intent = 'greet';
+    const pool = TPL[tier.id][intent];
+    out.push({ score, tier: tier.name, id: tier.id, sample: pool[0] });
+  }
+  return out;
 }
 
 function pick(arr) {
@@ -190,6 +215,7 @@ function intentOf(text) {
   if (GREET.some((w) => text.includes(w))) return 'greet';
   if (BYE.some((w) => text.includes(w))) return 'bye';
   if (MEM_ASK.some((w) => text.includes(w))) return 'mem';
+  if (/主线|守望|碎片|回忆卡/.test(text)) return 'lore';
   if (LORE_ASK.some((w) => text.includes(w))) return 'lore';
   return 'default';
 }
@@ -208,6 +234,14 @@ export function replyTo(mem, text) {
   let ans = pick(pool);
   const quote = findQuote(mem, t) || recentPlayerLines(mem, 1)[0] || '……那些还没成形的话';
   ans = ans.replace(/\{quote\}/g, quote.length > 36 ? quote.slice(0, 36) + '…' : quote);
+  // v8.8: 语气档可见前缀，方便截图/日志验三档
+  const tag = tier.id === 'close' ? '【亲密】' : tier.id === 'known' ? '【熟识】' : '【陌生】';
+  if (!ans.startsWith('【')) ans = tag + ans;
+  // mainline hook
+  if (/主线|你是谁|守望/.test(t) && MAINLINE.length) {
+    const beat = MAINLINE[(mem.affinity / 25 | 0) % MAINLINE.length];
+    ans += ' ' + beat.line;
+  }
   // lightly echo a keyword from player for default replies
   if (intent === 'default' && tier.id !== 'stranger' && Math.random() < 0.35) {
     const frag = t.length > 10 ? t.slice(0, 10) : t;

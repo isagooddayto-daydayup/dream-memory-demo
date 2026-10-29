@@ -1,4 +1,4 @@
-回忆与梦境 · VERSION v8.7 · 矿山探索加厚（做旧门口·童年游戏·闲逛·小卖部·梦境回忆）· 手机浏览器可玩
+回忆与梦境 · VERSION v8.8 · 童年加挂·ARES飞船口·社区作息·阿澄三档·低画质开关· 手机浏览器可玩
 
 公开试玩：https://isagooddayto-daydayup.github.io/dream-memory-demo/v8/
 

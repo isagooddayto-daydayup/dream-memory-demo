@@ -27,3 +27,11 @@
 
 ## 公开链接
 https://isagooddayto-daydayup.github.io/dream-memory-demo/v8/
+
+## v8.8 (2026-10-29 Asia/Shanghai)
+- Hub +2 childhood spots: mutouren, tiaosheng (walk-up playable)
+- Hangar door hub→ARES (E) + station cart_ares; evening rain particles on hub
+- NPC schedule by local hour (早/午/晚) among home/shop/station/plaza; parked join
+- Acheng: MAINLINE beats, visible 【陌生/熟识/亲密】tags, faster affinity, probeTiers/setAffinity
+- Menu 一键低画质 (fog dens×0.55, shadow off, pixelRatio≤0.55), localStorage dream_v88_gfx
+- Same public /v8/ link; free Rocketbox MIT only

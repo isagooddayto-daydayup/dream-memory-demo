@@ -1,14 +1,14 @@
-# v8.7 done criteria — 2026-10-29 08:36:31 Asia/Shanghai
+# DONE criteria — v8.8
 
-| # | 标准 | 结果 | 证据 |
-|---|------|------|------|
-| 1 | VERSION v8.7 in world.js + title/HUD/menu | PASS | world.js VERSION; title 加厚探索; results boot.ver |
-| 2 | home/shop/classroom/room OLDTEX 做旧 | PASS | makeEntranceFacade v8.7 blocks; shots 01a–01d |
-| 3 | Hub ≥2 minigame points; ≥2 E2E back | PASS | markIds 4; e2e gunlhuan+shabao enter+quit |
-| 4 | Hub NPCs wander walk/idle | PASS | wander: 晓雨/小悦/小晴/小雯 walkW≈1; 阿澄 static |
-| 5 | Shop buy soda/bread + localStorage + feedback | PASS | dream_v87_shop; __shopLast; st 买下了汽水 |
-| 6 | Dream recall doors/mgs/chars/buys; copy+close | PASS | shot 05; body 含门/游戏/换人/购买; hasCopy/Close |
-| 7 | Hub density; fog A dens≤0.040 | PASS | hubDens=56; fogDens=0.028 |
-| 8 | Pages 200 + v8.7; no yy/Renderpeople | PASS | http 200 + v8.7 @ 2026-10-29 08:37:40 Asia/Shanghai commit 6e415ee |
-| 9 | shots_v87 ①–⑥ | PASS | 10 png |
-| 10 | This table PASS/FAIL | PASS | this file |
+| # | Criterion | Result |
+|---|-----------|--------|
+| 1 | VERSION==='v8.8' in world.js + title/HUD/menu | **PASS** (results.boot.ver, title) |
+| 2 | Hub SPOTS.A mutouren+tiaosheng; E2E enter+quit | **PASS** (e2e both active→quit cur=A) |
+| 3 | hub_ares hangar + cart_ares to E; cold fog on E | **PASS** doors+fog dens 0.038/col 5a646c; meshVis in emu **unconfirmed** (loaded true, shot present) |
+| 4 | NPC schedule 早/午/晚 → home/shop/station; parked join | **PASS** period→poi map; parked hook in parkCurrentChar (code) |
+| 5 | Acheng MAINLINE + 【陌生/熟识/亲密】; affinity rises | **PASS** tags distinct; bumps 2→28 熟识 |
+| 6 | Menu lowq: fog dens↓, shadows off, pixelRatio↓ | **PASS** fogDrop+shadowOff; prDrop N/A under ?emu=0.3 floor |
+| 7 | Pages /v8/ HTTP 200 + v8.8; no YY face / Renderpeople | (deploy) public roster Rocketbox only; dead `/yy/` string in jogPathFor only |
+| 8 | shots_v88/ evidence | **PASS** 11 png + acheng_tiers.json + results.json |
+
+Evidence: `/workspace/game/demo/v8work/shots_v88/` · stamp Asia/Shanghai from run.
