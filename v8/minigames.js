@@ -739,11 +739,546 @@ GAMES.push((()=>{
 })());
 
 
+
+// ---------- v8.16 打牌 · 抽王八/对对碰 ----------
+GAMES.push((()=>{
+  // 模式：'oldmaid' 抽王八；'match' 对对碰（翻牌消对）
+  // 牌：A23456789JQK × 红桃/方块/梅花/黑桃；抽王八另加一张「王」作鬼牌
+  let me, opp, mode, phase, deck=[], handMe=[], handOpp=[], discard=[],
+      sel=-1, flipIdx=-1, flipA=-1, flipB=-1, flipT=0, tableCards=[],
+      scorePair=0, turns=0, cool=0, cursor=0, board=[], NCOL=4, NROW=3;
+  const SUITS=[{s:'♥',c:'#c0392b'},{s:'♦',c:'#c0392b'},{s:'♣',c:'#1a1a1a'},{s:'♠',c:'#1a1a1a'}];
+  const RANKS=['A','2','3','4','5','6','7','8','9','J','Q','K'];
+
+  function faceTex(rank, suitIdx, joker){
+    const c=document.createElement('canvas'); c.width=128; c.height=180;
+    const x=c.getContext('2d');
+    x.fillStyle='#f7f2e6'; x.fillRect(0,0,128,180);
+    x.strokeStyle='#8a7a5c'; x.lineWidth=4; x.strokeRect(3,3,122,174);
+    if(joker){
+      x.fillStyle='#2c3e6b'; x.font='bold 28px "Microsoft YaHei",sans-serif';
+      x.textAlign='center'; x.textBaseline='middle';
+      x.fillText('王',64,70);
+      x.font='bold 18px "Microsoft YaHei",sans-serif';
+      x.fillText('JOKER',64,110);
+      x.fillStyle='#c0392b'; x.beginPath(); x.arc(64,145,10,0,6.28); x.fill();
+    } else {
+      const su=SUITS[suitIdx];
+      x.fillStyle=su.c;
+      x.font='bold 36px "Microsoft YaHei",sans-serif';
+      x.textAlign='left'; x.textBaseline='top';
+      x.fillText(rank,10,8);
+      x.font='bold 28px serif'; x.fillText(su.s,10,46);
+      x.font='bold 52px serif'; x.textAlign='center'; x.textBaseline='middle';
+      x.fillText(su.s,64,100);
+      x.font='bold 28px "Microsoft YaHei",sans-serif';
+      x.textAlign='right'; x.textBaseline='bottom';
+      x.fillText(rank,118,172);
+    }
+    const t=new THREE.CanvasTexture(c); t.colorSpace=THREE.SRGBColorSpace; t.needsUpdate=true;
+    return t;
+  }
+  function backTex(){
+    const c=document.createElement('canvas'); c.width=128; c.height=180;
+    const x=c.getContext('2d');
+    x.fillStyle='#1e4d8c'; x.fillRect(0,0,128,180);
+    x.strokeStyle='#f2d98b'; x.lineWidth=6; x.strokeRect(6,6,116,168);
+    x.fillStyle='#f2d98b';
+    for(let i=0;i<5;i++) for(let j=0;j<7;j++){
+      x.fillRect(18+i*20, 22+j*20, 8, 8);
+    }
+    const t=new THREE.CanvasTexture(c); t.colorSpace=THREE.SRGBColorSpace; return t;
+  }
+  function makeCardMesh(info, faceUp){
+    const g=new THREE.Group();
+    const front=faceUp?faceTex(info.rank, info.suit, !!info.joker):backTex();
+    const back=backTex();
+    const m=new THREE.Mesh(
+      new THREE.BoxGeometry(0.22,0.01,0.32),
+      [
+        std({color:0xcfc4a8}), std({color:0xcfc4a8}),
+        std({map:front, roughness:0.75}),
+        std({map:back, roughness:0.8}),
+        std({color:0xcfc4a8}), std({color:0xcfc4a8})
+      ]
+    );
+    m.castShadow=true; g.add(m); g.userData.info=info; g.userData.faceUp=!!faceUp;
+    scene.add(g); return g;
+  }
+  function setFace(mesh, up){
+    if(mesh.userData.faceUp===up) return;
+    mesh.userData.faceUp=up;
+    const info=mesh.userData.info;
+    const mat=mesh.children[0].material;
+    mat[2]=std({map:up?faceTex(info.rank,info.suit,!!info.joker):backTex(), roughness:0.75});
+    mesh.children[0].material=mat;
+  }
+  function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=(Math.random()*(i+1))|0; const t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+  function buildDeck(withJoker){
+    const d=[];
+    for(let s=0;s<4;s++) for(const r of RANKS) d.push({rank:r,suit:s,joker:false,key:r+s});
+    if(withJoker) d.push({rank:'王',suit:0,joker:true,key:'JK'});
+    return shuffle(d);
+  }
+  function dropPairs(hand){
+    // 同 rank 成对剔除（不论花色）；鬼牌不成对
+    const by={}; const keep=[];
+    for(const c of hand){
+      if(c.joker){ keep.push(c); continue; }
+      (by[c.rank]=by[c.rank]||[]).push(c);
+    }
+    let dropped=0;
+    for(const r of Object.keys(by)){
+      const arr=by[r];
+      while(arr.length>=2){ arr.pop(); arr.pop(); dropped+=2; }
+      keep.push(...arr);
+    }
+    return {hand:keep, dropped};
+  }
+  function layoutHands(){
+    // 清理旧 mesh
+    for(const c of tableCards) scene.remove(c);
+    tableCards=[];
+    const place=(arr, z, face)=>{
+      const n=arr.length; const span=Math.min(1.6, n*0.14);
+      arr.forEach((info,i)=>{
+        const m=makeCardMesh(info, face);
+        const x=n<=1?0:(-span/2 + (span*(n===1?0:i/(n-1))));
+        m.position.set(x, 0.02+i*0.001, z);
+        m.rotation.y=(i-n/2)*0.02;
+        m.userData.slot=i; m.userData.owner=z>0?'me':'opp';
+        tableCards.push(m);
+      });
+    };
+    if(mode==='oldmaid'){
+      place(handMe, 0.85, true);
+      place(handOpp, -0.85, false);
+    } else {
+      // 对对碰：3×4 翻牌格
+      board.forEach((cell,i)=>{
+        if(!cell || cell.gone) return;
+        const r=(i/NCOL)|0, c=i%NCOL;
+        const m=makeCardMesh(cell.info, !!cell.up);
+        m.position.set((c-1.5)*0.28, 0.02, (r-1)*0.36);
+        m.userData.boardIdx=i;
+        tableCards.push(m);
+      });
+    }
+  }
+  function clearTable(){ for(const c of tableCards) scene.remove(c); tableCards=[]; }
+
+  return {
+    id:'dapai', name:'打牌 · 抽王八', icon:'🃏', scene:'A', env:'town', where:'矿区小镇 · 屋檐石桌',
+    rule:'和小雯玩「抽王八」：发牌后先甩成对，轮流从对方手牌抽一张；再甩对。谁手里最后只剩「王」谁输。也可切「对对碰」：翻开两张同点数消掉，清完桌面算赢。',
+    pc:'<b>左右</b> 选对方牌，<b>空格</b> 抽；对对碰时方向键选格、<b>空格</b> 翻。开局按 <b>M</b> 可切模式（预览）。',
+    mobile:'摇杆左右选牌，右下 <b>抽/翻</b>。',
+    joy:true, buttons:[['A','抽/翻','right:28px;bottom:28px']],
+    async setup(){
+      me=await char(ME); opp=await char('xw');
+      me.root.position.set(0,0,1.15); me.root.rotation.y=Math.PI;
+      opp.root.position.set(0,0,-1.15); opp.root.rotation.y=0;
+      // 石桌
+      const top=new THREE.Mesh(new THREE.CylinderGeometry(0.85,0.85,0.06,32),std({color:0x8d8a82,roughness:0.95}));
+      top.position.y=0.55; top.receiveShadow=true; scene.add(top);
+      const leg=new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.28,0.52,16),std({color:0x7a776f,roughness:1}));
+      leg.position.y=0.26; scene.add(leg);
+      for(const [x,z] of [[-0.55,0.7],[0.55,0.7],[-0.55,-0.7],[0.55,-0.7]]){
+        const s=new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.18,0.38,12),std({color:0x8d8a82}));
+        s.position.set(x,0.19,z); scene.add(s);
+      }
+      scene.add(tree(2.2,-2.0,1.1));
+      camera.position.set(0,2.4,2.2); camera.lookAt(0,0.55,0);
+      mode='oldmaid'; this.reset();
+    },
+    reset(){
+      clearTable(); scorePair=0; turns=0; cool=0; sel=0; cursor=0; phase='play'; flipA=flipB=-1; flipT=0;
+      if(mode==='oldmaid'){
+        deck=buildDeck(true);
+        // 发 7 张给双方（简化；余牌入弃牌）
+        handMe=deck.splice(0,7); handOpp=deck.splice(0,7); discard=deck;
+        let d1=dropPairs(handMe); handMe=d1.hand; scorePair+=d1.dropped;
+        let d2=dropPairs(handOpp); handOpp=d2.hand; scorePair+=d2.dropped;
+        phase='pick'; // 玩家从对方抽
+      } else {
+        // 对对碰：取 6 对（12 张）
+        const pool=buildDeck(false); const pairs=[];
+        const used={};
+        while(pairs.length<6){
+          const c=pool.pop(); if(!c||used[c.rank]) continue;
+          used[c.rank]=1;
+          pairs.push({rank:c.rank,suit:0,joker:false,key:c.rank+'a'});
+          pairs.push({rank:c.rank,suit:1,joker:false,key:c.rank+'b'});
+        }
+        shuffle(pairs);
+        board=pairs.map(info=>({info,up:false,gone:false}));
+        phase='flip';
+      }
+      layoutHands();
+    },
+    preview(){ this.reset(); },
+    idle(){ camera.position.set(0,2.4,2.2); camera.lookAt(0,0.55,0); },
+    start(){ mode='oldmaid'; this.reset(); msg('从对面抽一张！成对就甩掉',1.3); },
+    press(k){
+      if(cool>0) return;
+      if(k==='A'){
+        if(mode==='oldmaid' && phase==='pick' && handOpp.length){
+          // 抽对方第 sel 张
+          const i=clamp(sel,0,handOpp.length-1);
+          const card=handOpp.splice(i,1)[0];
+          handMe.push(card); turns++;
+          snd('slap');
+          const d=dropPairs(handMe); handMe=d.hand;
+          if(d.dropped){ scorePair+=d.dropped; snd('ok'); msg('成对甩掉 '+d.dropped+' 张！',0.9); }
+          else msg('没成对…',0.7);
+          layoutHands();
+          // 胜负：对方空手且自己无王 / 自己只剩王
+          if(this.checkEnd()) return;
+          // AI 回抽
+          phase='ai'; cool=0.45;
+        } else if(mode==='match' && phase==='flip'){
+          const cell=board[cursor];
+          if(!cell||cell.gone||cell.up) return;
+          cell.up=true; snd('tick');
+          if(flipA<0){ flipA=cursor; layoutHands(); }
+          else if(flipB<0 && cursor!==flipA){
+            flipB=cursor; flipT=0.7; phase='reveal'; layoutHands();
+            const a=board[flipA], b=board[flipB];
+            if(a.info.rank===b.info.rank){
+              a.gone=b.gone=true; scorePair+=2; MG.score=scorePair*50;
+              snd('ok'); msg('碰！',0.7);
+              flipA=flipB=-1; phase='flip';
+              layoutHands();
+              if(board.every(c=>!c||c.gone)){ MG.score=Math.max(MG.score,600); MG.finish(true,'对对碰清台！'); return; }
+            }
+          }
+        }
+      }
+    },
+    checkEnd(){
+      MG.score=scorePair*40+Math.max(0,200-turns*8);
+      const meJ=handMe.some(c=>c.joker), oppJ=handOpp.some(c=>c.joker);
+      if(handOpp.length===0 && !oppJ){ MG.finish(true,'对面空手，你赢了！'); return true; }
+      if(handMe.length===0 && !meJ){ MG.finish(true,'你甩光了，大胜！'); return true; }
+      if(handMe.length===1 && meJ){ MG.finish(false,'你手里只剩「王」——抽到王八了。'); return true; }
+      if(handOpp.length===1 && oppJ){ MG.finish(true,'小雯拿到王八了！'); return true; }
+      if(turns>=24){ MG.finish(!meJ||handMe.length<handOpp.length,'回合到。你 '+handMe.length+' 张，对面 '+handOpp.length+' 张。'); return true; }
+      return false;
+    },
+    update(dt){
+      cool-=dt;
+      const a=axis();
+      if(mode==='oldmaid'){
+        if(phase==='pick'){
+          if(Math.abs(a.x)>0.4){ cool=Math.max(cool,0); if(cool<=0){ sel=clamp(sel+Math.sign(a.x),0,Math.max(0,handOpp.length-1)); cool=0.18; } }
+          // 高亮选中的对方牌
+          tableCards.forEach(m=>{
+            if(m.userData.owner==='opp'){
+              const on=m.userData.slot===sel;
+              m.position.y=on?0.08:0.02;
+              m.scale.setScalar(on?1.08:1);
+            }
+          });
+          hud('<b>🃏 抽王八</b><br>选对面一张抽','你 '+handMe.length+' 张 · 对面 '+handOpp.length+' · 已甩 '+scorePair);
+        } else if(phase==='ai'){
+          cool-=dt;
+          hud('<b>🃏 抽王八</b><br>小雯抽牌中…','你 '+handMe.length+' 张 · 对面 '+handOpp.length);
+          if(cool<=0 && handMe.length){
+            const i=(Math.random()*handMe.length)|0;
+            const card=handMe.splice(i,1)[0];
+            handOpp.push(card); turns++;
+            const d=dropPairs(handOpp); handOpp=d.hand;
+            if(d.dropped){ scorePair+=d.dropped; snd('bad'); msg('对面甩对了',0.8); }
+            else snd('tick');
+            layoutHands();
+            if(this.checkEnd()) return;
+            phase='pick'; sel=clamp(sel,0,Math.max(0,handOpp.length-1));
+            cool=0.2;
+          }
+        }
+      } else {
+        // match mode cursor
+        if(phase==='flip'){
+          if(MG.joy && MG.joy.m>0.55){
+            MG.jt=(MG.jt||0)-dt;
+            if(MG.jt<=0){
+              MG.jt=0.16;
+              const dc=Math.round(a.x), dr=Math.round(a.y);
+              let col=cursor%NCOL, row=(cursor/NCOL)|0;
+              col=clamp(col+dc,0,NCOL-1); row=clamp(row+dr,0,NROW-1);
+              cursor=row*NCOL+col;
+            }
+          }
+          tableCards.forEach(m=>{
+            const on=m.userData.boardIdx===cursor;
+            m.position.y=on?0.06:0.02;
+          });
+          hud('<b>🃏 对对碰</b><br>翻两张同点数','已消 '+scorePair+'/12');
+        } else if(phase==='reveal'){
+          flipT-=dt;
+          hud('<b>🃏 对对碰</b><br>看牌…','已消 '+scorePair+'/12');
+          if(flipT<=0){
+            if(flipA>=0) board[flipA].up=false;
+            if(flipB>=0) board[flipB].up=false;
+            flipA=flipB=-1; phase='flip'; layoutHands(); snd('bad');
+          }
+        }
+      }
+      if(MG.t>=120){ MG.score=scorePair*40; MG.finish(scorePair>=8,'时间到，甩/消了 '+scorePair+' 张。'); return; }
+      me.walk(0); opp.walk(0);
+    }
+  };
+})());
+
+// ---------- v8.16 军棋占格（旁路 minigame_draft_xiaqi.js） ----------
+GAMES.push((()=>{
+  // 6×6 半盘：双方各 6 子（帅>旅>团>营>连>兵），兵可吃帅（炸）。
+  // 行棋：上下左右一格；同级对撞同尽；大吃小；小碰大则己方消。
+  // 胜：吃掉对方帅，或对方无子可动 / 占对方大本营。
+  let me, opp, grid, pieces=[], cur, turn, aiT, selected, boardMesh, cursor, cells=[],
+      myBase, oppBase, moves;
+  const N=6, SZ=1.2, STEP=SZ/N;
+  const RANK_NAME=['','兵','连','营','团','旅','帅'];
+  // 棋力 1..6；兵=1 特殊可吃帅
+  function canCapture(a,b){
+    if(!a||!b||a.side===b.side) return false;
+    if(a.rank===1 && b.rank===6) return true; // 兵炸帅
+    if(a.rank===b.rank) return 'both';
+    return a.rank>b.rank;
+  }
+  function wp(i,j){ return new THREE.Vector3(-SZ/2+STEP*(i+0.5), 0.62, -SZ/2+STEP*(j+0.5)); }
+  function pieceTex(rank, side){
+    const c=document.createElement('canvas'); c.width=128; c.height=128;
+    const x=c.getContext('2d');
+    x.fillStyle=side===1?'#2b4c7e':'#7a2e2e';
+    x.beginPath(); x.arc(64,64,58,0,6.28); x.fill();
+    x.strokeStyle='#f2efe6'; x.lineWidth=4; x.stroke();
+    x.fillStyle='#f7f2e6';
+    x.font='bold 36px "Microsoft YaHei",sans-serif';
+    x.textAlign='center'; x.textBaseline='middle';
+    x.fillText(RANK_NAME[rank],64,68);
+    const t=new THREE.CanvasTexture(c); t.colorSpace=THREE.SRGBColorSpace; return t;
+  }
+  function makePiece(rank, side, i, j){
+    const g=new THREE.Group();
+    const body=new THREE.Mesh(
+      new THREE.CylinderGeometry(0.07,0.08,0.06,16),
+      std({color:side===1?0x2b4c7e:0x7a2e2e, roughness:0.55})
+    ); body.position.y=0.03; body.castShadow=true; g.add(body);
+    const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:pieceTex(rank,side), transparent:true, depthTest:true}));
+    sp.scale.set(0.22,0.22,1); sp.position.y=0.12; g.add(sp);
+    g.position.copy(wp(i,j)); g.position.y=0.62;
+    g.userData={rank,side,i,j};
+    scene.add(g); return g;
+  }
+  function clearPieces(){ pieces.forEach(p=>scene.remove(p)); pieces=[]; }
+  function syncGrid(){
+    grid=[...Array(N)].map(()=>Array(N).fill(null));
+    pieces.forEach(p=>{ if(p.userData.alive!==false) grid[p.userData.i][p.userData.j]=p; });
+  }
+  function placeStart(){
+    clearPieces();
+    // 蓝方（玩家）底两行；红方（对面）顶两行
+    // 布局：兵 连 营 | 团 旅 帅  （简化固定）
+    const myLine=[[0,5,1],[1,5,2],[2,5,3],[3,5,4],[4,5,5],[5,5,6]];
+    const opLine=[[0,0,1],[1,0,2],[2,0,3],[3,0,4],[4,0,5],[5,0,6]];
+    for(const [i,j,r] of myLine) pieces.push(makePiece(r,1,i,j));
+    for(const [i,j,r] of opLine) pieces.push(makePiece(r,2,i,j));
+    pieces.forEach(p=>p.userData.alive=true);
+    myBase=[2,5]; oppBase=[3,0];
+    syncGrid();
+  }
+  function neighbors(i,j){
+    return [[i+1,j],[i-1,j],[i,j+1],[i,j-1]].filter(([x,y])=>x>=0&&y>=0&&x<N&&y<N);
+  }
+  function legalMoves(p){
+    if(!p||p.userData.alive===false) return [];
+    const out=[];
+    for(const [ni,nj] of neighbors(p.userData.i,p.userData.j)){
+      const t=grid[ni][nj];
+      if(!t) out.push([ni,nj,'move']);
+      else if(t.userData.side!==p.userData.side){
+        const r=canCapture(p.userData, t.userData);
+        if(r) out.push([ni,nj,r===true?'eat':r]);
+      }
+    }
+    return out;
+  }
+  function doMove(p, ni, nj, kind){
+    const oi=p.userData.i, oj=p.userData.j;
+    const tgt=grid[ni][nj];
+    if(kind==='both' && tgt){
+      // 同尽
+      p.userData.alive=false; tgt.userData.alive=false;
+      p.visible=false; tgt.visible=false;
+      snd('bad'); msg('同级对撞，同尽！',0.9);
+    } else if(kind==='eat' && tgt){
+      tgt.userData.alive=false; tgt.visible=false;
+      p.userData.i=ni; p.userData.j=nj; p.position.copy(wp(ni,nj)); p.position.y=0.62;
+      snd('ok'); msg('吃掉 '+RANK_NAME[tgt.userData.rank]+'！',0.8);
+    } else {
+      p.userData.i=ni; p.userData.j=nj; p.position.copy(wp(ni,nj)); p.position.y=0.62;
+      snd('slap');
+    }
+    syncGrid(); moves++;
+    return checkWin();
+  }
+  function alive(side){ return pieces.filter(p=>p.userData.alive!==false && p.userData.side===side); }
+  function hasShuai(side){ return alive(side).some(p=>p.userData.rank===6); }
+  function checkWin(){
+    MG.score=Math.max(50, 800-moves*15);
+    if(!hasShuai(2)){ MG.finish(true,'吃掉对面帅，军棋胜！'); return true; }
+    if(!hasShuai(1)){ MG.finish(false,'你的帅没了。'); return true; }
+    if(alive(2).length===0){ MG.finish(true,'对面全灭！'); return true; }
+    if(alive(1).length===0){ MG.finish(false,'你的子全没了。'); return true; }
+    // 占大本营：己方任意子走到对方出生行中心
+    const onBase=alive(1).some(p=>p.userData.i===oppBase[0]&&p.userData.j===oppBase[1]);
+    if(onBase){ MG.finish(true,'攻占对面大本营！'); return true; }
+    if(moves>=40){
+      const s1=alive(1).reduce((a,p)=>a+p.userData.rank,0);
+      const s2=alive(2).reduce((a,p)=>a+p.userData.rank,0);
+      MG.finish(s1>=s2,'手满，兵力你 '+s1+' : 对面 '+s2+'。'); return true;
+    }
+    return false;
+  }
+  function aiPlay(){
+    const mine=alive(2);
+    // 优先：能吃则吃（尤其吃帅）；否则向前（+j 对我是 -j 方向？红在 j=0，应向 +j）
+    let best=null, bs=-1e9;
+    for(const p of mine){
+      for(const [ni,nj,kind] of legalMoves(p)){
+        let sc=Math.random()*2 + (nj-p.userData.j)*3; // 倾向推进
+        if(kind==='eat'){
+          const t=grid[ni][nj];
+          sc+=20+t.userData.rank*8;
+          if(t.userData.rank===6) sc+=500;
+        } else if(kind==='both'){
+          sc+=5-p.userData.rank; // 用小子换
+        }
+        if(sc>bs){ bs=sc; best={p,ni,nj,kind}; }
+      }
+    }
+    if(!best){ turn=1; return false; }
+    return doMove(best.p, best.ni, best.nj, best.kind);
+  }
+
+  return {
+    id:'junqi_lite', name:'下棋 · 军棋占格', icon:'🎖️', scene:'A', env:'town', where:'矿区小镇 · 石桌旁',
+    rule:'和小雯下简化军棋：6×6 格，各 6 子（兵<连<营<团<旅<帅）。上下左右走一格；大吃小，同级同尽；兵可「炸」帅。吃掉对方帅或攻入对面大本营就赢。',
+    pc:'<b>方向键</b> 选子/选格，<b>空格</b> 确认；或鼠标点棋盘。',
+    mobile:'点棋盘选子再点目标格；也可摇杆移动光标 + 右下 <b>走</b>。',
+    joy:true, buttons:[['A','走','right:28px;bottom:28px']],
+    async setup(){
+      me=await char(ME); opp=await char('xw');
+      me.root.position.set(0,0,1.05); me.root.rotation.y=Math.PI;
+      opp.root.position.set(0,0,-1.05); opp.root.rotation.y=0;
+      const stoneM=std({color:0x8d8a82,roughness:0.95});
+      const top=new THREE.Mesh(new THREE.CylinderGeometry(0.78,0.78,0.07,36),stoneM);
+      top.position.y=0.55; top.castShadow=top.receiveShadow=true; scene.add(top);
+      const leg=new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.28,0.5,16),stoneM);
+      leg.position.y=0.25; scene.add(leg);
+      boardMesh=new THREE.Mesh(
+        new THREE.BoxGeometry(SZ,0.03,SZ),
+        std({color:0xc4b89a, roughness:0.85})
+      ); boardMesh.position.y=0.60; boardMesh.receiveShadow=true; scene.add(boardMesh);
+      // 格线
+      for(let i=0;i<=N;i++){
+        for(const horiz of [true,false]){
+          const len=SZ; const g=new THREE.Mesh(
+            new THREE.BoxGeometry(horiz?len:0.008,0.004,horiz?0.008:len),
+            std({color:0x5a5348})
+          );
+          const t=-SZ/2+STEP*i;
+          if(horiz) g.position.set(0,0.618,t); else g.position.set(t,0.618,0);
+          scene.add(g);
+        }
+      }
+      // 双方大本营色块
+      const mkBase=(i,j,col)=>{
+        const m=new THREE.Mesh(new THREE.PlaneGeometry(STEP*0.92,STEP*0.92),std({color:col,roughness:1}));
+        m.rotation.x=-Math.PI/2; const p=wp(i,j); m.position.set(p.x,0.616,p.z); scene.add(m);
+      };
+      mkBase(2,5,0x3a5a8c); mkBase(3,0,0x8c3a3a);
+      cursor=new THREE.Mesh(
+        new THREE.RingGeometry(0.05,0.07,24).rotateX(-Math.PI/2),
+        new THREE.MeshBasicMaterial({color:0xff5533})
+      ); scene.add(cursor);
+      scene.add(tree(-2.0,-1.8,1.2));
+      camera.position.set(0,2.0,1.55); camera.lookAt(0,0.6,0);
+      this.reset();
+    },
+    reset(){ placeStart(); cur=[2,4]; selected=null; turn=1; aiT=0; moves=0; this.cur(); },
+    preview(){ this.reset(); },
+    idle(){ camera.position.set(0,2.0,1.55); camera.lookAt(0,0.6,0); },
+    start(){ this.reset(); msg('你执蓝，先走。兵可炸帅！',1.3); },
+    cur(){ cursor.position.copy(wp(cur[0],cur[1])); cursor.position.y=0.64; },
+    press(k){
+      if(turn!==1) return;
+      const d={L:[-1,0],R:[1,0],U:[0,-1],D:[0,1]}[k];
+      if(d){ cur=[clamp(cur[0]+d[0],0,N-1),clamp(cur[1]+d[1],0,N-1)]; this.cur(); return; }
+      if(k==='A') this.act(cur[0],cur[1]);
+    },
+    act(i,j){
+      if(turn!==1) return;
+      const cell=grid[i][j];
+      if(!selected){
+        if(cell && cell.userData.side===1){ selected=cell; snd('tick'); msg(RANK_NAME[cell.userData.rank],0.5); }
+        return;
+      }
+      if(cell && cell.userData.side===1){ selected=cell; snd('tick'); return; }
+      const movesL=legalMoves(selected);
+      const hit=movesL.find(([x,y])=>x===i&&y===j);
+      if(!hit){ selected=null; snd('bad'); return; }
+      const ended=doMove(selected, hit[0], hit[1], hit[2]);
+      selected=null;
+      if(ended) return;
+      turn=2; aiT=0.55;
+    },
+    tap(ray){
+      const h=ray.intersectObject(boardMesh)[0]; if(!h) return;
+      const i=clamp(Math.floor((h.point.x+SZ/2)/STEP),0,N-1);
+      const j=clamp(Math.floor((h.point.z+SZ/2)/STEP),0,N-1);
+      cur=[i,j]; this.cur(); this.act(i,j);
+    },
+    update(dt){
+      if(MG.joy && MG.joy.m>0.55 && turn===1){
+        MG.jt=(MG.jt||0)-dt;
+        if(MG.jt<=0){
+          MG.jt=0.16;
+          cur=[clamp(cur[0]+Math.round(MG.joy.x),0,N-1),clamp(cur[1]+Math.round(MG.joy.y),0,N-1)];
+          this.cur();
+        }
+      }
+      // 选中高亮
+      pieces.forEach(p=>{
+        if(p.userData.alive===false) return;
+        const on=selected===p;
+        p.scale.setScalar(on?1.15:1);
+        p.position.y=0.62+(on?0.04:0);
+      });
+      if(turn===2){
+        aiT-=dt;
+        hud('<b>🎖️ 军棋占格</b><br>小雯思考中…','手数 '+moves);
+        if(aiT<=0){
+          const ended=aiPlay();
+          if(ended) return;
+          turn=1;
+        }
+      } else {
+        const lab=selected?('已选 '+RANK_NAME[selected.userData.rank]+' → 点目标格'):'点己方棋子';
+        hud('<b>🎖️ 军棋占格</b><br>'+lab,'手数 '+moves+' · 蓝 '+(alive(1).length)+' · 红 '+(alive(2).length));
+      }
+      me.walk(0); opp.walk(0);
+    }
+  };
+})());
+
 // ================= 场景入口 =================
 // spots: 相对场景出生点的 [dx,dz]；main 会用 groundW 贴地
-export const SPOTS={A:[['gunlhuan',-4.5,-2.5],['shabao',4.5,-2.5],['wuziqi',-3.5,3.5],['paizhipian',3.5,3.5],['mutouren',-7.0,-4.0],['tiaosheng',6.5,-5.0],['moxiazi',-6.0,5.5],['caijidan',7.0,5.0],['tiaofangzi',-8.5,2.0],['tijianzi',8.5,-1.5]],
- B:[['mutouren',-4,-3],['tiaosheng',4,-3],['caijidan',-4,3.5],['moxiazi',4,3.5],['gunlhuan',0,-5.5],['tiaofangzi',0,5.5],['tijianzi',-6.5,0.5]],
- G:[['shabao',2.5,-3.5],['wuziqi',-3.0,2.0],['tiaofangzi',-2.5,2.0],['tijianzi',0,3.5]]};
+export const SPOTS={A:[['gunlhuan',-4.5,-2.5],['shabao',4.5,-2.5],['wuziqi',-3.5,3.5],['paizhipian',3.5,3.5],['mutouren',-7.0,-4.0],['tiaosheng',6.5,-5.0],['moxiazi',-6.0,5.5],['caijidan',7.0,5.0],['tiaofangzi',-8.5,2.0],['tijianzi',8.5,-1.5],['dapai',5.5,1.5],['junqi_lite',-5.5,1.0]],
+ B:[['mutouren',-4,-3],['tiaosheng',4,-3],['caijidan',-4,3.5],['moxiazi',4,3.5],['gunlhuan',0,-5.5],['tiaofangzi',0,5.5],['tijianzi',-6.5,0.5],['dapai',5.0,-1.0],['junqi_lite',-5.0,-2.0]],
+ G:[['shabao',2.5,-3.5],['wuziqi',-3.0,2.0],['tiaofangzi',-2.5,2.0],['tijianzi',0,3.5],['dapai',2.0,1.5],['junqi_lite',-1.5,-2.5]],
+ H:[['junqi_lite',1.2,-1.0],['dapai',-1.4,1.0]],
+ J:[['dapai',0.8,-0.6],['junqi_lite',-1.2,0.9]]};
 export {GAMES,enter,quit,MG};
 export function makeMarker(THREE_,id){const G=GAMES.find(g=>g.id===id);const g=new THREE_.Group();
  const ring=new THREE_.Mesh(new THREE_.RingGeometry(0.55,0.75,48).rotateX(-Math.PI/2),new THREE_.MeshBasicMaterial({color:0xffc070,transparent:true,opacity:0.75,depthWrite:false,side:THREE_.DoubleSide}));ring.position.y=0.04;g.add(ring);
@@ -761,6 +1296,8 @@ export function makeMarker(THREE_,id){const G=GAMES.find(g=>g.id===id);const g=n
  else if(id==='moxiazi'){prop=new THREE_.Mesh(new THREE_.BoxGeometry(0.5,0.06,0.02),new THREE_.MeshStandardMaterial({color:0x222222}));prop.position.y=1.0;}
  else if(id==='tiaofangzi'){prop=new THREE_.Mesh(new THREE_.PlaneGeometry(0.7,0.7),new THREE_.MeshStandardMaterial({color:0xf2efe6,roughness:1,side:THREE_.DoubleSide}));prop.rotation.x=-Math.PI/2;prop.position.y=0.03;}
  else if(id==='tijianzi'){const base=new THREE_.Mesh(new THREE_.CylinderGeometry(0.05,0.05,0.02,10),new THREE_.MeshStandardMaterial({color:0xc8463c}));base.position.y=0.02;g.add(base);prop=new THREE_.Mesh(new THREE_.ConeGeometry(0.04,0.16,6),new THREE_.MeshStandardMaterial({color:0xf2efe6}));prop.position.y=0.12;}
+ else if(id==='dapai'){prop=new THREE_.Mesh(new THREE_.BoxGeometry(0.18,0.01,0.26),new THREE_.MeshStandardMaterial({color:0x1e4d8c}));prop.position.y=0.03;}
+ else if(id==='junqi_lite'){prop=new THREE_.Mesh(new THREE_.CylinderGeometry(0.07,0.08,0.06,12),new THREE_.MeshStandardMaterial({color:0x2b4c7e}));prop.position.y=0.04;}
  else{prop=new THREE_.Mesh(new THREE_.CylinderGeometry(0.06,0.06,1.2,8),new THREE_.MeshStandardMaterial({color:0xc8b48a}));prop.position.y=0.6;}
  g.add(prop);g.userData={id,ring,sp,name:G.name,icon:G.icon};return g;}
 export function setPrompt(text,onTap){if(!text){prompt.style.display='none';prompt.onclick=null;return;}prompt.textContent=text;prompt.style.display='block';prompt.onclick=e=>{e.stopPropagation();onTap&&onTap();};
