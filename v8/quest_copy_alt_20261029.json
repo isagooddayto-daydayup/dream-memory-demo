@@ -1,5 +1,5 @@
 {
-  "version": "quest_copy_alt_20261029",
+  "version": "quest_copy_alt_20261029_v815",
   "created_beijing": "2026-10-29 09:06 Asia/Shanghai",
   "note": "阿澄主线任务板 4 节拍扩展文案 · 2 套备选。替换目标：dream_v7_features.js 的 QUEST_BEATS（title/hint）与 QUEST_PHASE_LINES（完成拍后台词）。不改 check 字段与 id。公开安全：无 YY 真名、无现实住址。",
   "beat_ids": [
@@ -149,6 +149,55 @@
         "report_acheng": [
           "四节拍齐了。梦会写成回忆卡；结束这局就能看见。",
           "我都记下了。你走的路、买的汽水、玩过的圈——短笺里会有。"
+        ]
+      }
+    },
+    {
+      "id": "alt_chalk_cicada",
+      "label": "粉笔蝉鸣",
+      "tone": "夏日操场、粉笔灰、蝉、短句鼓励",
+      "QUEST_BEATS": [
+        {
+          "id": "buy_soda",
+          "title": "买瓶冰汽水垫底",
+          "hint": "钻进小卖部，柜台上按 E 拿一瓶冰汽水。",
+          "check": "buy:soda"
+        },
+        {
+          "id": "play_mg",
+          "title": "粉笔圈里玩一局",
+          "hint": "走近地上淡圈，木头人、跳绳、沙包或跳房子都行。",
+          "check": "minigame"
+        },
+        {
+          "id": "ride_cart",
+          "title": "坐矿车吹一站风",
+          "hint": "进矿车站，看清「即将发车」，走上矿车去一站。",
+          "check": "ride"
+        },
+        {
+          "id": "report_acheng",
+          "title": "回入口跟阿澄回话",
+          "hint": "回到矿山入口金环，按 E 告诉阿澄你回来了。",
+          "check": "talk"
+        }
+      ],
+      "QUEST_PHASE_LINES": {
+        "buy_soda": [
+          "瓶壁有凉意。下一拍：去淡圈玩，让粉笔灰沾鞋底。",
+          "汽水你拿走了。蝉还在叫——先玩一局再来。"
+        ],
+        "play_mg": [
+          "圈里脚步我听见了。下一拍：进站坐矿车，吹一站风。",
+          "玩过就好。时刻表跳「即将发车」再检票，别赶错班。"
+        ],
+        "ride_cart": [
+          "袖口有站台的灰。过来按 E 回话，四节拍就齐了。",
+          "矿车门合上了。我在入口等你那句「回来了」。"
+        ],
+        "report_acheng": [
+          "四节拍都进梦了。结束这局，短笺会写入汽水、粉笔和矿车风。",
+          "记下了。蝉鸣、铁环、你走过的淡圈——回忆卡里会有。"
         ]
       }
     }

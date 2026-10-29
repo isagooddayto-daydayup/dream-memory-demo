@@ -205,6 +205,43 @@ export function questPhaseLineExt(q) {
   return pool[(q.done.length + (q.completedAt | 0)) % pool.length];
 }
 
+
+/** v8.15 memory-card lore hooks (14). Filled by index fetch / setMemoryHooks. */
+export let MEMORY_CARD_LORE_HOOKS = [];
+export function setMemoryHooks(list) {
+  MEMORY_CARD_LORE_HOOKS = Array.isArray(list) ? list.slice() : [];
+  return MEMORY_CARD_LORE_HOOKS.length;
+}
+export function pickMemoryHooks(n, opts) {
+  opts = opts || {};
+  let pool = MEMORY_CARD_LORE_HOOKS.slice();
+  if (opts.place) {
+    const p = opts.place;
+    const hit = pool.filter((x) => x.place === p);
+    if (hit.length) pool = hit.concat(pool.filter((x) => x.place !== p));
+  }
+  if (opts.tag) {
+    const t = opts.tag;
+    pool = pool.filter((x) => x.tags && x.tags.indexOf(t) >= 0).concat(
+      pool.filter((x) => !(x.tags && x.tags.indexOf(t) >= 0))
+    );
+  }
+  if (opts.weather === 'rain') {
+    pool = pool
+      .filter((x) => x.tags && (x.tags.indexOf('雨') >= 0 || x.tags.indexOf('雨夜') >= 0 || x.tags.indexOf('雾') >= 0))
+      .concat(pool);
+  }
+  const seen = {};
+  const out = [];
+  for (let i = 0; i < pool.length && out.length < (n | 0 || 3); i++) {
+    const id = pool[i].id;
+    if (seen[id]) continue;
+    seen[id] = 1;
+    out.push(pool[i]);
+  }
+  return out;
+}
+
 /** v8.14 lore snippets pool (filled by index fetch). */
 export let LORE_SNIPPETS = [];
 export function setLoreSnippets(list) {
@@ -604,6 +641,13 @@ export function buildDreamCard(sess, mem) {
   try {
     const sn = pickLoreSnippet();
     if (sn && sn.text) lines.push(sn.text);
+  } catch (_) {}
+  try {
+    const placeMap = { A: 'plaza', H: 'home', I: 'station', J: 'shop', F: 'plaza', K: 'plaza', B: 'plaza' };
+    const lastScene = (sess.scenes && sess.scenes.length) ? sess.scenes[sess.scenes.length - 1] : 'A';
+    const hooks = pickMemoryHooks(2, { place: placeMap[lastScene] || 'plaza' });
+    for (const h of hooks) { if (h && h.text) lines.push(h.text); }
+    if (typeof globalThis !== 'undefined') globalThis.__memHooks = hooks;
   } catch (_) {}
   if (buys.length) {
     lines.push(`小卖部柜台上，你买过：${buys.map((id) => BUY_NAME[id] || id).join('、')}。塑料瓶还带着一点凉意。`);

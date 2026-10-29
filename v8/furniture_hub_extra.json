@@ -1,0 +1,103 @@
+{
+  "version": "furniture_hub_extra_20261029",
+  "created_beijing": "2026-10-29 09:22 Asia/Shanghai",
+  "note": "枢纽 A 程序化家具摆点建议（未接线）。对齐 mine_furniture 类型与 placeFurn(root,obj,x,y,z,ry) 风格。y≈0 贴地；rot 为绕 Y 弧度。勿改 dream_v8_public。",
+  "scene": "A",
+  "pack": "hub",
+  "loadFurn_types": [
+    "bed",
+    "table",
+    "chair",
+    "oil_lamp",
+    "radio",
+    "calendar",
+    "crate",
+    "shelf",
+    "stool",
+    "poster_board"
+  ],
+  "anchor_doors_hubLocal_xz": {
+    "hub_station": [-3.8, -5.0],
+    "hub_shop": [-5.8, 0.8],
+    "hub_home": [2.6, 1.2],
+    "hub_classroom": [0.8, -7.2],
+    "hub_nursery": [-1.8, -7.5],
+    "hub_campus": [1.5, 8.5]
+  },
+  "placements": [
+    {
+      "type": "crate",
+      "x": -4.6,
+      "z": -4.2,
+      "rot": 0.25,
+      "note": "矿车站门脸旁煤灰木箱，可坐旁白/回忆卡钩"
+    },
+    {
+      "type": "stool",
+      "x": -3.1,
+      "z": -4.0,
+      "rot": -0.4,
+      "note": "站台口矮凳，候车/雨夜共撑屋檐"
+    },
+    {
+      "type": "poster_board",
+      "x": -5.2,
+      "z": -5.4,
+      "rot": 0.35,
+      "note": "车站锈告示板，呼应 1987/时刻表感官"
+    },
+    {
+      "type": "shelf",
+      "x": -6.4,
+      "z": 0.2,
+      "rot": 1.57,
+      "note": "小卖部门外矮货架，价签发黄"
+    },
+    {
+      "type": "crate",
+      "x": -5.0,
+      "z": 1.4,
+      "rot": -0.2,
+      "note": "小卖部门口第二木箱，汽水/面包道具位"
+    },
+    {
+      "type": "stool",
+      "x": 2.0,
+      "z": 1.8,
+      "rot": 0.5,
+      "note": "家门口石阶旁凳，小悦闲坐锚点"
+    },
+    {
+      "type": "oil_lamp",
+      "x": 3.1,
+      "z": 0.9,
+      "rot": 0.0,
+      "note": "家门楣旁油灯（贴墙矮台），雨夜暖点"
+    },
+    {
+      "type": "poster_board",
+      "x": 0.2,
+      "z": -6.6,
+      "rot": 0.0,
+      "note": "教室/育儿所门区告示，粉笔灰旁白"
+    },
+    {
+      "type": "radio",
+      "x": -0.6,
+      "z": 0.4,
+      "rot": -0.3,
+      "note": "广场中心靠煤堆的旧收音机，串台钩"
+    },
+    {
+      "type": "calendar",
+      "x": 1.2,
+      "z": -6.9,
+      "rot": 3.14,
+      "note": "教室门脸侧墙日历停格（挂墙高 y 接线时再抬）"
+    }
+  ],
+  "import_hint": {
+    "for": "v8.14+",
+    "js_example": "const HUB=await (await fetch('./snippets/furniture_hub_extra.json')).json();\nfor(const p of HUB.placements){ const o=await loadFurn(p.type); if(o) placeFurn(root,o,p.x,0,p.z,p.rot); }"
+  }
+}

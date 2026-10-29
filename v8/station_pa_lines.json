@@ -1,0 +1,150 @@
+{
+  "version": "station_pa_lines_v815",
+  "created_beijing": "2026-10-29 09:26 Asia/Shanghai",
+  "note": "矿车站广播短句文案库。闽西矿山小镇 1990s 口吻：含糊普通话夹地方腔、铁皮喇叭嘶声感。公开安全：无个人姓名、无现实门牌、无私人缩写。旁路未接线；贴 cue 时对照 ATMO_RAIN_STATION_DRAFT_v815.md §4。",
+  "tone": "minxi_90s_station_pa",
+  "categories": [
+    "arrive",
+    "delay",
+    "ticket",
+    "watchstep"
+  ],
+  "lines_n": 20,
+  "lines": [
+    {
+      "id": "pa_01",
+      "cat": "arrive",
+      "cue": "pa_arrive",
+      "text": "前方到站——矿车站。请带好随身包袋，准备下车。"
+    },
+    {
+      "id": "pa_02",
+      "cat": "arrive",
+      "cue": "pa_arrive",
+      "text": "本站到了。通车年份写在站牌背面，煤灰盖住一角也没关系。"
+    },
+    {
+      "id": "pa_03",
+      "cat": "arrive",
+      "cue": "pa_arrive",
+      "text": "旅客同志请注意：列车进站，请往里走，别堵在车门口。"
+    },
+    {
+      "id": "pa_04",
+      "cat": "arrive",
+      "cue": "pa_arrive",
+      "text": "矿区支线到站。雨棚底下等一等，别急着往铁道边挤。"
+    },
+    {
+      "id": "pa_05",
+      "cat": "arrive",
+      "cue": "pa_arrive",
+      "text": "到站了……（嘶——）请从左侧木板下站台。"
+    },
+    {
+      "id": "pa_06",
+      "cat": "delay",
+      "cue": "pa_delay",
+      "text": "广播通知：本班矿车晚点，大约还要等一会儿。请在棚下候车。"
+    },
+    {
+      "id": "pa_07",
+      "cat": "delay",
+      "cue": "pa_delay",
+      "text": "因雨雾较大，发车时刻顺延。旅客不要离开站台太远。"
+    },
+    {
+      "id": "pa_08",
+      "cat": "delay",
+      "cue": "pa_delay",
+      "text": "晚点……晚点。时刻表上的粉笔字被雨洇开了，听广播为准。"
+    },
+    {
+      "id": "pa_09",
+      "cat": "delay",
+      "cue": "pa_delay",
+      "text": "对不住各位：煤车占线，客车还要再等一趟。"
+    },
+    {
+      "id": "pa_10",
+      "cat": "delay",
+      "cue": "pa_delay",
+      "text": "（串台）……今日戏曲改期……（啪）——矿车仍在晚点中。"
+    },
+    {
+      "id": "pa_11",
+      "cat": "ticket",
+      "cue": "pa_ticket",
+      "text": "请旅客排队检票。矮栏这边，一张一张来，别挤。"
+    },
+    {
+      "id": "pa_12",
+      "cat": "ticket",
+      "cue": "pa_ticket",
+      "text": "即将发车。未检票的同志请到栏杆口，灯牌亮了就上车。"
+    },
+    {
+      "id": "pa_13",
+      "cat": "ticket",
+      "cue": "pa_ticket",
+      "text": "检票了——看清方向：边疆、校园、基地，别上错车。"
+    },
+    {
+      "id": "pa_14",
+      "cat": "ticket",
+      "cue": "pa_ticket",
+      "text": "车门要合了。袖口拍拍灰，再往里挪半步。"
+    },
+    {
+      "id": "pa_15",
+      "cat": "ticket",
+      "cue": "pa_ticket",
+      "text": "请出示……啊，梦里没有票也行，报一下要去哪一站。"
+    },
+    {
+      "id": "pa_16",
+      "cat": "watchstep",
+      "cue": "pa_watchstep",
+      "text": "请小心脚下。木板湿滑，煤灰脚印别踩空。"
+    },
+    {
+      "id": "pa_17",
+      "cat": "watchstep",
+      "cue": "pa_watchstep",
+      "text": "站台有积水，旅客慢点走，雨棚滴水别仰头接。"
+    },
+    {
+      "id": "pa_18",
+      "cat": "watchstep",
+      "cue": "pa_watchstep",
+      "text": "注意——铁轨边不许站。矿车轮缘还是湿的，一踩就响。"
+    },
+    {
+      "id": "pa_19",
+      "cat": "watchstep",
+      "cue": "pa_watchstep",
+      "text": "雨夜里看不清台阶。把手扶一下锈柱，再往下迈。"
+    },
+    {
+      "id": "pa_20",
+      "cat": "watchstep",
+      "cue": "pa_watchstep",
+      "text": "请旅客注意脚下坑洼。煤堆边上别跑，灰会灌进鞋里。"
+    }
+  ],
+  "counts_by_cat": {
+    "arrive": 5,
+    "delay": 5,
+    "ticket": 5,
+    "watchstep": 5
+  },
+  "how_to_paste": {
+    "when": "主线合并 v8.15+ 车站氛围时",
+    "file_hint": "dream_v8_public/index.html 或独立 audio/pa 模块",
+    "keep": [
+      "cue id 与 ATMO 草案 §4 一致",
+      "抽样勿连播同 cat 超过 2 条"
+    ],
+    "note": "本文件仅文案库；旁路勿改 public。"
+  }
+}

@@ -148,6 +148,18 @@ function axis(){let x=(MG.k.R?1:0)-(MG.k.L?1:0),y=(MG.k.D?1:0)-(MG.k.U?1:0);if(M
 const _ray=new THREE.Raycaster(),_ndc=new THREE.Vector2();
 root.addEventListener('pointerdown',e=>{if(!MG.active||MG.state!=='play'||!MG.game.tap)return;if(e.target!==renderer.domElement)return;_ndc.set(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1);_ray.setFromCamera(_ndc,camera);MG.game.tap(_ray);});
 
+
+// ---- v8.15 minigame sfx/copy ----
+export let MG_SFX_COPY=null;
+export function setMgSfxCopy(j){MG_SFX_COPY=j||null; if(typeof window!=='undefined') window.__mgSfxCopy=MG_SFX_COPY; return !!(MG_SFX_COPY&&MG_SFX_COPY.games);}
+function mgCopy(id, kind, fallback){
+  try{
+    const g=MG_SFX_COPY&&MG_SFX_COPY.games&&MG_SFX_COPY.games[id];
+    const arr=g&&g[kind];
+    if(arr&&arr.length) return arr[(Math.random()*arr.length)|0];
+  }catch(_){}
+  return fallback;
+}
 // ---------------- 通用流程 ----------------
 const msg=(t,dur=1.2)=>{const m=$('mgmsg');m.textContent=t;clearTimeout(msg.h);if(dur>0)msg.h=setTimeout(()=>m.textContent='',dur*1000);};
 function hud(l,r){$('mgl').innerHTML=l;$('mgr').innerHTML=r;}
@@ -157,8 +169,9 @@ function introHTML(G){return `<h2>${G.icon} ${G.name}</h2><div style="color:#cfc
  <div style="margin-top:6px"><b style="color:#ffd9a0">电脑：</b>${G.pc}</div><div><b style="color:#ffd9a0">手机：</b>${G.mobile}</div>
  <span class="bt" data-a="start">开始（空格）</span><span class="bt g" data-a="quit">返回场景（Esc）</span>`;}
 MG.finish=(win,text)=>{if(MG.state!=='play')return;MG.state='end';snd(win?'win':'bad');MG.k={};
+ const _cid=MG.game&&MG.game.id; const _ct=mgCopy(_cid,win?'win':'fail',text||'');
  const best=Math.max(MG.score,+(localStorage.getItem('mg_best_'+MG.game.id)||0));try{localStorage.setItem('mg_best_'+MG.game.id,best);}catch(e){}
- panel(`<h2>${win?'🎉 赢了！':'游戏结束'}</h2><div>${text||''}</div><div style="font-size:20px;margin-top:6px">得分 <b style="color:#ffd28a">${MG.score}</b> · 最高 ${best}</div>
+ panel(`<h2>${win?'🎉 赢了！':'游戏结束'}</h2><div>${_ct||text||''}</div><div style="font-size:20px;margin-top:6px">得分 <b style="color:#ffd28a">${MG.score}</b> · 最高 ${best}</div>
  <span class="bt" data-a="start">再玩一次</span><span class="bt g" data-a="quit">回到场景</span>`);
  window.__mgEnd={id:MG.game.id,win,score:MG.score};};
 let loadTok=0;
@@ -192,7 +205,7 @@ GAMES.push((()=>{let me,it,others=[],st,z,lives,phase,pt,chant,caughtT;const GOA
  reset(){z=0;me.root.position.set(-0.8,0,0);me.root.rotation.y=Math.PI;others[0].root.position.set(1.2,0,0);others[0].root.rotation.y=Math.PI;others[0].z=0;it.root.rotation.y=Math.PI;},
  preview(){this.cam();},
  cam(){camera.position.set(me.root.position.x+1.6,2.4,me.root.position.z+4.2);camera.lookAt(me.root.position.x*0.5,1.1,me.root.position.z-6);},
- start(){this.reset();lives=3;phase='back';pt=R(2.2,4);chant=0;caughtT=0;msg('一、二、三……',1.5);},
+ start(){this.reset();lives=3;phase='back';pt=R(2.2,4);chant=0;caughtT=0;msg(mgCopy('mutouren','start','一、二、三……'),1.5);},
  idle(dt){this.cam();},
  update(dt){const mv=MG.k.U||axis().y<-0.3;const run=MG.k.S;const sp=(MG.k.S?3.2:(mv?1.6:0));
   if(caughtT>0){caughtT-=dt;me.walk(0);if(caughtT<=0)this.reset();this.cam();return;}
@@ -233,7 +246,7 @@ GAMES.push((()=>{let me,hoop,hook,road,stones=[],marbles=[],x,dist,speed,lives,l
   hook.position.set(x+0.18,0,-dist-0.3);road.position.z=-dist+150-(dist%2);
   camera.position.set(x*0.6+1.2,2.3,-dist+3.6);camera.lookAt(x*0.6,0.6,-dist-4);MG.sun.position.set(x+8,14,-dist+6);MG.sun.target.position.set(x,0,-dist);},
  idle(dt){this.pose(dt);},
- start(){MG.bonus=0;x=0;dist=0;speed=3;lives=3;lean=0;hitT=0;this.layout();msg('推起来！',1);},
+ start(){MG.bonus=0;x=0;dist=0;speed=3;lives=3;lean=0;hitT=0;this.layout();msg(mgCopy('gunlhuan','start','推起来！'),1);},
  update(dt){const a=axis();x=clamp(x+a.x*3.2*dt,-2.1,2.1);lean+=(a.x-lean)*Math.min(1,dt*5);
   const base=3+MG.t*0.07;speed+=((MG.k.U?base*1.45:MG.k.D?base*0.6:base)-speed)*Math.min(1,dt*2);
   if(hitT>0){hitT-=dt;speed=0.5;hoop.position.y=0.05;}
@@ -506,7 +519,7 @@ GAMES.push((()=>{
     },
     preview(){ this.reset(); },
     idle(){ camera.position.set(0,6.2,4.5); camera.lookAt(0,0,-2.5); },
-    start(){ this.reset(); msg('先丢进第 1 格！',1.2); },
+    start(){ this.reset(); msg(mgCopy('tiaofangzi','start','先丢进第 1 格！'),1.2); },
     press(k){
       if(k!=='A') return;
       if(phase==='aim'){
@@ -663,7 +676,7 @@ GAMES.push((()=>{
     },
     preview(){ this.reset(); },
     idle(dt){ spin+=dt*2; jian.rotation.y=spin; jian.position.y=0.35+Math.sin(MG.t||0)*0.05; },
-    start(){ this.reset(); msg('踢起来！',1); vy=2.2; },
+    start(){ this.reset(); msg(mgCopy('tijianzi','start','踢起来！'),1); vy=2.2; },
     press(k){
       if(k!=='A' || cool>0) return;
       // 脚下命中：毽子接近地面且水平距离近
