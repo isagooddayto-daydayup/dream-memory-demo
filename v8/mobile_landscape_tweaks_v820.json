@@ -1,0 +1,178 @@
+{
+  "title": "mobile_landscape_tweaks_v820",
+  "draft": false,
+  "wired": true,
+  "beijing": "2026-10-29 10:05 Asia/Shanghai",
+  "scope": "v8work snippets only; do NOT patch dream_v8_public from this file alone",
+  "disclaimer": "建议常量/CSS 补丁，改善竖横屏摇杆·按钮·菜单与 notch 冲突。未接线；勿声称已达原生 App 触控或主机级 HUD。",
+  "baseline_public": {
+    "VERSION": "v8.19",
+    "TOUCH_FEEL_since": "v8.14",
+    "fullscreen_orientation_lock_since": "v8.4",
+    "viewport_fit": "cover",
+    "TOUCH_FEEL": {
+      "dead": 0.18,
+      "walkStart": 0.18,
+      "walkFull": 0.55,
+      "runStart": 0.82,
+      "runFull": 0.95,
+      "stickRadiusPx": 64,
+      "lookYaw": 0.0052,
+      "lookPitch": 0.0042,
+      "lookScaleByWidth": true,
+      "lookRefWidth": 390,
+      "lookScaleMin": 0.75,
+      "lookScaleMax": 1.25,
+      "knobReturn": 0.28,
+      "btnMin": 60,
+      "btnGap": 12,
+      "btnStep": 72,
+      "pressLockMs": 180,
+      "leftFrac": 0.44,
+      "deadRingAlpha": 0.22,
+      "talkDimOpacity": 0.35
+    },
+    "css_joy_px": 140,
+    "css_tb_px": 60,
+    "css_tb_landscape_px": 56,
+    "css_tb_wide_px": 96,
+    "css_tb_wide_landscape_px": 88,
+    "gp_step_landscape": 68,
+    "gp_step_portrait": 72,
+    "gp_origin_inset_px": 12,
+    "joy_side_inset_px": 16,
+    "joy_bottom_inset_px": 16,
+    "hud_reserve_px": 440,
+    "v7prompt_bottom_landscape": "20px + safe-B",
+    "v7prompt_bottom_portrait": "236px + safe-B",
+    "menu_max_height_vh": 82,
+    "reflow_on_orientation": false,
+    "menu_safe_area_padding": false
+  },
+  "proposed_constants": {
+    "TOUCH_FEEL_patch": {
+      "btnMin": 60,
+      "btnMinLandscape": 52,
+      "btnGap": 12,
+      "btnGapLandscape": 10,
+      "btnStep": 72,
+      "btnStepLandscape": 62,
+      "joySize": 140,
+      "joySizeLandscape": 120,
+      "stickRadiusPx": 64,
+      "stickRadiusPxLandscape": 56,
+      "knobTravelPortrait": 44,
+      "knobTravelLandscape": 38,
+      "bottomInset": 16,
+      "bottomInsetLandscape": 10,
+      "sideInset": 16,
+      "sideInsetLandscape": 12,
+      "gridOriginInset": 12,
+      "gridOriginInsetLandscape": 10,
+      "leftFrac": 0.44,
+      "leftFracLandscape": 0.37,
+      "hudReservePx": 440,
+      "hudReservePxLandscape": 380,
+      "promptBottomPortrait": 236,
+      "promptBottomLandscape": 96,
+      "tipTopLandscape": 56,
+      "menuMaxHeightVh": 82,
+      "menuMaxHeightVhLandscape": 78,
+      "menuPadSafe": true,
+      "reflowOnOrientation": true,
+      "dimControlsWhenMenu": true,
+      "pressLockMs": 180,
+      "dead": 0.18
+    },
+    "button_px": {
+      "portrait": {
+        "tb": 60,
+        "tb_wide": 96,
+        "step": 72,
+        "gap": 12
+      },
+      "landscape": {
+        "tb": 52,
+        "tb_wide": 80,
+        "step": 62,
+        "gap": 10
+      }
+    },
+    "joy_size": {
+      "portrait": {
+        "box": 140,
+        "knob": 50,
+        "stickRadiusPx": 64,
+        "knobTravel": 44
+      },
+      "landscape": {
+        "box": 120,
+        "knob": 44,
+        "stickRadiusPx": 56,
+        "knobTravel": 38
+      }
+    },
+    "bottom_inset": {
+      "portrait": 16,
+      "landscape": 10,
+      "note": "always add env(safe-area-inset-bottom) in CSS calc"
+    },
+    "side_inset": {
+      "portrait": 16,
+      "landscape": 12,
+      "note": "joy uses safe-area-inset-left; grid uses safe-area-inset-right"
+    },
+    "safe_area": {
+      "joy": "left:calc(sideInset + env(safe-area-inset-left)); bottom:calc(bottomInset + env(safe-area-inset-bottom))",
+      "grid": "right/bottom calc(origin + n*step + env(safe-area-inset-right|bottom))",
+      "top_btns": "top:calc(10px + env(safe-area-inset-top)); left/right + env(safe-area-inset-*)",
+      "menu_padding": "calc(16|20px + env(safe-area-inset-*)) on all four sides",
+      "menu_max_height": "calc(78vh - env(safe-area-inset-top) - env(safe-area-inset-bottom)) landscape",
+      "hud_max_width": "max(200px, min(60vw, calc(100vw - hudReserve - env(safe-area-inset-left) - env(safe-area-inset-right))))"
+    }
+  },
+  "proposed_css_landscape": {
+    "media": "(orientation:landscape)",
+    "rules": [
+      "#joy{width:120px;height:120px;left:calc(12px + env(safe-area-inset-left));bottom:calc(10px + env(safe-area-inset-bottom))}",
+      "#knob{width:44px;height:44px;left:38px;top:38px}",
+      "#joyDead{width:36%;height:36%;margin-left:-18%;margin-top:-18%}",
+      ".tb{width:52px;height:52px;font-size:13px}",
+      ".tb.wide{width:80px}",
+      "#v7prompt{bottom:calc(96px + env(safe-area-inset-bottom))!important;max-width:max(200px,min(60vw,calc(100vw - 380px - env(safe-area-inset-left) - env(safe-area-inset-right))))}",
+      "#v8tip{top:calc(56px + env(safe-area-inset-top))}",
+      "#v8doorhint{max-width:max(200px,min(60vw,calc(100vw - 380px - env(safe-area-inset-left) - env(safe-area-inset-right))))!important}",
+      "#st{top:calc(8px + env(safe-area-inset-top))!important;max-width:36vw}",
+      "#menu{max-height:calc(78vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));padding:calc(16px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left))}",
+      "body.menu-open #tc .tb:not(#v8btnFS){pointer-events:none;opacity:0.25}"
+    ]
+  },
+  "proposed_js_hooks": {
+    "isLand": "() => innerWidth > innerHeight",
+    "gp": "step = isLand() ? (TOUCH_FEEL.btnStepLandscape||62) : (TOUCH_FEEL.btnStep||72); origin = isLand() ? (TOUCH_FEEL.gridOriginInsetLandscape||10) : 12",
+    "relayoutTouch": "on resize + orientationchange(+300ms): rewrite all gp() button styles; set #joy/#knob sizes; update stickRadius from landscape/portrait; optional leftFrac swap",
+    "toggleMenu": "document.body.classList.toggle('menu-open', on)",
+    "look_leftFrac": "use TOUCH_FEEL.leftFracLandscape when isLand()"
+  },
+  "conflict_ids_addressed": [
+    "C1_portrait_joy_btn_squeeze",
+    "L1_landscape_short_height",
+    "L2_gp_no_reflow",
+    "L3_prompt_over_row0",
+    "L4_btnMin_vs_css56",
+    "L5_leftFrac_wide",
+    "L6_notch_menu_safe",
+    "L7_top_tip_crowd",
+    "L8_menu_under_tb"
+  ],
+  "non_goals": [
+    "no console/native parity claim",
+    "no minigames.js patch in this snippet",
+    "no public write",
+    "no Pages / Drive"
+  ],
+  "audit_doc": "/workspace/game/demo/v8work/MOBILE_LANDSCAPE_AUDIT_v819.md",
+  "wire_target_hint": "v8.20 TOUCH_FEEL + touch CSS block in index.html (same region as v8.14)",
+  "wired_version": "v8.20",
+  "wired_beijing": "2026-10-29 Asia/Shanghai"
+}

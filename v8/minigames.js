@@ -118,10 +118,12 @@ async function char(key,h=1.6){const g=await loader.loadAsync(NPCF[key]);const m
 function face(c,x,z){c.root.rotation.y=Math.atan2(x-c.root.position.x,z-c.root.position.z);}
 
 // ---------------- 声音（WebAudio 合成，0 素材）----------------
-let AC=null;function snd(type,pan=0){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const t=AC.currentTime;const g=AC.createGain();const p=AC.createStereoPanner?AC.createStereoPanner():null;
+let AC=null;function snd(type,pan=0){try{if(window.__sfxMuted||(window.__sfx&&window.__sfx.enabled&&!window.__sfx.enabled())||(typeof localStorage!=='undefined'&&localStorage.getItem('dream_v820_sfx')==='0'))return;AC=AC||new (window.AudioContext||window.webkitAudioContext)();const t=AC.currentTime;const g=AC.createGain();const p=AC.createStereoPanner?AC.createStereoPanner():null;
  if(p){p.pan.value=clamp(pan,-1,1);g.connect(p);p.connect(AC.destination);}else g.connect(AC.destination);
- if(type==='clap'||type==='pop'||type==='slap'){const b=AC.createBuffer(1,AC.sampleRate*0.15,AC.sampleRate);const d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.exp(-i/(type==='pop'?400:900));const s=AC.createBufferSource();s.buffer=b;s.connect(g);g.gain.value=type==='pop'?0.9:0.6;s.start(t);return;}
- const o=AC.createOscillator();o.type='triangle';o.frequency.value={ok:880,bad:180,win:660,tick:520}[type]||440;o.connect(g);g.gain.setValueAtTime(0.25,t);g.gain.exponentialRampToValueAtTime(0.001,t+(type==='win'?0.6:0.18));o.start(t);o.stop(t+0.6);}catch(e){}}
+ if(type==='clap'||type==='pop'||type==='slap'){const b=AC.createBuffer(1,AC.sampleRate*0.15,AC.sampleRate);const d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.exp(-i/(type==='pop'?400:900));const s=AC.createBufferSource();s.buffer=b;s.connect(g);g.gain.value=type==='pop'?0.9:0.6;s.start(t);}
+ else{const o=AC.createOscillator();o.type='triangle';o.frequency.value={ok:880,bad:180,win:660,tick:520}[type]||440;o.connect(g);g.gain.setValueAtTime(0.25,t);g.gain.exponentialRampToValueAtTime(0.001,t+(type==='win'?0.6:0.18));o.start(t);o.stop(t+0.6);}
+ // v8.20: procedural cues for 跳房子 / 踢毽子 (playProcCue via PROC_SFX)
+ try{const gid=(MG&&MG.game&&MG.game.id)||'';let cue=null;if(gid==='tiaofangzi'&&(type==='ok'||type==='tick'))cue='hop_land';else if(gid==='tijianzi'&&(type==='ok'||type==='tick'||type==='slap'))cue='jianzi_kick';else if((gid==='dapai'||gid==='junqi_lite')&&type==='slap')cue='card_snap';if(cue&&window.PROC_SFX&&window.PROC_SFX.play)window.PROC_SFX.play(cue,{pan});window.__mgSfxLast={type,cue,gid,t:Date.now()};}catch(_){}}catch(e){}}
 
 // ---------------- 输入 ----------------
 const KM={KeyA:'L',ArrowLeft:'L',KeyD:'R',ArrowRight:'R',KeyW:'U',ArrowUp:'U',KeyS:'D',ArrowDown:'D',Space:'A',Enter:'A',KeyJ:'A',KeyE:'B',KeyK:'B',ShiftLeft:'S',ShiftRight:'S'};

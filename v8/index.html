@@ -4,7 +4,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="梦境矿山">
 <meta name="theme-color" content="#07060c"><link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
-<title>回忆与梦境 · v8.19 矿山世界 · 破败贴花·社区跑腿</title>
+<title>回忆与梦境 · v8.20 矿山世界 · 横屏触控·程序化音效</title>
 <style>
 html,body{margin:0;height:100%;overflow:hidden;background:#0a0e12;font-family:"Microsoft YaHei","PingFang SC",sans-serif}
 canvas{display:block}
@@ -23,7 +23,7 @@ canvas{display:block}
 <script type="importmap">{"imports":{"three":"./lib/three.module.js","three/addons/":"./lib/addons/","@sparkjsdev/spark":"./lib/spark.module.js","@pixiv/three-vrm":"./lib/three-vrm.module.js","MG":"./minigames.js","V7":"./dream_v7_features.js","V8":"./dream_v8_world.js"}}</script>
 </head><body>
 <div id="tint"></div><div id="vig"></div><div id="flash"></div><div id="title"></div><div id="cross"></div>
-<div id="hud"><b>回忆与梦境 · v8.19 矿山世界 · 破败贴花·社区跑腿·回忆卡钩·枢纽家具·场景闲聊</b><br>走进<strong>实体门口</strong>：家 / 小卖部 / 教室 / 小房间 / <strong>飞船口·ARES</strong>，<strong>山洞</strong>（校园）/ <strong>矿洞</strong>（林间），进<strong>矿车站</strong>后走进矿车「上车」去火星边疆 / 矿区校园；返回也走门 / 洞口 / 矿车（数字键仅快进）；手机：左摇杆走、右半屏拖视角、点「角色」换人；<b>E</b> 阿澄交谈；地上淡圈=小游戏<br>
+<div id="hud"><b>回忆与梦境 · v8.20 矿山世界 · 横屏触控·程序化音效·破败贴花·社区跑腿</b><br>走进<strong>实体门口</strong>：家 / 小卖部 / 教室 / 小房间 / <strong>飞船口·ARES</strong>，<strong>山洞</strong>（校园）/ <strong>矿洞</strong>（林间），进<strong>矿车站</strong>后走进矿车「上车」去火星边疆 / 矿区校园；返回也走门 / 洞口 / 矿车（数字键仅快进）；手机：左摇杆走、右半屏拖视角、点「角色」换人；<b>E</b> 阿澄交谈；地上淡圈=小游戏<br>
 点击画面锁定鼠标 · 鼠标转视角 · <b>WASD</b> 走 · <b>Shift</b> 跑<br>
 <b>空格</b> 按住起飞/上升 · <b>Ctrl/Q</b> 下降 · <b>F</b> 飞行/步行切换<br>
 <b>M</b> 菜单（结束这局→梦境回忆）· <b>G</b> 切换角色（前任留在原地当 NPC · 菜单看角色卡）· <b>1-9</b> 仍可快切场景 · <b>C</b> 镜头 · <b>V</b> 第一人称<br>
@@ -34,6 +34,7 @@ canvas{display:block}
 <div id="load"><div id="lt">正在载入回忆…</div><div class="bar"><i id="lb"></i></div><div id="ld" style="font-size:12px;color:#9a90c0"></div></div>
 <script src="memory_card_lore_hooks.js"></script>
 <script src="decay_decals_procedural.js"></script>
+<script src="sfx_procedural_cues_v820.js"></script>
 <script type="module">
 import * as THREE from 'three';
 import {SplatMesh,SparkPortals,PackedSplats,SplatSkinning,dyno} from '@sparkjsdev/spark';
@@ -1213,12 +1214,13 @@ function blurbOfRoster(name){try{const m=window.__rosterBlurbsByName;if(m&&m[nam
 function menuRender(){const tier=V7.tierOf(V7MEM.affinity);const card=PL.name?V8.ensureCharCard(PL.name):null;const flavor=blurbOfRoster(PL.name||'');const cardHtml=card?('当前：'+card.name+'\n经历：'+(card.经历||[]).join(' → ')+'\n技能：'+Object.entries(card.技能||{}).map(([k,v])=>k+' '+v).join(' · ')+(flavor?('\n——\n'+flavor):'')):'（切换角色后显示）';menu.innerHTML='<b style="font-size:18px">梦境菜单 (M 关闭)</b><br><span style="color:#ffd9a0">场景 · 数字键</span><br>'+
  ORDER.map((k,i)=>'<div data-s="'+k+'" style="cursor:pointer;'+(k===cur?'color:#ffd28a':'')+'">'+(i+1)+'. '+SC[k].name+(SC[k].loaded?'':' <small style="color:#9a90c0">(首次进入时加载)</small>')+'</div>').join('')+
  '<span style="color:#ffd9a0">角色 · G 切换</span><br>'+ROSTER.map((r,i)=>'<span data-c="'+i+'" style="cursor:pointer;margin-right:14px;'+(i===PL.idx?'color:#ffd28a;text-decoration:underline':'')+'">'+r.name+'</span>').join('')+
- '<br><span style="color:#ffd9a0">v8.19 · 破败贴花·社区跑腿·L/M告示</span><br><div style="font-size:13px;color:#cfc6ff">家 / 小卖部 / 教室 / 小房间 走实体门；校园走<b>山洞</b>、林间走<b>矿洞</b>；火星边疆 / 校园也可在<b>矿车站坐矿车</b>。数字键 1–9 快进；手机点「角色」换人</div><div data-close="1" style="cursor:pointer;color:#ffd28a;text-decoration:underline">📷 近景特写（Z）· 正面看人物</div><br><span style="color:#ffd9a0">角色卡</span><br><div id="v8cardpanel" style="font-size:13px;color:#cfc6ff;white-space:pre-wrap">'+cardHtml+'</div><br><span style="color:#ffd9a0">记事NPC</span><br><div style="font-size:13px;color:#cfc6ff">阿澄好感：'+tier.name+' ('+tier.score+') · 走近金环按 E 交谈</div>'+
+ '<br><span style="color:#ffd9a0">v8.20 · 横屏触控·程序化音效·音量开关</span><br><div style="font-size:13px;color:#cfc6ff">家 / 小卖部 / 教室 / 小房间 走实体门；校园走<b>山洞</b>、林间走<b>矿洞</b>；火星边疆 / 校园也可在<b>矿车站坐矿车</b>。数字键 1–9 快进；手机点「角色」换人</div><div data-close="1" style="cursor:pointer;color:#ffd28a;text-decoration:underline">📷 近景特写（Z）· 正面看人物</div><br><span style="color:#ffd9a0">角色卡</span><br><div id="v8cardpanel" style="font-size:13px;color:#cfc6ff;white-space:pre-wrap">'+cardHtml+'</div><br><span style="color:#ffd9a0">记事NPC</span><br><div style="font-size:13px;color:#cfc6ff">阿澄好感：'+tier.name+' ('+tier.score+') · 走近金环按 E 交谈</div>'+
  '<div data-quest="1" style="cursor:pointer;margin-top:8px;color:#d8c8ff;text-decoration:underline">阿澄主线任务板 ('+V7.questStatus().doneCount+'/'+V7.QUEST_BEATS.length+')</div>'+
  '<div data-errand="1" style="cursor:pointer;margin-top:4px;color:#c8e8c0;text-decoration:underline">社区小事 ('+((V7.errandStatus&&V7.errandStatus().doneCount)|0)+'/'+((V7.ERRAND_BEATS&&V7.ERRAND_BEATS.length)||8)+')</div>'+
  '<div data-questcopy="1" style="cursor:pointer;margin-top:4px;color:#c8e0ff;text-decoration:underline">节拍文案：'+((window.__questCopy&&window.__questCopy.label)||'默认节拍')+'（点切）</div>'+
  '<div data-weather="1" style="cursor:pointer;margin-top:8px;color:#9ec8ff;text-decoration:underline">天气：'+WEATHER.label()+'（点切 雨夜/自动）</div>'+
  '<div data-pa="1" style="cursor:pointer;margin-top:4px;color:#c8d8e8;text-decoration:underline">车站广播：'+(stationPAEnabled()?'开':'关')+'（点切）</div>'+
+ '<div data-sfx="1" style="cursor:pointer;margin-top:4px;color:#e8d8b0;text-decoration:underline">音量：'+(sfxEnabled()?'开':'关')+'（点切 · 程序化短 cue）</div>'+
  '<div data-atmo="1" style="cursor:pointer;margin-top:4px;color:#a8c0d8;text-decoration:underline">雨夜加深：'+(atmoDeepEnabled()?'开':'关')+'（点切）</div>'+
 '<div data-postfx="1" style="cursor:pointer;margin-top:4px;color:#b8c8e0;text-decoration:underline">轻量后期 POSTFX：'+(POSTFX.enabled?'开':'关')+'（默认关）</div>'+'<div data-feel="1" style="cursor:pointer;margin-top:4px;color:#b8c8e0;text-decoration:underline">轻量手感 FEEL：'+(feelEnabled()?'开':'关')+'（fog dens↑·camD≈5.2·冷FILL；非主机级）</div>'+
 '<div data-sched="1" style="cursor:pointer;margin-top:4px;color:#c8e0c8;text-decoration:underline">社区作息：'+CLOCK.label()+(window.__sched&&window.__sched.n?' · 可见'+(window.__sched.n.length)+'人':'')+'（点看锚点）</div>'+
@@ -1236,6 +1238,7 @@ function menuRender(){const tier=V7.tierOf(V7MEM.affinity);const card=PL.name?V8
  menu.querySelector('[data-lowq]')?.addEventListener('click',()=>toggleLowQ());
  menu.querySelector('[data-weather]')?.addEventListener('click',()=>{setWeather(WEATHER.mode==='rainnight'?'auto':'rainnight');});
  menu.querySelector('[data-pa]')?.addEventListener('click',()=>toggleStationPA());
+ menu.querySelector('[data-sfx]')?.addEventListener('click',()=>{try{toggleSfx();menuRender();}catch(e){setSt('音量切换失败');}});
  menu.querySelector('[data-atmo]')?.addEventListener('click',()=>toggleAtmoDeep());
  menu.querySelector('[data-postfx]')?.addEventListener('click',()=>{try{POSTFX.setEnabled(!POSTFX.enabled);window.__postfx=POSTFX;setSt('POSTFX：'+(POSTFX.enabled?'开':'关')+(GFX.low?'（低画质强制关）':''));menuRender();}catch(e){setSt('POSTFX失败');}});
  menu.querySelector('[data-feel]')?.addEventListener('click',()=>{try{toggleFeel();menuRender();}catch(e){setSt('FEEL失败');}});
@@ -1249,7 +1252,7 @@ function menuRender(){const tier=V7.tierOf(V7MEM.affinity);const card=PL.name?V8
  menu.querySelector('[data-close]')?.addEventListener('click',()=>{toggleMenu(false);toggleClose();});
  menu.querySelector('[data-resetmem]')?.addEventListener('click',()=>{V7MEM=V7.clearMem();V7.renderLog(V7MEM);menuRender();setSt('阿澄记忆已清空');});
  menu.querySelector('[data-reseterrand]')?.addEventListener('click',()=>{try{V7.clearErrands();}catch(_){}renderQuestBoard(true);menuRender();setSt('社区小事已重置');});}
-function toggleMenu(on){on=on===undefined?menu.style.display==='none':on;menu.style.display=on?'block':'none';if(on){menuRender();document.exitPointerLock?.();}}
+function toggleMenu(on){on=on===undefined?menu.style.display==='none':on;menu.style.display=on?'block':'none';try{document.body.classList.toggle('menu-open',!!on);}catch(_){}if(on){menuRender();document.exitPointerLock?.();}}
 function camHud(){if(CAMS[P.cam]==='close'&&!camHud.wasClose)P.closeBase=P.yaw;camHud.wasClose=CAMS[P.cam]==='close';setSt('镜头：'+CAMN[CAMS[P.cam]]);}
 // ---------------- v8.4 fullscreen (Fullscreen API + webkit, orientation lock, iOS 主屏提示) ----------------
 window.__fsLast=null;
@@ -1284,8 +1287,8 @@ if(!TOUCH.on){
 }
 // ---------------- touch controls (auto when touch device or ?touch) ----------------
 Object.assign(TOUCH,{jx:0,jy:0,jm:0,jid:null,lid:null,lx:0,ly:0,jcx:0,jcy:0});
-// --- TOUCH_FEEL v8.14 (from v8work/snippets/touch_feel_v814.js) ---
-const TOUCH_FEEL={dead:0.18,walkStart:0.18,walkFull:0.55,runStart:0.82,runFull:0.95,stickRadiusPx:64,lookYaw:0.0052,lookPitch:0.0042,lookScaleByWidth:true,lookRefWidth:390,lookScaleMin:0.75,lookScaleMax:1.25,knobReturn:0.28,btnMin:60,btnGap:12,btnStep:72,pressLockMs:180,leftFrac:0.44,deadRingAlpha:0.22,talkDimOpacity:0.35};
+// --- TOUCH_FEEL v8.14 + landscape v8.20 (from snippets/mobile_landscape_tweaks_v820.json) ---
+const TOUCH_FEEL={dead:0.18,walkStart:0.18,walkFull:0.55,runStart:0.82,runFull:0.95,stickRadiusPx:64,stickRadiusPxLandscape:56,lookYaw:0.0052,lookPitch:0.0042,lookScaleByWidth:true,lookRefWidth:390,lookScaleMin:0.75,lookScaleMax:1.25,knobReturn:0.28,btnMin:60,btnMinLandscape:52,btnGap:12,btnGapLandscape:10,btnStep:72,btnStepLandscape:62,joySize:140,joySizeLandscape:120,knobTravelPortrait:44,knobTravelLandscape:38,bottomInset:16,bottomInsetLandscape:10,sideInset:16,sideInsetLandscape:12,gridOriginInset:12,gridOriginInsetLandscape:10,pressLockMs:180,leftFrac:0.44,leftFracLandscape:0.37,hudReservePx:440,hudReservePxLandscape:380,promptBottomPortrait:236,promptBottomLandscape:96,tipTopLandscape:56,menuMaxHeightVh:82,menuMaxHeightVhLandscape:78,menuPadSafe:true,reflowOnOrientation:true,dimControlsWhenMenu:true,deadRingAlpha:0.22,talkDimOpacity:0.35};
 function touchLookScale(){if(!TOUCH_FEEL.lookScaleByWidth)return 1;const s=TOUCH_FEEL.lookRefWidth/Math.max(320,innerWidth||TOUCH_FEEL.lookRefWidth);return Math.max(TOUCH_FEEL.lookScaleMin,Math.min(TOUCH_FEEL.lookScaleMax,s));}
 function stickMag(jm){if(jm<TOUCH_FEEL.dead)return 0;const t=(jm-TOUCH_FEEL.dead)/(1-TOUCH_FEEL.dead);const u=Math.max(0,Math.min(1,t));return u*u*(3-2*u);}
 function stickSpeedMul(jm){const m=stickMag(jm);if(m<=0)return 0;if(jm<TOUCH_FEEL.walkFull){const span=TOUCH_FEEL.walkFull-TOUCH_FEEL.dead;const w=span>0?(jm-TOUCH_FEEL.dead)/span:1;return m*Math.max(0,Math.min(1,w));}if(jm<TOUCH_FEEL.runStart)return 1.0;const spanR=TOUCH_FEEL.runFull-TOUCH_FEEL.runStart;const r=spanR>0?(jm-TOUCH_FEEL.runStart)/spanR:1;return 1.0+0.55*Math.max(0,Math.min(1,r));}
@@ -1308,13 +1311,25 @@ if(TOUCH.on){
  .tb.sm{font-size:12px}
  .tb.hi{border-color:rgba(255,210,140,.95);box-shadow:0 0 12px rgba(255,180,100,.35)}
  .tb.dim{opacity:0.35;pointer-events:none}
- @media (orientation:landscape){.tb{width:56px;height:56px}.tb.wide{width:88px}}
+ @media (orientation:landscape){
+ #joy{width:120px;height:120px;left:calc(12px + env(safe-area-inset-left));bottom:calc(10px + env(safe-area-inset-bottom))}
+ #knob{width:44px;height:44px;left:38px;top:38px}
+ #joyDead{width:36%;height:36%;margin-left:-18%;margin-top:-18%}
+ .tb{width:52px;height:52px;font-size:13px}
+ .tb.wide{width:80px}
+ #v7prompt{bottom:calc(96px + env(safe-area-inset-bottom))!important;max-width:max(200px,min(60vw,calc(100vw - 380px - env(safe-area-inset-left) - env(safe-area-inset-right))))}
+ #v8tip{top:calc(56px + env(safe-area-inset-top))}
+ #v8doorhint{max-width:max(200px,min(60vw,calc(100vw - 380px - env(safe-area-inset-left) - env(safe-area-inset-right))))!important}
+ #st{top:calc(8px + env(safe-area-inset-top))!important;max-width:36vw}
+ #menu{max-height:calc(78vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));padding:calc(16px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left))}
+ body.menu-open #tc .tb:not(#v8btnFS){pointer-events:none;opacity:0.25}
+}
  #st{left:50%!important;right:auto!important;transform:translateX(-50%);top:calc(6px + env(safe-area-inset-top))!important;font-size:11px!important;text-align:center!important;max-width:40vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.8}
- #v8doorhint{z-index:35!important;max-width:max(200px,min(60vw,calc(100vw - 440px)))!important;min-width:180px;font-size:16px!important}
- #v8tip,#v8rot{position:fixed;left:50%;transform:translateX(-50%);z-index:34;pointer-events:none;background:rgba(14,10,28,.72);color:#ffe9c4;border-radius:14px;padding:8px 14px;font-size:13px;text-align:center;transition:opacity 1.2s;max-width:max(200px,min(70vw,calc(100vw - 440px)));min-width:200px}
+ #v8doorhint{z-index:35!important;max-width:max(200px,min(60vw,calc(100vw - 440px - env(safe-area-inset-left) - env(safe-area-inset-right))))!important;min-width:180px;font-size:16px!important}
+ #v8tip,#v8rot{position:fixed;left:50%;transform:translateX(-50%);z-index:34;pointer-events:none;background:rgba(14,10,28,.72);color:#ffe9c4;border-radius:14px;padding:8px 14px;font-size:13px;text-align:center;transition:opacity 1.2s;max-width:max(200px,min(70vw,calc(100vw - 440px - env(safe-area-inset-left) - env(safe-area-inset-right))));min-width:200px}
  #v8tip{top:calc(26px + env(safe-area-inset-top))}
  #v8rot{bottom:calc(176px + env(safe-area-inset-bottom));display:none}
- #v7prompt{bottom:calc(20px + env(safe-area-inset-bottom))!important;max-width:max(200px,min(60vw,calc(100vw - 440px)));font-size:15px!important;padding:12px 16px!important;border-radius:20px!important;pointer-events:auto!important}
+ #v7prompt{bottom:calc(20px + env(safe-area-inset-bottom))!important;max-width:max(200px,min(60vw,calc(100vw - 440px - env(safe-area-inset-left) - env(safe-area-inset-right))));font-size:15px!important;padding:12px 16px!important;border-radius:20px!important;pointer-events:auto!important}
  #v7chat{width:min(560px,96vw)!important;bottom:12px!important}
  #v7chat .hd b{font-size:17px!important}
  #v7chat .x{font-size:28px!important;padding:8px 12px!important;min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center}
@@ -1322,7 +1337,7 @@ if(TOUCH.on){
  #v7send{font-size:16px!important;padding:12px 18px!important;min-height:48px;min-width:72px}
  #v7card .acts button{font-size:16px!important;padding:12px 16px!important;min-height:48px}
  @media (orientation:portrait){#v7prompt{bottom:calc(236px + env(safe-area-inset-bottom))!important}#v8rot{bottom:calc(300px + env(safe-area-inset-bottom))!important}#v8tip{top:calc(76px + env(safe-area-inset-top))!important}#st{top:calc(68px + env(safe-area-inset-top))!important;max-width:80vw}#v8doorhint{top:calc(160px + env(safe-area-inset-top))!important}}
- #menu{z-index:60!important;min-width:0!important;max-width:92vw!important;max-height:82vh;overflow:auto;font-size:17px!important;line-height:2.05!important;padding:18px 20px!important;touch-action:pan-y}
+ #menu{z-index:60!important;min-width:0!important;max-width:92vw!important;max-height:calc(82vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow:auto;font-size:17px!important;line-height:2.05!important;padding:calc(16px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left))!important;touch-action:pan-y;box-sizing:border-box}
  #menu [data-s],#menu [data-c],#menu [data-end],#menu [data-resetmem]{display:block;padding:10px 8px;margin:2px 0;border-radius:12px;background:rgba(255,255,255,.04);min-height:44px;box-sizing:border-box}
  #menu [data-end]{background:rgba(255,180,100,.18)!important;font-size:18px;font-weight:700;text-align:center;margin-top:12px!important}
  `;document.head.appendChild(css);
@@ -1355,20 +1370,48 @@ if(TOUCH.on){
  }
  // v8.4 layout: 3×3 grid bottom-right (52px, 10px gap) + top corners; safe-area aware; nothing over the joystick
  const SR='env(safe-area-inset-right)',SB='env(safe-area-inset-bottom)',SL='env(safe-area-inset-left)',ST='env(safe-area-inset-top)';
- const gp=(c,r)=>{const step=(innerWidth>innerHeight)?68:(TOUCH_FEEL.btnStep||72);return 'right:calc('+(12+c*step)+'px + '+SR+');bottom:calc('+(12+r*step)+'px + '+SB+')';};
- mk('上升',gp(0,0),'Space',null,'round');
- mk('下降',gp(1,0),'KeyQ',null,'round');
- mk('溶解',gp(2,0),null,()=>goScene(cur==='A'?'B':'A'),'round');
- mk('交谈',gp(0,1),null,()=>{if(LAMP.near)toggleLamp();else if(POSTER.near)readPoster();else if(CAL.near)readCalendar();else if(window.__homeRadioNear)toggleHomeRadio();else if(BED.near)sleepInBed();else if(SIT.on||SIT.near)sitToggle();else if(CLERK.near)talkClerk();else if(V7_NEAR)v7OpenChat();else if(BANTER_NEAR.n)talkBanter(BANTER_NEAR.n);else if(SHOP.near)shopBuy(SHOP.near.id);else if(MGX.near)mgEnter(MGX.near.userData.id);else setSt('走近阿澄、闲聊NPC、货架、老板娘、日历/油灯、收音机、床/椅或发光圈后再点');},'hi');
- mk('飞行',gp(1,1),null,()=>{P.fly=!P.fly;setSt(P.fly?'飞行':'步行');try{if(P.fly)V7.markFlight(V7SESS);}catch(_){}},'round');
- mk('梦境',gp(2,1),null,()=>enterDream(),'round');
- mk('角色',gp(0,2),null,()=>setChar((PL.idx+1)%ROSTER.length),'hi','v8btnChar');
- mk('镜头',gp(1,2),null,()=>{P.cam=(P.cam+1)%CAMS.length;camHud();},'round');
- mk('第一人称',gp(2,2),null,()=>{if(CAMS[P.cam]==='first')P.cam=P.camPrev||0;else{P.camPrev=P.cam;P.cam=CAMS.indexOf('first');}camHud();},'sm');
+ const isLand=()=>innerWidth>innerHeight;
+ const touchLeftFrac=()=>isLand()?(TOUCH_FEEL.leftFracLandscape||0.37):(TOUCH_FEEL.leftFrac||0.44);
+ const stickR=()=>isLand()?(TOUCH_FEEL.stickRadiusPxLandscape||56):(TOUCH_FEEL.stickRadiusPx||64);
+ const knobTravel=()=>isLand()?(TOUCH_FEEL.knobTravelLandscape||38):(TOUCH_FEEL.knobTravelPortrait||44);
+ const gpOrigin=()=>isLand()?(TOUCH_FEEL.gridOriginInsetLandscape||10):(TOUCH_FEEL.gridOriginInset||12);
+ const gpStep=()=>isLand()?(TOUCH_FEEL.btnStepLandscape||62):(TOUCH_FEEL.btnStep||72);
+ const gp=(c,r)=>{const step=gpStep(),o=gpOrigin();return 'right:calc('+(o+c*step)+'px + '+SR+');bottom:calc('+(o+r*step)+'px + '+SB+')';};
+ const gpBtns=[];
+ function mkGp(lab,c,r,key,fn,extraClass,id){const b=mk(lab,gp(c,r),key,fn,extraClass,id);b.dataset.gpC=c;b.dataset.gpR=r;gpBtns.push(b);return b;}
+ mkGp('上升',0,0,'Space',null,'round');
+ mkGp('下降',1,0,'KeyQ',null,'round');
+ mkGp('溶解',2,0,null,()=>goScene(cur==='A'?'B':'A'),'round');
+ mkGp('交谈',0,1,null,()=>{if(LAMP.near)toggleLamp();else if(POSTER.near)readPoster();else if(CAL.near)readCalendar();else if(window.__homeRadioNear)toggleHomeRadio();else if(BED.near)sleepInBed();else if(SIT.on||SIT.near)sitToggle();else if(CLERK.near)talkClerk();else if(V7_NEAR)v7OpenChat();else if(BANTER_NEAR.n)talkBanter(BANTER_NEAR.n);else if(SHOP.near)shopBuy(SHOP.near.id);else if(MGX.near)mgEnter(MGX.near.userData.id);else setSt('走近阿澄、闲聊NPC、货架、老板娘、日历/油灯、收音机、床/椅或发光圈后再点');},'hi');
+ mkGp('飞行',1,1,null,()=>{P.fly=!P.fly;setSt(P.fly?'飞行':'步行');try{if(P.fly)V7.markFlight(V7SESS);}catch(_){}},'round');
+ mkGp('梦境',2,1,null,()=>enterDream(),'round');
+ mkGp('角色',0,2,null,()=>setChar((PL.idx+1)%ROSTER.length),'hi','v8btnChar');
+ mkGp('镜头',1,2,null,()=>{P.cam=(P.cam+1)%CAMS.length;camHud();},'round');
+ mkGp('第一人称',2,2,null,()=>{if(CAMS[P.cam]==='first')P.cam=P.camPrev||0;else{P.camPrev=P.cam;P.cam=CAMS.indexOf('first');}camHud();},'sm');
  // top-left: 全屏; top-right: 菜单 / 结束这局
+ const endWideRight=()=>isLand()? (10+(TOUCH_FEEL.btnMinLandscape||52)+8) : 74;
  mk('⛶ 全屏','left:calc(12px + '+SL+');top:calc(10px + '+ST+')',null,()=>v8Fullscreen(),'wide hi','v8btnFS');
- mk('菜单','right:calc(12px + '+SR+');top:calc(10px + '+ST+')',null,()=>toggleMenu());
- mk('结束这局','right:calc(74px + '+SR+');top:calc(10px + '+ST+')',null,()=>v7EndSession(),'wide');
+ const menuBtn=mk('菜单','right:calc(12px + '+SR+');top:calc(10px + '+ST+')',null,()=>toggleMenu());
+ const endBtn=mk('结束这局','right:calc('+endWideRight()+'px + '+SR+');top:calc(10px + '+ST+')',null,()=>v7EndSession(),'wide');
+ function relayoutTouch(){
+  if(!TOUCH_FEEL.reflowOnOrientation)return;
+  const land=isLand();
+  const joyEl=$('joy'),knEl=$('knob');
+  const jsz=land?(TOUCH_FEEL.joySizeLandscape||120):(TOUCH_FEEL.joySize||140);
+  const side=land?(TOUCH_FEEL.sideInsetLandscape||12):(TOUCH_FEEL.sideInset||16);
+  const bot=land?(TOUCH_FEEL.bottomInsetLandscape||10):(TOUCH_FEEL.bottomInset||16);
+  if(joyEl){joyEl.style.width=jsz+'px';joyEl.style.height=jsz+'px';joyEl.style.left='calc('+side+'px + '+SL+')';joyEl.style.bottom='calc('+bot+'px + '+SB+')';}
+  const ksz=land?44:50; const k0=land?38:45;
+  if(knEl){knEl.style.width=ksz+'px';knEl.style.height=ksz+'px';}
+  for(const b of gpBtns){const c=+b.dataset.gpC,r=+b.dataset.gpR;b.style.cssText=gp(c,r);}
+  if(endBtn){endBtn.style.right='calc('+endWideRight()+'px + '+SR+')';endBtn.style.top='calc(10px + '+ST+')';}
+  try{setKnob();}catch(_){}
+  window.__touchLayout={land,jsz,step:gpStep(),origin:gpOrigin(),leftFrac:touchLeftFrac(),stickR:stickR(),t:Date.now()};
+ }
+ addEventListener('resize',()=>{relayoutTouch();});
+ addEventListener('orientationchange',()=>setTimeout(relayoutTouch,300));
+ setTimeout(relayoutTouch,0);
+ window.__relayoutTouch=relayoutTouch;
 
  // auto-fading control tip + portrait hint (non-blocking)
  const tip=document.createElement('div');tip.id='v8tip';tip.textContent='左摇杆走 · 右半屏拖视角 · 走进门口自动进入 · 「全屏」去地址栏';document.body.appendChild(tip);
@@ -1377,13 +1420,13 @@ if(TOUCH.on){
  const rotChk=()=>{rot.style.display=innerHeight>innerWidth*1.05?'block':'none';};rotChk();addEventListener('resize',rotChk);addEventListener('orientationchange',()=>setTimeout(rotChk,300));
 
  const joy=$('joy'),knob=$('knob');
- const setKnob=()=>{knob.style.left=(45+TOUCH.jx*44)+'px';knob.style.top=(45+TOUCH.jy*44)+'px';};
+ const setKnob=()=>{const base=isLand()?38:45;const tr=knobTravel();knob.style.left=(base+TOUCH.jx*tr)+'px';knob.style.top=(base+TOUCH.jy*tr)+'px';};
  function isUITarget(el){return el&&(el.closest&&(el.closest('.tb')||el.closest('#v7chat')||el.closest('#menu')||el.closest('#v7card')||el.closest('#v7prompt')||el.closest('#v8fsmodal')));}
  function beginStick(id,x,y){
   TOUCH.jid=id;const r=joy.getBoundingClientRect();TOUCH.jcx=r.left+r.width/2;TOUCH.jcy=r.top+r.height/2;
   if(Math.hypot(x-TOUCH.jcx,y-TOUCH.jcy)>100){TOUCH.jcx=x;TOUCH.jcy=y;}
  }
- function moveStick(x,y){const R=TOUCH_FEEL.stickRadiusPx||64;let dx=(x-TOUCH.jcx)/R,dy=(y-TOUCH.jcy)/R;const m=Math.hypot(dx,dy);if(m>1){dx/=m;dy/=m;}TOUCH.jx=dx;TOUCH.jy=dy;TOUCH.jm=Math.min(1,m);setKnob();}
+ function moveStick(x,y){const R=stickR();let dx=(x-TOUCH.jcx)/R,dy=(y-TOUCH.jcy)/R;const m=Math.hypot(dx,dy);if(m>1){dx/=m;dy/=m;}TOUCH.jx=dx;TOUCH.jy=dy;TOUCH.jm=Math.min(1,m);setKnob();}
  function endStick(){TOUCH.jid=null;/* knob return in update via touchFeelKnobReturn */}
  function beginLook(id,x,y){TOUCH.lid=id;TOUCH.lx=x;TOUCH.ly=y;}
  function moveLook(x,y){const sc=touchLookScale();P.yaw-=(x-TOUCH.lx)*TOUCH_FEEL.lookYaw*sc;P.pitch=Math.max(-1.2,Math.min(0.9,P.pitch-(y-TOUCH.ly)*TOUCH_FEEL.lookPitch*sc));TOUCH.lx=x;TOUCH.ly=y;}
@@ -1397,7 +1440,7 @@ if(TOUCH.on){
   if(V7_CHAT||menu.style.display==='block'||document.getElementById('v7card')?.style.display==='flex'||CS.on||(window.__MG&&window.__MG.active)||MGM.MG.active)return;
   if(isUITarget(e.target))return;
   // left half → stick; right half → look. No pointer lock required.
-  const left=e.clientX<innerWidth*(TOUCH_FEEL.leftFrac||0.44);
+  const left=e.clientX<innerWidth*touchLeftFrac();
   if(left&&TOUCH.jid===null){beginStick(e.pointerId,e.clientX,e.clientY);try{renderer.domElement.setPointerCapture?.(e.pointerId);}catch(_){}e.preventDefault();}
   else if(!left&&TOUCH.lid===null){beginLook(e.pointerId,e.clientX,e.clientY);try{renderer.domElement.setPointerCapture?.(e.pointerId);}catch(_){}e.preventDefault();}
  };
@@ -1421,7 +1464,7 @@ if(TOUCH.on){
   if(V7_CHAT||menu.style.display==='block')return;
   for(const t of e.changedTouches){
    if(isUITarget(document.elementFromPoint(t.clientX,t.clientY))||isUITarget(t.target))continue;
-   if(t.clientX<innerWidth*(TOUCH_FEEL.leftFrac||0.44)&&TOUCH.jid===null){beginStick(t.identifier,t.clientX,t.clientY);e.preventDefault();}
+   if(t.clientX<innerWidth*touchLeftFrac()&&TOUCH.jid===null){beginStick(t.identifier,t.clientX,t.clientY);e.preventDefault();}
    else if(TOUCH.lid===null){beginLook(t.identifier,t.clientX,t.clientY);e.preventDefault();}
   }
  },{passive:false});
@@ -1575,7 +1618,8 @@ const WEATHER={mode:'auto', // auto | rainnight | clear
  label(){return this.forceRain()?'雨夜':'晴·'+CLOCK.label();}
 };
 function setWeather(mode){WEATHER.mode=mode||'auto';try{localStorage.setItem('dream_v89_weather',WEATHER.mode);}catch(_){}
- applyNightLights();placeRain();try{applySceneMood(cur);}catch(_){}menuRender&&menuRender();setSt('天气：'+WEATHER.label());window.__weather={mode:WEATHER.mode,rain:WEATHER.forceRain(),label:WEATHER.label()};}
+ applyNightLights();placeRain();try{applySceneMood(cur);}catch(_){}menuRender&&menuRender();setSt('天气：'+WEATHER.label());window.__weather={mode:WEATHER.mode,rain:WEATHER.forceRain(),label:WEATHER.label()};
+ try{if(WEATHER.forceRain())sfxPlay('rain_start');else sfxPlay('rain_stop');}catch(_){}}
 try{const wm=localStorage.getItem('dream_v89_weather');if(wm==='rainnight'||wm==='clear'||wm==='auto')WEATHER.mode=wm;}catch(_){}
 function placeRain(){
  if(RAIN){RAIN.parent&&RAIN.parent.remove(RAIN);RAIN=null;}
@@ -1944,7 +1988,7 @@ function speakStationPA(preferCat){
   STATION_PA.lastAt=now;
   setSt('广播：'+line.text);
   try{const el=$('title');el.innerHTML='矿车站 · 广播<small>'+line.text+'</small>';el.style.opacity='1';clearTimeout(showTitle.h);showTitle.h=setTimeout(()=>el.style.opacity='0',3800);}catch(_){}
-  try{playBeep(280,0.08,'sawtooth',0.03);setTimeout(()=>playBeep(220,0.12,'sawtooth',0.025),90);}catch(_){}
+  try{sfxPlay('pa');}catch(_){}
   window.__stationPALast={id:line.id,cat:line.cat,text:line.text,t:now};
   return line;
 }
@@ -2113,8 +2157,19 @@ function toggleLamp(){
 }
 
 const rewardDiv=(()=>{const d=document.createElement('div');d.id='v8reward';d.style.cssText='position:fixed;inset:0;display:none;z-index:42;background:rgba(6,4,14,.82);opacity:0;transition:opacity .9s;align-items:center;justify-content:center;flex-direction:column;color:#f3e8ff;pointer-events:none;text-align:center;padding:24px';d.innerHTML='<div id="v8rewardT" style="font-size:26px;letter-spacing:.08em;color:#ffd28a">主线四节拍 · 完成</div><div id="v8rewardS" style="font-size:15px;color:#cfc6ff;margin-top:14px;max-width:420px;line-height:1.6"></div>';document.body.appendChild(d);return d;})();
+function sfxEnabled(){try{if(window.__sfx&&typeof window.__sfx.enabled==='function')return window.__sfx.enabled();return localStorage.getItem('dream_v820_sfx')!=='0';}catch(_){return true;}}
+function toggleSfx(force){
+ const on=(force==null)?!sfxEnabled():!!force;
+ try{if(window.__sfx&&window.__sfx.setEnabled)window.__sfx.setEnabled(on);else localStorage.setItem('dream_v820_sfx',on?'1':'0');}catch(_){}
+ window.__sfxMuted=!on; window.__sfxOn=on;
+ setSt('音量：'+(on?'开':'关'));
+ try{menuRender();}catch(_){}
+ return on;
+}
 function playBeep(freq,dur,type,gain){
  try{
+  if(!sfxEnabled())return;
+  if(window.__sfx&&window.__sfx.beep){window.__sfx.beep(freq,dur,type,gain);return;}
   const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
   const ctx=playBeep.ctx||(playBeep.ctx=new AC());
   const o=ctx.createOscillator(),g=ctx.createGain();
@@ -2124,6 +2179,9 @@ function playBeep(freq,dur,type,gain){
   o.stop(ctx.currentTime+(dur||0.18)+0.02);
  }catch(_){}
 }
+function sfxPlay(id,opts){try{if(!sfxEnabled())return null;if(window.__sfx&&window.__sfx.play){const r=window.__sfx.play(id,opts);if(r){window.__sfxLast={id:(r.id||id),t:Date.now(),mapped:r.mapped||null};return r;}}if(window.PROC_SFX&&window.PROC_SFX.play){const map={door:'door_latch',pa:'pa_chime',rain_start:'rain_iron',rain:'rain_iron',hop:'hop_land',jianzi:'jianzi_kick'};const mid=map[id]||id;const ok=window.PROC_SFX.play(mid,opts||{});if(ok){window.__sfxLast={id,t:Date.now(),mapped:mid};return {id,mapped:mid};}}if(id==='door'){playBeep(140,0.09,'sawtooth',0.045);setTimeout(()=>playBeep(90,0.14,'triangle',0.03),70);window.__sfxLast={id:'door',t:Date.now()};}else if(id==='pa'){playBeep(280,0.08,'sawtooth',0.03);setTimeout(()=>playBeep(220,0.12,'sawtooth',0.025),90);window.__sfxLast={id:'pa',t:Date.now()};}return {id};}catch(_){return null;}}
+try{if(window.__sfx){window.__sfx.syncFromStorage&&window.__sfx.syncFromStorage();window.__sfxOn=sfxEnabled();}}catch(_){}
+
 function spawnRewardParticles(){
  try{
   const wrap=document.createElement('div');wrap.id='v8rpart';
@@ -2571,6 +2629,7 @@ async function useDoor(door,kind,obj,force){
  if(force){DOOR_CD=0;DOOR_ARM=true;try{if(TR)TR.on=false;}catch(_){}}
  if(DOOR_CD>0||TR.on||CS.on||!DOOR_ARM||RIDE.on)return;
  DOOR_CD=1.6;DOOR_ARM=false;
+ try{sfxPlay('door');window.__sfxLast={id:'door',t:Date.now(),door:door&&door.id};}catch(_){}
  // v8.18: map legacy E2E kind 'hub'→enter
  if(kind==='hub')kind='enter';
  if(door.ride&&obj&&obj.userData.cart){rideStart(door,kind,obj);DOOR_CD=4;return;}
@@ -2716,7 +2775,7 @@ addEventListener('keydown',e=>{if(MGM.MG.active||CS.on||V7_CHAT)return;
  if(e.code==='Escape'&&document.getElementById('v7card').style.display==='flex'){document.getElementById('v7card').style.display='none';}
 });
 // test hooks (headless capture)
-window.__G={loadScene,loadMeshScene,DOOR_VIS,PLA,RIDE,doorVisRefresh,toggleClose,FILL,SkeletonUtils,applySceneMood,SCENE_MOOD,HEMI,SUN,get fog(){return scene.fog;},get exposure(){return renderer.toneMappingExposure;},MGM,MGX,mgEnter,mgUpdate,SHOP,shopBuy,placeHubDensity,HUB_DENS,CLOCK,scheduleUpdate,GFX,toggleLowQ,applyGfxMode,placeRain,WEATHER,setWeather,applyNightLights,SIT,sitToggle,showArriveCard,arriveDiv,sleepInBed,talkClerk,renderTimetable,renderQuestBoard,questHook,BED,CLERK,questDiv,timetableDiv,readCalendar,toggleLamp,playQuestReward,calendarBlurb,CAL,LAMP,rewardDiv,questPinBtn,talkBanter,BANTER_NEAR,get BANTER(){return BANTER;},loadBanterAff,bumpBanterAff,banterScore,banterTierOfScore,banterContextKeys,pickBanterLine,readPoster,posterBlurb,POSTER,playBeep,spawnRewardParticles,banterNeverHit,cycleQuestCopy,get QUEST_ALT(){return QUEST_ALT;},questHookExt,toggleHomeRadio,loreQuestTick,placeHubFurnitureExtra,mergeBanterExtra,speakStationPA,toggleStationPA,toggleAtmoDeep,maybeStationPATip,get POSTFX(){return POSTFX;},get FEEL(){return FEEL;},feelEnabled,toggleFeel,placeInteriorPropsLM,get __lmProps(){return window.__lmProps;},errandHook,errandTick,get __errands(){return window.__errands;},blurbOfRoster,get __rosterBlurbs(){return window.__rosterBlurbs;},get __decay(){return {hub:!!window.__decayHub,station:!!window.__decayStation,doors:window.__decayDoors|0};},pickMemoryHooks:(n,o)=>V7.pickMemoryHooks&&V7.pickMemoryHooks(n,o),get HUB_FURN(){return HUB_FURN;},get TOUCH_FEEL(){return (typeof TOUCH_FEEL!=='undefined'?TOUCH_FEEL:null);},get scene(){return scene;},get RAIN(){return RAIN;},PL,ROSTER,setChar,goScene,V8,DOORS:V8.DOORS,PARKED,placeDoors,placeCommunity,useDoor,COMM_VIS,CAMS,toggleMenu,ORDER,NPCS,CS,playCutscene,enterDream,THREE,P,SC,AV,TR,keys,update,startDissolve,place,makePortal,removePortal,camera,player,body,portals,get cur(){return cur;},set cur(v){cur=v;},groundW,poseAvatar,avatarBones,showTitle,V7,get V7MEM(){return V7MEM;},get V7SESS(){return V7SESS;},v7OpenChat,v7CloseChat,v7EndSession,get V7_NEAR(){return V7_NEAR;}};
+window.__G={loadScene,loadMeshScene,DOOR_VIS,PLA,RIDE,doorVisRefresh,toggleClose,FILL,SkeletonUtils,applySceneMood,SCENE_MOOD,HEMI,SUN,get fog(){return scene.fog;},get exposure(){return renderer.toneMappingExposure;},MGM,MGX,mgEnter,mgUpdate,SHOP,shopBuy,placeHubDensity,HUB_DENS,CLOCK,scheduleUpdate,GFX,toggleLowQ,applyGfxMode,placeRain,WEATHER,setWeather,applyNightLights,SIT,sitToggle,showArriveCard,arriveDiv,sleepInBed,talkClerk,renderTimetable,renderQuestBoard,questHook,BED,CLERK,questDiv,timetableDiv,readCalendar,toggleLamp,playQuestReward,calendarBlurb,CAL,LAMP,rewardDiv,questPinBtn,talkBanter,BANTER_NEAR,get BANTER(){return BANTER;},loadBanterAff,bumpBanterAff,banterScore,banterTierOfScore,banterContextKeys,pickBanterLine,readPoster,posterBlurb,POSTER,playBeep,sfxPlay,sfxEnabled,toggleSfx,spawnRewardParticles,banterNeverHit,cycleQuestCopy,get QUEST_ALT(){return QUEST_ALT;},questHookExt,toggleHomeRadio,loreQuestTick,placeHubFurnitureExtra,mergeBanterExtra,speakStationPA,toggleStationPA,toggleAtmoDeep,maybeStationPATip,get POSTFX(){return POSTFX;},get FEEL(){return FEEL;},feelEnabled,toggleFeel,placeInteriorPropsLM,get __lmProps(){return window.__lmProps;},errandHook,errandTick,get __errands(){return window.__errands;},blurbOfRoster,get __rosterBlurbs(){return window.__rosterBlurbs;},get __decay(){return {hub:!!window.__decayHub,station:!!window.__decayStation,doors:window.__decayDoors|0};},pickMemoryHooks:(n,o)=>V7.pickMemoryHooks&&V7.pickMemoryHooks(n,o),get HUB_FURN(){return HUB_FURN;},get TOUCH_FEEL(){return (typeof TOUCH_FEEL!=='undefined'?TOUCH_FEEL:null);},get __sfx(){return window.__sfx||null;},get relayoutTouch(){return window.__relayoutTouch||null},get scene(){return scene;},get RAIN(){return RAIN;},PL,ROSTER,setChar,goScene,V8,DOORS:V8.DOORS,PARKED,placeDoors,placeCommunity,useDoor,COMM_VIS,CAMS,toggleMenu,ORDER,NPCS,CS,playCutscene,enterDream,THREE,P,SC,AV,TR,keys,update,startDissolve,place,makePortal,removePortal,camera,player,body,portals,get cur(){return cur;},set cur(v){cur=v;},groundW,poseAvatar,avatarBones,showTitle,V7,get V7MEM(){return V7MEM;},get V7SESS(){return V7SESS;},v7OpenChat,v7CloseChat,v7EndSession,get V7_NEAR(){return V7_NEAR;}};
 window.__step=(sec,dt=1/30)=>{for(let t=0;t<sec-1e-6;t+=dt)update(dt);};
 
 // ---------------- boot ----------------
