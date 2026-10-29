@@ -1,0 +1,189 @@
+{
+  "version": "v8.16-sideburn",
+  "created_beijing": "2026-10-29 09:34 Asia/Shanghai",
+  "note": "局后「这局梦境回忆」自动生成句模板。占位符：{place}{npc}{game}{weather}。情绪四档各 6 条共 24。闽西 1990s 矿山小镇感官；公开安全：无 YY 真名。仅 v8work 草稿，未接线。",
+  "placeholders": {
+    "place": "场景/地点中文名，如 矿车站、小卖部、家门口、广场、九十年代教室、育儿所、林间矿洞",
+    "npc": "本局说过话或路过的人，如 阿澄、晓雨、小悦；无人则填「门口的影子」或省略句",
+    "game": "本局试过的童年小游戏名，如 滚铁环、跳房子、踢毽子、丢沙包",
+    "weather": "天气短词，如 细雨、冷雾、晴晒、雨夜、薄霜"
+  },
+  "moods": ["怀旧", "温馨", "微怖", "畅快"],
+  "count": 24,
+  "templates": [
+    {
+      "id": "dr01",
+      "mood": "怀旧",
+      "text": "在{place}停了一会儿，{weather}里煤灰贴在袖口，像小时候放学路上总甩不掉的那一层。",
+      "tags": ["煤灰", "袖口"],
+      "prefer": ["place", "weather"]
+    },
+    {
+      "id": "dr02",
+      "mood": "怀旧",
+      "text": "{npc}提过一九八七，站牌白漆底下那一行又被煤灰盖住；你路过{place}时，风把锈螺丝磕出一声轻响。",
+      "tags": ["1987", "车站"],
+      "prefer": ["npc", "place"]
+    },
+    {
+      "id": "dr03",
+      "mood": "怀旧",
+      "text": "地上淡圈还在。你弯腰试了{game}，铁环或沙包落地的闷响，叠在{weather}的远处广播里。",
+      "tags": ["小游戏", "广播"],
+      "prefer": ["game", "weather"]
+    },
+    {
+      "id": "dr04",
+      "mood": "怀旧",
+      "text": "推开{place}时木门轴吱呀一声；日历停在某个不重要的日子，收音机串着半句地方戏。",
+      "tags": ["家", "日历"],
+      "prefer": ["place"]
+    },
+    {
+      "id": "dr05",
+      "mood": "怀旧",
+      "text": "{weather}洗过石墙，{place}门口的积水倒映出门楣，又被你的脚步搅碎——像一本翻旧的相册。",
+      "tags": ["雨", "门楣"],
+      "prefer": ["weather", "place"]
+    },
+    {
+      "id": "dr06",
+      "mood": "怀旧",
+      "text": "柜台上玻璃瓶汽水起过雾；你和{npc}没多话，只记得瓶壁凉意从指尖爬上来，外面是{weather}敲铁皮。",
+      "tags": ["小卖", "汽水"],
+      "prefer": ["npc", "weather"]
+    },
+    {
+      "id": "dr07",
+      "mood": "温馨",
+      "text": "{npc}在{place}附近等过你。屋檐滴水很慢，像有人故意把节拍放轻，好让你们把话说完。",
+      "tags": ["守望", "屋檐"],
+      "prefer": ["npc", "place"]
+    },
+    {
+      "id": "dr08",
+      "mood": "温馨",
+      "text": "小卖部灯是广场上最暖的一块。你买过东西转身时，{weather}把煤灰冲出深浅痕，像有人画过地图。",
+      "tags": ["小卖", "灯"],
+      "prefer": ["weather"]
+    },
+    {
+      "id": "dr09",
+      "mood": "温馨",
+      "text": "在{place}坐了一会儿。油灯或台灯亮着，窗外{weather}淡下去，梦允许你「只是坐着」。",
+      "tags": ["家", "可坐"],
+      "prefer": ["place", "weather"]
+    },
+    {
+      "id": "dr10",
+      "mood": "温馨",
+      "text": "试过{game}之后，有人在淡圈外拍手——不是裁判，是{npc}那种半认真的笑，像暑假还没结束。",
+      "tags": ["小游戏", "暑假"],
+      "prefer": ["game", "npc"]
+    },
+    {
+      "id": "dr11",
+      "mood": "温馨",
+      "text": "雨棚铁皮补丁叠补丁。你和{npc}共撑过一阵{weather}，话更少，好感却悄悄挪近了一格。",
+      "tags": ["雨夜", "共撑"],
+      "prefer": ["npc", "weather"]
+    },
+    {
+      "id": "dr12",
+      "mood": "温馨",
+      "text": "从{place}回来，先看见广场煤堆与路灯，再看见守门的人。袖口还有没有灰——{npc}大概会这样问。",
+      "tags": ["枢纽", "回话"],
+      "prefer": ["place", "npc"]
+    },
+    {
+      "id": "dr13",
+      "mood": "微怖",
+      "text": "{place}的广播嘶一声，吐出半句「请旅客注意」，后半截被{weather}掐断，像从井底喊上来。",
+      "tags": ["广播", "车站"],
+      "prefer": ["place", "weather"]
+    },
+    {
+      "id": "dr14",
+      "mood": "微怖",
+      "text": "雾浓时{place}只剩剪影。你听见锈螺丝轻磕，却看不见人；{npc}的名字在嘴里转了一圈又咽回去。",
+      "tags": ["雾", "锈"],
+      "prefer": ["place", "npc"]
+    },
+    {
+      "id": "dr15",
+      "mood": "微怖",
+      "text": "摸{game}的淡圈时，粉笔印像没被时间收走——可圈外的影子比人先动了一寸，{weather}里更明显。",
+      "tags": ["淡圈", "影子"],
+      "prefer": ["game", "weather"]
+    },
+    {
+      "id": "dr16",
+      "mood": "微怖",
+      "text": "矿车门哐地合上。风灌进{place}，袖口挂细煤灰；下一站名字含糊，像{npc}故意说半句就停。",
+      "tags": ["矿车", "煤灰"],
+      "prefer": ["place", "npc"]
+    },
+    {
+      "id": "dr17",
+      "mood": "微怖",
+      "text": "家门口积水倒映门楣，你一踩，倒影里的窗灯先灭半秒。{weather}返潮，石墙像在慢慢渗墨。",
+      "tags": ["积水", "返潮"],
+      "prefer": ["weather"]
+    },
+    {
+      "id": "dr18",
+      "mood": "微怖",
+      "text": "地方戏曲拖腔被雷掐断在半句。{place}灯牌写着「即将发车」，可月台上只有你和一声空回音。",
+      "tags": ["戏曲", "发车"],
+      "prefer": ["place"]
+    },
+    {
+      "id": "dr19",
+      "mood": "畅快",
+      "text": "你在{place}把{game}玩顺了：铁环声、毽子拍击或沙包闷响连成一串，{weather}也拦不住脚步。",
+      "tags": ["小游戏", "畅快"],
+      "prefer": ["place", "game", "weather"]
+    },
+    {
+      "id": "dr20",
+      "mood": "畅快",
+      "text": "矿车轮缘还湿着，一踩就响。从{place}冲进风里，{npc}在入口远远抬了下手，像给发令。",
+      "tags": ["矿车", "风"],
+      "prefer": ["place", "npc"]
+    },
+    {
+      "id": "dr21",
+      "mood": "畅快",
+      "text": "{weather}刚停，煤灰被冲出深浅痕。你沿着痕迹跑过{place}，像把暑假最后一天又抢回来一截。",
+      "tags": ["雨停", "暑假"],
+      "prefer": ["weather", "place"]
+    },
+    {
+      "id": "dr22",
+      "mood": "畅快",
+      "text": "跳房子格线被鞋底拍响；或踢毽子一下接一下。{game}结束时，{npc}喊了声好——广场灯都亮堂了些。",
+      "tags": ["跳房子", "踢毽子"],
+      "prefer": ["game", "npc"]
+    },
+    {
+      "id": "dr23",
+      "mood": "畅快",
+      "text": "汽水瓶壁起雾，一口凉意灌下去。你转身离开{place}，{weather}里路灯拉长影子，脚步比风声更近。",
+      "tags": ["汽水", "路灯"],
+      "prefer": ["place", "weather"]
+    },
+    {
+      "id": "dr24",
+      "mood": "畅快",
+      "text": "多段回忆叠在一起也不怕迷路：你从{place}回来，袖口挂灰，手里还留着{game}的节奏，{npc}只问一句「还回来吗」。",
+      "tags": ["叠片", "回话"],
+      "prefer": ["place", "game", "npc"]
+    }
+  ],
+  "fill_hints": {
+    "place_from_sess": "优先 sess.doors 末项经 DOOR_NAME，否则 sess.scenes 末项经 SCENE_NAME",
+    "npc_from_sess": "sess.talked → 阿澄；否则 banter 近距角色名；皆无 → 「守门的人」",
+    "game_from_sess": "sess.minigames 末项经 MG_NAME；空 → 「地上的淡圈」",
+    "weather_from_runtime": "WEATHER.rain / atmo → 细雨|雨夜|冷雾|晴晒"
+  }
+}

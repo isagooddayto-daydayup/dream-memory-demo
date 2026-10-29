@@ -591,6 +591,37 @@ function minutesOf(sess) {
   return Math.max(1, Math.round((Date.now() - sess.startedAt) / 60000));
 }
 
+
+/** v8.16 dream recall templates (24). Filled by index fetch. */
+export let DREAM_RECALL_TEMPLATES = [];
+export function setDreamRecallTemplates(list) {
+  DREAM_RECALL_TEMPLATES = Array.isArray(list) ? list.slice() : [];
+  return DREAM_RECALL_TEMPLATES.length;
+}
+export function pickDreamRecallLine(sess, opts) {
+  opts = opts || {};
+  const all = DREAM_RECALL_TEMPLATES;
+  if (!all.length) return null;
+  let mood = '怀旧';
+  try {
+    if (opts.weather && /雨/.test(opts.weather)) mood = Math.random() < 0.5 ? '微怖' : '怀旧';
+    else if (sess && sess.minigames && sess.minigames.length) mood = '畅快';
+    else if (sess && sess.talked) mood = '温馨';
+  } catch (_) {}
+  let pool = all.filter((t) => t.mood === mood);
+  if (!pool.length) pool = all;
+  const tpl = pool[(Math.random() * pool.length) | 0];
+  const place = (opts.place || (sess && sess.scenes && sess.scenes[sess.scenes.length - 1]) || '广场');
+  const npc = opts.npc || (sess && sess.talked ? '阿澄' : '守门的人');
+  const game = opts.game || (sess && sess.minigames && sess.minigames.length ? sess.minigames[sess.minigames.length - 1] : '地上的淡圈');
+  const weather = opts.weather || '冷雾';
+  return String(tpl.text || '')
+    .replaceAll('{place}', String(place))
+    .replaceAll('{npc}', String(npc))
+    .replaceAll('{game}', String(game))
+    .replaceAll('{weather}', String(weather));
+}
+
 export function buildDreamCard(sess, mem) {
   const scenes = [...(sess.scenes || [])];
   const mgs = [...(sess.minigames || [])];
@@ -664,6 +695,23 @@ export function buildDreamCard(sess, mem) {
   if (scenes.length >= 3) lines.push('多段回忆叠在一起，像一本被翻乱的相册，封面却仍写着「矿区」。');
   else if (scenes.length === 1) lines.push('你几乎没离开最初的那一页回忆，梦便把这一页写得很仔细。');
   else lines.push('两段回忆之间有一道淡淡的溶解光，像醒来前的眨眼。');
+  // RECALL_TPL_INJECT v8.16 — 1 filled template into first-8 budget (after core facts)
+  try {
+    const lastScene = (sess.scenes && sess.scenes.length) ? sess.scenes[sess.scenes.length - 1] : 'A';
+    const placeMap = { A: '矿山小镇枢纽', H: '家', I: '矿车站', J: '小卖部', B: '小学校园', G: '林间', F: '教室', K: '托儿所' };
+    const lastMg = (sess.minigames && sess.minigames.length) ? sess.minigames[sess.minigames.length - 1] : null;
+    const rl = pickDreamRecallLine(sess, {
+      place: placeMap[lastScene] || '广场',
+      game: (MG_NAME[lastMg] || lastMg || '地上的淡圈'),
+      weather: (typeof globalThis !== 'undefined' && globalThis.__weather && globalThis.__weather.rain) ? '雨夜' : '冷雾',
+    });
+    if (rl) {
+      // keep within slice(0,8): put after first 5 core lines
+      const at = Math.min(5, lines.length);
+      lines.splice(at, 0, rl);
+      if (typeof globalThis !== 'undefined') globalThis.__dreamRecallLast = rl;
+    }
+  } catch (_) {}
   const body = lines.slice(0, 8).join('\n');
   const card = {
     id: 'c' + Date.now().toString(36),

@@ -1093,6 +1093,7 @@ function menuRender(){const tier=V7.tierOf(V7MEM.affinity);const card=PL.name?V8
 '<div data-postfx="1" style="cursor:pointer;margin-top:4px;color:#b8c8e0;text-decoration:underline">轻量后期 POSTFX：'+(POSTFX.enabled?'开':'关')+'（默认关）</div>'+
 '<div data-sched="1" style="cursor:pointer;margin-top:4px;color:#c8e0c8;text-decoration:underline">社区作息：'+CLOCK.label()+(window.__sched&&window.__sched.n?' · 可见'+(window.__sched.n.length)+'人':'')+'（点看锚点）</div>'+
  '<div data-memhooks="1" style="cursor:pointer;margin-top:4px;color:#e0d0ff;text-decoration:underline">回忆卡钩预览（'+(window.__memHooksN||0)+'）</div>'+
+'<div data-recalltpl="1" style="cursor:pointer;margin-top:4px;color:#e8d8c0;text-decoration:underline">回忆模板预览（'+(window.__dreamRecallN||0)+'）</div>'+
  '<div data-lowq="1" style="cursor:pointer;margin-top:8px;color:#9ec8ff;text-decoration:underline">画质：'+(GFX.low?'低（点此恢复标准）':'标准（点此降雾/阴影/像素比）')+'</div>'+
  '<div style="font-size:12px;color:#9a90c0">社区作息：'+CLOCK.label()+' · 阿澄好感三档可聊出来</div>'+
  '<div data-end="1" style="cursor:pointer;margin-top:8px;color:#ffd28a;text-decoration:underline">结束这局 · 生成「这局梦境回忆」</div>'+
@@ -1108,6 +1109,7 @@ function menuRender(){const tier=V7.tierOf(V7MEM.affinity);const card=PL.name?V8
  menu.querySelector('[data-postfx]')?.addEventListener('click',()=>{try{POSTFX.setEnabled(!POSTFX.enabled);window.__postfx=POSTFX;setSt('POSTFX：'+(POSTFX.enabled?'开':'关')+(GFX.low?'（低画质强制关）':''));menuRender();}catch(e){setSt('POSTFX失败');}});
  menu.querySelector('[data-sched]')?.addEventListener('click',()=>{try{scheduleUpdate();const s=window.__sched||{};const lines=(s.n||[]).map(x=>x.name.replace('(闲逛)','')+'→'+(x.poi||'?')).join(' · ')||'（枢纽无人）';setSt('作息 '+s.label+'：'+lines);const el=$('title');el.innerHTML='社区作息 · '+s.label+'<small>'+lines+'</small>';el.style.opacity='1';clearTimeout(showTitle.h);showTitle.h=setTimeout(()=>el.style.opacity='0',4200);window.__schedShown={t:Date.now(),label:s.label,n:(s.n||[]).length};}catch(e){setSt('作息查看失败');}});
  menu.querySelector('[data-memhooks]')?.addEventListener('click',()=>{try{const hs=(V7.pickMemoryHooks?V7.pickMemoryHooks(3,{place:'station',weather:'rain'}):[]);window.__memHooks=hs;const body=hs.map(h=>'· '+h.text).join('\n')||'（无）';setSt('回忆卡钩\n'+body);const el=$('title');el.innerHTML='回忆卡钩<small style="white-space:pre-wrap">'+body+'</small>';el.style.opacity='1';clearTimeout(showTitle.h);showTitle.h=setTimeout(()=>el.style.opacity='0',4500);}catch(e){setSt('回忆卡钩失败');}});
+ menu.querySelector('[data-recalltpl]')?.addEventListener('click',()=>{try{const line=V7.pickDreamRecallLine?V7.pickDreamRecallLine(V7SESS,{weather:WEATHER.forceRain()?'雨夜':'冷雾'}):null;const t=line||'（未加载）';setSt('回忆模板\n'+t);const el=$('title');el.innerHTML='回忆模板<small>'+t+'</small>';el.style.opacity='1';clearTimeout(showTitle.h);showTitle.h=setTimeout(()=>el.style.opacity='0',4200);window.__recallPreview={t:Date.now(),line:t};}catch(e){setSt('回忆模板失败');}});
  menu.querySelector('[data-questcopy]')?.addEventListener('click',()=>cycleQuestCopy());
  menu.querySelector('[data-quest]')?.addEventListener('click',()=>{window.__questPinned=true;renderQuestBoard(true);toggleMenu(false);setSt('任务板已钉在左上');});
  menu.querySelector('[data-resetquest]')?.addEventListener('click',()=>{V7.clearQuest();try{V7.clearQuestExt();}catch(_){}renderQuestBoard(true);menuRender();setSt('主线+第二段已重置');});
@@ -1575,6 +1577,7 @@ try{const hooks=(typeof MEMORY_CARD_LORE_HOOKS!=='undefined'&&MEMORY_CARD_LORE_H
 fetch('minigame_sfx_copy_v814.json').then(r=>r.json()).then(j=>{window.__mgSfxCopy=j;try{if(MGM&&MGM.setMgSfxCopy)MGM.setMgSfxCopy(j);}catch(_){}}).catch(e=>console.warn('mgSfx',e));
 fetch('BANTER_EXTRA_SCENES_2026-10-29.json').then(r=>r.json()).then(j=>{window.__banterExtra=j;window.__banterExtraScenes=Object.keys((j&&j.scenes)||{});try{mergeBanterExtra(j);}catch(e){console.warn('banterExtra',e);}}).catch(e=>console.warn('banterExtra',e));
 fetch('station_pa_lines.json').then(r=>r.json()).then(j=>{window.__stationPA=j;window.__stationPAOn=localStorage.getItem('dream_v815_pa')!=='0';}).catch(e=>console.warn('stationPA',e));
+fetch('dream_recall_templates_v816.json').then(r=>r.json()).then(j=>{window.__dreamRecall=j;window.__dreamRecallN=(j.templates||[]).length;try{if(V7.setDreamRecallTemplates)V7.setDreamRecallTemplates(j.templates||[]);}catch(_){}}).catch(e=>console.warn('dreamRecall',e));
 fetch('furniture_hub_extra.json').then(r=>r.json()).then(j=>{window.__hubFurnPlan=j;try{placeHubFurnitureExtra();}catch(e){console.warn('hubFurn',e);}}).catch(e=>console.warn('hubFurn',e));
 
 let QUEST_ALT=null; const QUEST_ALT_KEY='dream_v813_quest_copy';
