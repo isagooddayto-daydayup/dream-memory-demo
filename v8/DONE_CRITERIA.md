@@ -9,6 +9,6 @@
 | 5 | Shop buy soda/bread + localStorage + feedback | PASS | dream_v87_shop; __shopLast; st 买下了汽水 |
 | 6 | Dream recall doors/mgs/chars/buys; copy+close | PASS | shot 05; body 含门/游戏/换人/购买; hasCopy/Close |
 | 7 | Hub density; fog A dens≤0.040 | PASS | hubDens=56; fogDens=0.028 |
-| 8 | Pages 200 + v8.7; no yy/Renderpeople | pending deploy | — |
+| 8 | Pages 200 + v8.7; no yy/Renderpeople | PASS | http 200 + v8.7 @ 2026-10-29 08:37:40 Asia/Shanghai commit 6e415ee |
 | 9 | shots_v87 ①–⑥ | PASS | 10 png |
 | 10 | This table PASS/FAIL | PASS | this file |
