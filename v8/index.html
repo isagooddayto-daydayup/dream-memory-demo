@@ -338,7 +338,7 @@ async function loadMeshScene(S){
    root.add(winRain);root.userData.winRain=winRain;
    // furniture GLB (fallback boxes if load fails — placed after await below)
    const lamp=new THREE.PointLight(0xffc080,0.85,9);lamp.position.set(2.0,1.7,1.0);root.add(lamp);
-   root.userData.sits=[{id:'chair',name:'木椅',local:[2.15,1.9]}];
+   root.userData.sits=[{id:'chair',name:'木椅',local:[2.15,1.9]},{id:'stool',name:'小凳',local:[-2.2,1.6]}];
    root.userData.beds=[{id:'bed',name:'床',local:[-1.7,-1.3]}];
    root.userData.lampLight=lamp;lamp.userData.baseI=0.85;
    root.userData.lamp={on:true,local:[2.0,1.0],light:lamp};
@@ -347,8 +347,10 @@ async function loadMeshScene(S){
      ['bed',-1.7,0,-1.3,Math.PI/2],
      ['table',2.0,0,1.0,0],
      ['chair',2.15,0,1.9,Math.PI],
+     ['stool',-2.2,0,1.6,0.4],
      ['oil_lamp',2.0,0.74,1.0,0.3],
      ['calendar',-3.85,1.2,-1.5,Math.PI/2],
+     ['poster_board',3.7,1.15,-1.2,-Math.PI/2],
    ];
   }else if(pack==='station'){
    // v8.4 老矿区小站：煤灰地面 · 斑驳木站台 · 锈铁柱 · 波纹铁皮雨棚 · 旧站牌 · 轨道矿车 · 破挂钟
@@ -419,7 +421,7 @@ async function loadMeshScene(S){
      '坐矿车的话，记得看时刻表，别上错车。',
    ], i:0};
    root.userData.calendars=[{id:'cal',name:'小卖日历',local:[3.5,-0.5],lines:null}];
-   root.userData._shopFurn=[['radio',2.4,1.05,-1.5,0],['calendar',3.6,1.3,-0.4,-Math.PI/2]];
+   root.userData._shopFurn=[['radio',2.4,1.05,-1.5,0],['calendar',3.6,1.3,-0.4,-Math.PI/2],['crate',-1.8,0,2.2,0.2],['shelf',3.2,0,1.0,Math.PI]];
   }
   // v8.10 load procedural-furniture GLBs
   if(root.userData._furnJobs){
@@ -990,7 +992,7 @@ const menu=document.createElement('div');menu.id='menu';menu.style.cssText='posi
 function menuRender(){const tier=V7.tierOf(V7MEM.affinity);const card=PL.name?V8.ensureCharCard(PL.name):null;const cardHtml=card?('当前：'+card.name+'\n经历：'+(card.经历||[]).join(' → ')+'\n技能：'+Object.entries(card.技能||{}).map(([k,v])=>k+' '+v).join(' · ')):'（切换角色后显示）';menu.innerHTML='<b style="font-size:18px">梦境菜单 (M 关闭)</b><br><span style="color:#ffd9a0">场景 · 数字键</span><br>'+
  ORDER.map((k,i)=>'<div data-s="'+k+'" style="cursor:pointer;'+(k===cur?'color:#ffd28a':'')+'">'+(i+1)+'. '+SC[k].name+(SC[k].loaded?'':' <small style="color:#9a90c0">(首次进入时加载)</small>')+'</div>').join('')+
  '<span style="color:#ffd9a0">角色 · G 切换</span><br>'+ROSTER.map((r,i)=>'<span data-c="'+i+'" style="cursor:pointer;margin-right:14px;'+(i===PL.idx?'color:#ffd28a;text-decoration:underline':'')+'">'+r.name+'</span>').join('')+
- '<br><span style="color:#ffd9a0">v8.11 · 林间点·油灯日历·任务钉·班次·节拍台词</span><br><div style="font-size:13px;color:#cfc6ff">家 / 小卖部 / 教室 / 小房间 走实体门；校园走<b>山洞</b>、林间走<b>矿洞</b>；火星边疆 / 校园也可在<b>矿车站坐矿车</b>。数字键 1–9 快进；手机点「角色」换人</div><div data-close="1" style="cursor:pointer;color:#ffd28a;text-decoration:underline">📷 近景特写（Z）· 正面看人物</div><br><span style="color:#ffd9a0">角色卡</span><br><div id="v8cardpanel" style="font-size:13px;color:#cfc6ff;white-space:pre-wrap">'+cardHtml+'</div><br><span style="color:#ffd9a0">记事NPC</span><br><div style="font-size:13px;color:#cfc6ff">阿澄好感：'+tier.name+' ('+tier.score+') · 走近金环按 E 交谈</div>'+
+ '<br><span style="color:#ffd9a0">v8.11 · 林间点·油灯日历·任务钉·班次·节拍·闲聊·扩家具</span><br><div style="font-size:13px;color:#cfc6ff">家 / 小卖部 / 教室 / 小房间 走实体门；校园走<b>山洞</b>、林间走<b>矿洞</b>；火星边疆 / 校园也可在<b>矿车站坐矿车</b>。数字键 1–9 快进；手机点「角色」换人</div><div data-close="1" style="cursor:pointer;color:#ffd28a;text-decoration:underline">📷 近景特写（Z）· 正面看人物</div><br><span style="color:#ffd9a0">角色卡</span><br><div id="v8cardpanel" style="font-size:13px;color:#cfc6ff;white-space:pre-wrap">'+cardHtml+'</div><br><span style="color:#ffd9a0">记事NPC</span><br><div style="font-size:13px;color:#cfc6ff">阿澄好感：'+tier.name+' ('+tier.score+') · 走近金环按 E 交谈</div>'+
  '<div data-quest="1" style="cursor:pointer;margin-top:8px;color:#d8c8ff;text-decoration:underline">阿澄主线任务板 ('+V7.questStatus().doneCount+'/'+V7.QUEST_BEATS.length+')</div>'+
  '<div data-weather="1" style="cursor:pointer;margin-top:8px;color:#9ec8ff;text-decoration:underline">天气：'+WEATHER.label()+'（点切 雨夜/自动）</div>'+
  '<div data-lowq="1" style="cursor:pointer;margin-top:8px;color:#9ec8ff;text-decoration:underline">画质：'+(GFX.low?'低（点此恢复标准）':'标准（点此降雾/阴影/像素比）')+'</div>'+
@@ -1105,7 +1107,7 @@ if(TOUCH.on){
  mk('上升',gp(0,0),'Space',null,'round');
  mk('下降',gp(1,0),'KeyQ',null,'round');
  mk('溶解',gp(2,0),null,()=>goScene(cur==='A'?'B':'A'),'round');
- mk('交谈',gp(0,1),null,()=>{if(LAMP.near)toggleLamp();else if(CAL.near)readCalendar();else if(BED.near)sleepInBed();else if(SIT.on||SIT.near)sitToggle();else if(CLERK.near)talkClerk();else if(V7_NEAR)v7OpenChat();else if(SHOP.near)shopBuy(SHOP.near.id);else if(MGX.near)mgEnter(MGX.near.userData.id);else setSt('走近阿澄、货架、老板娘、日历/油灯、床/椅或发光圈后再点');},'hi');
+ mk('交谈',gp(0,1),null,()=>{if(LAMP.near)toggleLamp();else if(CAL.near)readCalendar();else if(BED.near)sleepInBed();else if(SIT.on||SIT.near)sitToggle();else if(CLERK.near)talkClerk();else if(V7_NEAR)v7OpenChat();else if(BANTER_NEAR.n)talkBanter(BANTER_NEAR.n);else if(SHOP.near)shopBuy(SHOP.near.id);else if(MGX.near)mgEnter(MGX.near.userData.id);else setSt('走近阿澄、闲聊NPC、货架、老板娘、日历/油灯、床/椅或发光圈后再点');},'hi');
  mk('飞行',gp(1,1),null,()=>{P.fly=!P.fly;setSt(P.fly?'飞行':'步行');try{if(P.fly)V7.markFlight(V7SESS);}catch(_){}},'round');
  mk('梦境',gp(2,1),null,()=>enterDream(),'round');
  mk('角色',gp(0,2),null,()=>setChar((PL.idx+1)%ROSTER.length),'hi','v8btnChar');
@@ -1427,6 +1429,46 @@ function talkClerk(){
 }
 const CLERK={near:null};
 
+// ---- v8.11b community NPC banter (npc_banter_20261029.json) ----
+let BANTER=null; const BANTER_NEAR={n:null};
+fetch('npc_banter_20261029.json').then(r=>r.json()).then(j=>{BANTER=j;window.__banterLoaded=true;window.__banterChars=(j.characters||[]).map(c=>c.name);}).catch(e=>{console.warn('banter',e);window.__banterLoaded=false;});
+function banterTierId(){
+ try{const id=V7.tierOf(V7MEM.affinity).id; return id==='known'?'familiar':id==='close'?'intimate':'stranger';}catch(_){return 'stranger';}
+}
+function talkBanter(n){
+ if(!n||!BANTER)return;
+ const nm=(n.name||'').replace('(闲逛)','');
+ const c=(BANTER.characters||[]).find(x=>x.name===nm);
+ if(!c||!c.banter){setSt(nm+'：……');return;}
+ const tier=banterTierId();
+ const pool=c.banter[tier]||c.banter.stranger||[];
+ if(!pool.length)return;
+ n._banterI=(n._banterI|0)%pool.length;
+ const line=pool[n._banterI++]; 
+ setSt(nm+'：'+line);
+ try{const el=$('title');el.innerHTML=nm+' · 闲聊<small>'+line+'</small>';el.style.opacity='1';clearTimeout(showTitle.h);showTitle.h=setTimeout(()=>el.style.opacity='0',3400);}catch(_){}
+ window.__banter={name:nm,tier,line,t:Date.now()};
+ try{V7.markChar(V7SESS,nm);}catch(_){}
+}
+function banterUpdate(){
+ BANTER_NEAR.n=null;
+ if(!BANTER||V7_CHAT||CS.on||MGM.MG.active)return;
+ if(cur!=='A'&&cur!=='E'&&cur!=='F'&&cur!=='B'&&cur!=='C')return;
+ let best=null,bd=2.4;
+ for(const n of NPCS){
+  if(n.key!==cur||n.talkable)continue; // Acheng keeps dedicated chat
+  const nm=(n.name||'').replace('(闲逛)','');
+  if(!BANTER.characters.some(c=>c.name===nm))continue;
+  const d=Math.hypot(n.pos.x-P.pos.x,n.pos.z-P.pos.z);
+  if(d<bd){bd=d;best=n;}
+ }
+ BANTER_NEAR.n=best;
+ if(best && !SHOP.near && !BED.near && !SIT.near && !CLERK.near && !CAL.near && !LAMP.near && !MGX.near && !V7_NEAR){
+  MGM.setPrompt((TOUCH.on?'👆 ':'按 E ')+'和'+best.name.replace('(闲逛)','')+'闲聊',()=>talkBanter(best));
+ }
+}
+
+
 // ---- v8.11 calendar / lamp / quest pin / reward / clock timetable ----
 const CAL={near:null};const LAMP={near:null};
 function calendarBlurb(){
@@ -1576,6 +1618,7 @@ function sitToggle(){
 function shopUpdate(){
  const prev=SHOP.near;const prevSit=SIT.near;SHOP.near=null;SIT.near=null;BED.near=null;CLERK.near=null;
  try{renderTimetable();}catch(_){}
+ try{banterUpdate();}catch(_){}
  try{if(cur==='A')renderQuestBoard(false);else if(cur!=='A'&&questDiv.style.display==='block'&&!window.__questPinned){/* keep */}}catch(_){}
  // home window rain visibility
  try{const S=SC.H;if(S&&S.mesh&&S.mesh.userData.winRain){S.mesh.userData.winRain.visible=!!(cur==='H'&&WEATHER.forceRain());
@@ -1600,7 +1643,7 @@ function shopUpdate(){
   if((prevSit||BED.near)&&!SIT.near&&!BED.near)MGM.setPrompt(null);
   return;
  }
- if(cur!=='J'){if(prev)MGM.setPrompt(null);return;}
+ if(cur!=='J'){if(BANTER_NEAR.n){MGM.setPrompt((TOUCH.on?'👆 ':'按 E ')+'和'+BANTER_NEAR.n.name.replace('(闲逛)','')+'闲聊',()=>talkBanter(BANTER_NEAR.n));return;}if(prev)MGM.setPrompt(null);return;}
  const S=SC.J;if(!S||!S.mesh)return;CAL.near=null;
  if(S.mesh.userData.calendars){
   let bestCal=null,bdC=1.5;
@@ -1826,16 +1869,16 @@ const MGX={marks:[],near:null};
 function mgPlace(){for(const k of ['A','B','G']){const S=SC[k];for(const [id,dx,dz] of MGM.SPOTS[k]){const m=MGM.makeMarker(THREE,id);const x=S.off.x+S.spawn[0]+dx,z=S.off.z+S.spawn[1]+dz;m.position.set(x,0,z);m.userData.key=k;m.visible=false;scene.add(m);MGX.marks.push(m);}}}
 function mgEnter(id){for(const k in keys)keys[k]=false;MGX.near=null;MGM.setPrompt(null);document.exitPointerLock?.();try{V7.markMinigame(V7SESS,id);}catch(_){}MGM.enter(id,{touch:TOUCH.on,lowq:LOWQ});window.__mgWatch=id;}
 MGM.MG.onExit=()=>{for(const k in keys)keys[k]=false;last=performance.now();if(TEST)portals.render();};
-function mgUpdate(){try{rainUpdate(0.016);}catch(_){}try{shopUpdate();}catch(_){}try{if(window.__mgEnd&&!window.__mgEnd._mem){window.__mgEnd._mem=1;const e=window.__mgEnd;V7MEM=V7.loadMem();V7.rememberMinigame(V7MEM,e.id,!!e.win,e.score|0);V7MEM=V7.loadMem();window.__mgMem=e;try{questHook('minigame',e.id);}catch(_){};}}catch(_){}let best=null,bd=2.0;for(const m of MGX.marks){const k=m.userData.key,S=SC[k];const vis=k===cur&&!!S.mesh&&S.mesh.visible&&!TR.on;m.visible=vis;if(!vis)continue;
+function mgUpdate(){try{rainUpdate(0.016);}catch(_){}try{shopUpdate();}catch(_){}try{banterUpdate();}catch(_){}try{if(window.__mgEnd&&!window.__mgEnd._mem){window.__mgEnd._mem=1;const e=window.__mgEnd;V7MEM=V7.loadMem();V7.rememberMinigame(V7MEM,e.id,!!e.win,e.score|0);V7MEM=V7.loadMem();window.__mgMem=e;try{questHook('minigame',e.id);}catch(_){};}}catch(_){}let best=null,bd=2.0;for(const m of MGX.marks){const k=m.userData.key,S=SC[k];const vis=k===cur&&!!S.mesh&&S.mesh.visible&&!TR.on;m.visible=vis;if(!vis)continue;
   if(!m.userData.ys&&S.g){m.position.y=groundW(k,m.position.x,m.position.z);m.userData.ys=1;}
   m.userData.ring.material.opacity=0.2+0.07*Math.sin(P.t*3); /* v8.5 地面淡提示 */const d=Math.hypot(m.position.x-P.pos.x,m.position.z-P.pos.z);if(d<bd){bd=d;best=m;}}
  if(V7_NEAR){MGX.near=null;MGM.setPrompt(null);return;} if(best!==MGX.near){MGX.near=best;MGM.setPrompt(best?(TOUCH.on?'👆 点这里进入「'+best.userData.name+'」':'按 E 进入「'+best.userData.name+'」'):null,best?()=>mgEnter(best.userData.id):null);}}
 addEventListener('keydown',e=>{if(MGM.MG.active||CS.on||V7_CHAT)return;
- if(e.code==='KeyE'){if(LAMP.near){toggleLamp();return;}if(CAL.near){readCalendar();return;}if(BED.near){sleepInBed();return;}if(SIT.on||SIT.near){sitToggle();return;}if(CLERK.near){talkClerk();return;}if(V7_NEAR){v7OpenChat();return;}if(SHOP.near){shopBuy(SHOP.near.id);return;}if(MGX.near)mgEnter(MGX.near.userData.id);}
+ if(e.code==='KeyE'){if(LAMP.near){toggleLamp();return;}if(CAL.near){readCalendar();return;}if(BED.near){sleepInBed();return;}if(SIT.on||SIT.near){sitToggle();return;}if(CLERK.near){talkClerk();return;}if(V7_NEAR){v7OpenChat();return;}if(BANTER_NEAR.n){talkBanter(BANTER_NEAR.n);return;}if(SHOP.near){shopBuy(SHOP.near.id);return;}if(MGX.near)mgEnter(MGX.near.userData.id);}
  if(e.code==='Escape'&&document.getElementById('v7card').style.display==='flex'){document.getElementById('v7card').style.display='none';}
 });
 // test hooks (headless capture)
-window.__G={loadScene,loadMeshScene,DOOR_VIS,PLA,RIDE,doorVisRefresh,toggleClose,FILL,SkeletonUtils,applySceneMood,SCENE_MOOD,HEMI,SUN,get fog(){return scene.fog;},get exposure(){return renderer.toneMappingExposure;},MGM,MGX,mgEnter,mgUpdate,SHOP,shopBuy,placeHubDensity,HUB_DENS,CLOCK,scheduleUpdate,GFX,toggleLowQ,applyGfxMode,placeRain,WEATHER,setWeather,applyNightLights,SIT,sitToggle,showArriveCard,arriveDiv,sleepInBed,talkClerk,renderTimetable,renderQuestBoard,questHook,BED,CLERK,questDiv,timetableDiv,readCalendar,toggleLamp,playQuestReward,calendarBlurb,CAL,LAMP,rewardDiv,questPinBtn,PL,ROSTER,setChar,goScene,V8,DOORS:V8.DOORS,PARKED,placeDoors,placeCommunity,useDoor,COMM_VIS,CAMS,toggleMenu,ORDER,NPCS,CS,playCutscene,enterDream,THREE,P,SC,AV,TR,keys,update,startDissolve,place,makePortal,removePortal,camera,player,body,portals,get cur(){return cur;},set cur(v){cur=v;},groundW,poseAvatar,avatarBones,showTitle,V7,get V7MEM(){return V7MEM;},get V7SESS(){return V7SESS;},v7OpenChat,v7CloseChat,v7EndSession,get V7_NEAR(){return V7_NEAR;}};
+window.__G={loadScene,loadMeshScene,DOOR_VIS,PLA,RIDE,doorVisRefresh,toggleClose,FILL,SkeletonUtils,applySceneMood,SCENE_MOOD,HEMI,SUN,get fog(){return scene.fog;},get exposure(){return renderer.toneMappingExposure;},MGM,MGX,mgEnter,mgUpdate,SHOP,shopBuy,placeHubDensity,HUB_DENS,CLOCK,scheduleUpdate,GFX,toggleLowQ,applyGfxMode,placeRain,WEATHER,setWeather,applyNightLights,SIT,sitToggle,showArriveCard,arriveDiv,sleepInBed,talkClerk,renderTimetable,renderQuestBoard,questHook,BED,CLERK,questDiv,timetableDiv,readCalendar,toggleLamp,playQuestReward,calendarBlurb,CAL,LAMP,rewardDiv,questPinBtn,talkBanter,BANTER_NEAR,get BANTER(){return BANTER;},PL,ROSTER,setChar,goScene,V8,DOORS:V8.DOORS,PARKED,placeDoors,placeCommunity,useDoor,COMM_VIS,CAMS,toggleMenu,ORDER,NPCS,CS,playCutscene,enterDream,THREE,P,SC,AV,TR,keys,update,startDissolve,place,makePortal,removePortal,camera,player,body,portals,get cur(){return cur;},set cur(v){cur=v;},groundW,poseAvatar,avatarBones,showTitle,V7,get V7MEM(){return V7MEM;},get V7SESS(){return V7SESS;},v7OpenChat,v7CloseChat,v7EndSession,get V7_NEAR(){return V7_NEAR;}};
 window.__step=(sec,dt=1/30)=>{for(let t=0;t<sec-1e-6;t+=dt)update(dt);};
 
 // ---------------- boot ----------------
