@@ -1,27 +1,29 @@
-# 回忆与梦境 · v8.6 进度（魂系气质对照）
+# 回忆与梦境 · v8.7 进度（矿山探索加厚）
 
-**状态**：公开 Pages 覆盖同一 v8 链接 · VERSION **v8.6**  
-**更新**：2026-10-28 11:15:50 Asia/Shanghai
+**状态**：公开 Pages 覆盖同一 v8 链接 · VERSION **v8.7**  
+**更新**：2026-10-29 08:36:31 Asia/Shanghai
 
-## 本版做了什么（观感方向，非主机级）
-1. **运镜**：默认第三人称 camD=4.5、pitch=-0.26（略远略低略跟肩）；全身+纵深清楚；保留近景 Z；触屏右半屏拖视角。
-2. **雾气**：枢纽/室外 FogExp2 冷灰石青（SCENE_MOOD + applySceneMood）；室内更淡；去掉塑料紫空 setClearColor。
-3. **破败材质**：nosplat/网格地面煤灰脏污+砖石路径；矿车站锈铁/斑驳木/煤灰（程序化 CanvasTexture）；门脸旧感加强。
-4. **冷灰光**：主光 0xc8d4dc、半球 0xb8c4cc、曝光 0.92；近景 FILL 仍可读脸。
-5. **VERSION v8.6**；公开包仍无 YY 脸、无 Renderpeople。
+## 本版交付
+1. **做旧门口**：家 / 小卖部 / 教室 / 小房间门脸统一 OLDTEX 锈铁·木板·砖石·煤灰（对齐矿车站风格）。
+2. **童年小游戏**：枢纽 4 个淡圈点（滚铁环·丢沙包·五子棋·打纸片）；校园另有木头人等；触屏可进；滚铁环+丢沙包 E2E 可完一局并 quit 回主场景。
+3. **社区闲逛**：枢纽 晓雨/小悦/小晴/小雯 walk/idle（阿澄仍站桩可交谈）；换人 PARKED 继续闲逛。
+4. **小卖部可买**：室内货架+柜台汽水/面包；`localStorage dream_v87_shop` 计数；状态栏反馈「买下了…」。
+5. **局后梦境回忆**：菜单/结束这局 → 模板中文短笺（门/小游戏/换人/购买/阿澄/飞行），可复制可关闭。
+6. **场景密度**：枢纽路灯·煤堆·废铁·木栏·木箱（`placeHubDensity`，约 56 件）；雾 dens 0.028 防糊。
+7. VERSION v8.7；公开无 YY 脸、无 Renderpeople。
 
 ## 证据
-`/workspace/game/demo/v8work/shots_v86/`
-- 01_hub_far_fog.png · 02_third_fullbody.png · 02b_third_walk.png · 03_closeup_face.png
-- 04a_station_facade.png · 04b_station_interior_fog.png · 05_mobile_landscape.png
-- 00_v85_compare_*.png（对照） · results.json · normal_probe.json
+`/workspace/game/demo/v8work/shots_v87/`
+- 01a/b/c/d 做旧家·小卖·教室·小房间
+- 02 童年游戏点 · 03 NPC 闲逛 · 04 小卖购买反馈 · 05 回忆面板 · 06 手机横屏
+- results.json
 
-## 诚实缺口（做不到 / 本版不做）
-- 主机级体积雾 / 体积光 / 光追 GI
-- 超密石砖/PBR 超清破败贴图包（仍是程序化 ≤512 画布 + 低模）
-- 魂系战斗手感、锁敌、架势条、受击演出
-- splat 场景本身的材质重绘（雾/色调只能罩一层）
-- 手机浏览器帧率与主机/主机模拟器不可比
+## 诚实缺口
+- 小卖购买无真实商品模型/收银动画，仅计数+文案
+- NPC 作息仍是简单路径点，非日程表 AI
+- 童年游戏仍是独立 overlay 场景，非枢纽内实时物理
+- 主机级体积雾 / 超密破败 PBR / 战斗手感仍不做
+- splat 实景材质无法重绘（nosplat/门脸/密度道具可做旧）
 
 ## 公开链接
 https://isagooddayto-daydayup.github.io/dream-memory-demo/v8/

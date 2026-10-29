@@ -4,7 +4,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="梦境矿山">
 <meta name="theme-color" content="#07060c"><link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
-<title>回忆与梦境 · v8.6 矿山世界 · 魂系气质</title>
+<title>回忆与梦境 · v8.7 矿山世界 · 加厚探索</title>
 <style>
 html,body{margin:0;height:100%;overflow:hidden;background:#0a0e12;font-family:"Microsoft YaHei","PingFang SC",sans-serif}
 canvas{display:block}
@@ -23,7 +23,7 @@ canvas{display:block}
 <script type="importmap">{"imports":{"three":"./lib/three.module.js","three/addons/":"./lib/addons/","@sparkjsdev/spark":"./lib/spark.module.js","@pixiv/three-vrm":"./lib/three-vrm.module.js","MG":"./minigames.js","V7":"./dream_v7_features.js","V8":"./dream_v8_world.js"}}</script>
 </head><body>
 <div id="tint"></div><div id="vig"></div><div id="flash"></div><div id="title"></div><div id="cross"></div>
-<div id="hud"><b>回忆与梦境 · v8.6 矿山世界 · 魂系气质对照（运镜·雾·破败·冷光）</b><br>走进<strong>实体门口</strong>：家 / 小卖部 / 教室 / 小房间 门，<strong>山洞</strong>（校园）/ <strong>矿洞</strong>（林间），进<strong>矿车站</strong>后走进矿车「上车」去火星边疆 / 矿区校园；返回也走门 / 洞口 / 矿车（数字键仅快进）；手机：左摇杆走、右半屏拖视角、点「角色」换人；<b>E</b> 阿澄交谈；地上淡圈=小游戏<br>
+<div id="hud"><b>回忆与梦境 · v8.7 矿山世界 · 做旧门口·童年游戏·闲逛·小卖部·梦境回忆</b><br>走进<strong>实体门口</strong>：家 / 小卖部 / 教室 / 小房间 门，<strong>山洞</strong>（校园）/ <strong>矿洞</strong>（林间），进<strong>矿车站</strong>后走进矿车「上车」去火星边疆 / 矿区校园；返回也走门 / 洞口 / 矿车（数字键仅快进）；手机：左摇杆走、右半屏拖视角、点「角色」换人；<b>E</b> 阿澄交谈；地上淡圈=小游戏<br>
 点击画面锁定鼠标 · 鼠标转视角 · <b>WASD</b> 走 · <b>Shift</b> 跑<br>
 <b>空格</b> 按住起飞/上升 · <b>Ctrl/Q</b> 下降 · <b>F</b> 飞行/步行切换<br>
 <b>M</b> 菜单（结束这局→梦境回忆）· <b>G</b> 切换角色（前任留在原地当 NPC · 菜单看角色卡）· <b>1-9</b> 仍可快切场景 · <b>C</b> 镜头 · <b>V</b> 第一人称<br>
@@ -349,19 +349,28 @@ async function loadMeshScene(S){
    const bulb=new THREE.Mesh(new THREE.SphereGeometry(0.09,10,8),new THREE.MeshBasicMaterial({color:0xffd59a}));bulb.position.set(0,3.4,2);root.add(bulb);
    const N=140,pos=new Float32Array(N*3);for(let i=0;i<N;i++){pos[i*3]=(R()-0.5)*16;pos[i*3+1]=0.3+R()*3.2;pos[i*3+2]=(R()-0.5)*10;}
    root.add(new THREE.Points(new THREE.BufferGeometry().setAttribute('position',new THREE.BufferAttribute(pos,3)),new THREE.PointsMaterial({color:0x9a9288,size:0.05,transparent:true,opacity:0.45,depthWrite:false})));
-  }else{ // shop
-   box(8,2.8,0.2,0xf0e8d8,0,1.4,-4);
-   box(0.2,2.8,8,0xe8e0d0,-4,1.4,0);
-   box(0.2,2.8,8,0xe8e0d0,4,1.4,0);
-   box(8,0.15,8,0xd8d0c0,0,2.85,0);
-   // counter
-   box(4.5,1.05,0.7,0x8b5a3c,0,0.55,-1.6);
-   // shelves with box goods
+  }else{ // shop v8.7：做旧货架 + 可买交互点
+   const O=OLDTEX;
+   ground.material=new THREE.MeshStandardMaterial({map:(()=>{const t=O.dirt().clone();t.needsUpdate=true;t.repeat.set(3,3);return t;})(),color:0xb8a888,roughness:1});
+   function bm(w,h,d,mat,x,y,z){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;root.add(m);return m;}
+   bm(8,2.8,0.2,O.mat('wood',3,1.2,{color:0xe8dcc8}),0,1.4,-4);
+   bm(0.2,2.8,8,O.mat('wood',0.2,1.2,{color:0xe0d4c0}),-4,1.4,0);
+   bm(0.2,2.8,8,O.mat('wood',0.2,1.2,{color:0xe0d4c0}),4,1.4,0);
+   bm(8,0.15,8,O.mat('wood',3,3,{color:0xd0c4b0}),0,2.85,0);
+   bm(4.5,1.05,0.7,O.mat('wood',2,0.5,{color:0x8b5a3c}),0,0.55,-1.6);
+   const buys=[];
    for(let i=0;i<4;i++){
-    box(1.4,1.8,0.4,0x6a5040,-2.6+i*1.7,1.0,-3.5);
-    for(let r=0;r<3;r++) box(0.35,0.28,0.28,[0xff8866,0x88cc66,0x66aaff][r],-2.6+i*1.7,0.45+r*0.45,-3.25);
+    bm(1.4,1.8,0.4,O.mat('wood',0.8,1,{color:0x6a5040}),-2.6+i*1.7,1.0,-3.5);
+    for(let r=0;r<3;r++) bm(0.35,0.28,0.28,new THREE.MeshStandardMaterial({color:[0xff8866,0x88cc66,0x66aaff][r],roughness:0.7}),-2.6+i*1.7,0.45+r*0.45,-3.25);
    }
+   // 柜台可买：汽水 / 面包（世界坐标由 shopPlaceBuys 在场景偏移后登记）
+   const soda=bm(0.22,0.38,0.22,new THREE.MeshStandardMaterial({color:0x2a8acc,roughness:0.35,metalness:0.2}),-0.7,1.25,-1.35);
+   const bread=bm(0.4,0.12,0.28,O.mat('wood',0.4,0.3,{color:0xd4a060}),0.7,1.15,-1.35);
+   soda.userData.buyId='soda';bread.userData.buyId='bread';
+   root.userData.shopBuys=[{id:'soda',name:'汽水',mesh:soda,local:[ -0.7,-1.35]},{id:'bread',name:'面包',mesh:bread,local:[0.7,-1.35]}];
    const cool=new THREE.PointLight(0xa8d0ff,0.55,10);cool.position.set(0,2.2,-2);root.add(cool);
+   const tip=new THREE.Mesh(new THREE.PlaneGeometry(2.4,0.4),new THREE.MeshStandardMaterial({map:O.sign('柜台','走近按 E / 点购买'),roughness:1,side:THREE.DoubleSide}));
+   tip.position.set(0,2.05,-1.2);root.add(tip);
   }
   scene.add(root);root.updateMatrixWorld(true);
   S.mesh=root;S.loaded=true;return S;
@@ -605,7 +614,7 @@ scene.add(SUN);scene.add(SUN.target);
  const pm=new THREE.PMREMGenerator(renderer);scene.environment=pm.fromScene(es,0.04).texture;scene.environmentIntensity=0.7;pm.dispose();}
 const SCENE_LIGHT={A:{c:0xc8d4dc,i:2.15,h:0.42},B:{c:0xd0dae0,i:2.0,h:0.48},C:{c:0xe0c8b0,i:2.1,h:0.40},D:{c:0xd8d4cc,i:1.45,h:0.55},E:{c:0xd0d8e0,i:2.0,h:0.45},F:{c:0xd4d8dc,i:1.9,h:0.5},G:{c:0xc8d4c8,i:2.0,h:0.48},H:{c:0xd8d0c4,i:1.55,h:0.5},I:{c:0xb8c0c4,i:1.85,h:0.38},J:{c:0xd0d8e0,i:1.55,h:0.5}};
 // v8.6 魂系雾：冷灰/石青 FogExp2；室内更淡
-const SCENE_MOOD={A:{fog:0x6a747a,dens:0.032,clear:0x5a6468,exp:0.92},B:{fog:0x6e7880,dens:0.036,clear:0x5c666c,exp:0.92},C:{fog:0x7a6a5c,dens:0.028,clear:0x5e564c,exp:0.95},D:{fog:0x5a5e62,dens:0.055,clear:0x3a3e42,exp:0.88},E:{fog:0x6a747a,dens:0.034,clear:0x5a6468,exp:0.92},F:{fog:0x6a7074,dens:0.040,clear:0x4a5054,exp:0.90},G:{fog:0x627068,dens:0.038,clear:0x4e5a52,exp:0.92},H:{fog:0x5c5850,dens:0.050,clear:0x3e3a34,exp:0.88},I:{fog:0x5e666c,dens:0.042,clear:0x4a5258,exp:0.90},J:{fog:0x606870,dens:0.048,clear:0x3e464c,exp:0.88}};
+const SCENE_MOOD={A:{fog:0x6a747a,dens:0.028,clear:0x5e686e,exp:0.94},B:{fog:0x6e7880,dens:0.036,clear:0x5c666c,exp:0.92},C:{fog:0x7a6a5c,dens:0.028,clear:0x5e564c,exp:0.95},D:{fog:0x5a5e62,dens:0.055,clear:0x3a3e42,exp:0.88},E:{fog:0x6a747a,dens:0.034,clear:0x5a6468,exp:0.92},F:{fog:0x6a7074,dens:0.040,clear:0x4a5054,exp:0.90},G:{fog:0x627068,dens:0.038,clear:0x4e5a52,exp:0.92},H:{fog:0x5c5850,dens:0.050,clear:0x3e3a34,exp:0.88},I:{fog:0x5e666c,dens:0.042,clear:0x4a5258,exp:0.90},J:{fog:0x606870,dens:0.048,clear:0x3e464c,exp:0.88}};
 function applySceneMood(key){const m=SCENE_MOOD[key]||SCENE_MOOD.A;scene.fog=new THREE.FogExp2(m.fog,m.dens);renderer.setClearColor(m.clear,1);renderer.toneMappingExposure=m.exp;}
 applySceneMood('A');
 function realify(o){if(!o.isMesh)return;o.castShadow=!LOWQ;o.receiveShadow=false;
@@ -647,9 +656,13 @@ function idlePose(t){const T=7.0;const w=Math.sin(2*Math.PI*t/T);const br=Math.s
 function npcMix(a,b,k){const o={};for(const n of new Set([...Object.keys(a),...Object.keys(b)])){const pa=a[n]||{},pb=b[n]||{};o[n]={};for(const ax of new Set([...Object.keys(pa),...Object.keys(pb)]))o[n][ax]=(pa[ax]||0)*(1-k)+(pb[ax]||0)*k;}return o;}
 const NPCS=[];
 // v4：写实少女 NPC（第一批 c01–c06 + 第二批 d01–d06），自带 Idle_Loop / Walk_Loop 骨骼动画；static=没骨骼，原地站立
-const NPC_DEF=[ // 公开版：只保留 Microsoft Rocketbox (MIT) 模型；阿澄=记事 NPC
+const NPC_DEF=[ // v8.7 公开版 Rocketbox MIT；枢纽多名闲逛 NPC（walk/idle）
  {f:'npc/real/d03_fp01_npc.glb',name:'阿澄',scene:'A',talkable:true,memId:'acheng',static:true,home:[2.2,-1.6]},
- {f:'npc/real/c04_fa11_npc.glb',name:'晓雨',scene:'A'},{f:'npc/real/c05_fa03_npc.glb',name:'小雯',scene:'B'},
+ {f:'npc/real/c04_fa11_npc.glb',name:'晓雨',scene:'A',home:[-5.0,1.2]}, // 小卖部附近
+ {f:'npc/real/d02_fa15_npc.glb',name:'小悦',scene:'A',home:[2.4,0.6]}, // 家门口附近
+ {f:'npc/real/d01_fa12_npc.glb',name:'小晴',scene:'A',home:[-2.8,-4.2]}, // 矿车站附近
+ {f:'npc/real/c05_fa03_npc.glb',name:'小雯',scene:'A',home:[1.2,-6.0]}, // 教室门附近
+ {f:'npc/real/c05_fa03_npc.glb',name:'小雯',scene:'B'},
  {f:'npc/real/d01_fa12_npc.glb',name:'小晴',scene:'C'},{f:'npc/real/d02_fa15_npc.glb',name:'小悦',scene:'C'},
  {f:'npc/real/d04_fp02_npc.glb',name:'Vivi',scene:'E'},
  {f:'npc/real/c04_fa11_npc.glb',name:'晓雨',scene:'F'},{f:'npc/real/d01_fa12_npc.glb',name:'小晴',scene:'F'},
@@ -763,7 +776,7 @@ async function setChar(i,opts){opts=opts||{};const my=++charSeq;const d=ROSTER[i
  const cl={idle:clips.find(c=>c.name==='Idle_Loop')||clips.find(c=>/Idle/.test(c.name)),walk:clips.find(c=>c.name==='Walk_Loop')||clips.find(c=>/Walk_Formal_Loop|Walk/.test(c.name)&&!/RootMotion|To_/.test(c.name)),run:clips.find(c=>/Jog_Fwd_Loop|Sprint_Loop|Run/.test(c.name))};
  if(cl.idle&&!cl.run)cl.run=await loadJogClip(d);
  if(my!==charSeq)return;
- if(!opts.silent&&PL.idx>=0&&PL.idx!==i)parkCurrentChar();
+ if(!opts.silent&&PL.idx>=0&&PL.idx!==i)parkCurrentChar();try{if(!opts.silent)V7.markChar(V7SESS,d.name);}catch(_){}
  m.traverse(o=>{if(o.isMesh){o.frustumCulled=false;realify(o);}
   if(d.cfg){const nm=o.name.toLowerCase();
    if(/^skirt_plain/.test(nm))o.visible=d.cfg.skirt==='plain';else if(/^skirt/.test(nm))o.visible=d.cfg.skirt==='pleat';
@@ -860,7 +873,7 @@ const menu=document.createElement('div');menu.id='menu';menu.style.cssText='posi
 function menuRender(){const tier=V7.tierOf(V7MEM.affinity);const card=PL.name?V8.ensureCharCard(PL.name):null;const cardHtml=card?('当前：'+card.name+'\n经历：'+(card.经历||[]).join(' → ')+'\n技能：'+Object.entries(card.技能||{}).map(([k,v])=>k+' '+v).join(' · ')):'（切换角色后显示）';menu.innerHTML='<b style="font-size:18px">梦境菜单 (M 关闭)</b><br><span style="color:#ffd9a0">场景 · 数字键</span><br>'+
  ORDER.map((k,i)=>'<div data-s="'+k+'" style="cursor:pointer;'+(k===cur?'color:#ffd28a':'')+'">'+(i+1)+'. '+SC[k].name+(SC[k].loaded?'':' <small style="color:#9a90c0">(首次进入时加载)</small>')+'</div>').join('')+
  '<span style="color:#ffd9a0">角色 · G 切换</span><br>'+ROSTER.map((r,i)=>'<span data-c="'+i+'" style="cursor:pointer;margin-right:14px;'+(i===PL.idx?'color:#ffd28a;text-decoration:underline':'')+'">'+r.name+'</span>').join('')+
- '<br><span style="color:#ffd9a0">v8.6 · 魂系气质 · 雾 · 冷光</span><br><div style="font-size:13px;color:#cfc6ff">家 / 小卖部 / 教室 / 小房间 走实体门；校园走<b>山洞</b>、林间走<b>矿洞</b>；火星边疆 / 校园也可在<b>矿车站坐矿车</b>。数字键 1–9 快进；手机点「角色」换人</div><div data-close="1" style="cursor:pointer;color:#ffd28a;text-decoration:underline">📷 近景特写（Z）· 正面看人物</div><br><span style="color:#ffd9a0">角色卡</span><br><div id="v8cardpanel" style="font-size:13px;color:#cfc6ff;white-space:pre-wrap">'+cardHtml+'</div><br><span style="color:#ffd9a0">记事NPC</span><br><div style="font-size:13px;color:#cfc6ff">阿澄好感：'+tier.name+' ('+tier.score+') · 走近金环按 E 交谈</div>'+
+ '<br><span style="color:#ffd9a0">v8.7 · 加厚探索 · 做旧·游戏·闲逛·小卖</span><br><div style="font-size:13px;color:#cfc6ff">家 / 小卖部 / 教室 / 小房间 走实体门；校园走<b>山洞</b>、林间走<b>矿洞</b>；火星边疆 / 校园也可在<b>矿车站坐矿车</b>。数字键 1–9 快进；手机点「角色」换人</div><div data-close="1" style="cursor:pointer;color:#ffd28a;text-decoration:underline">📷 近景特写（Z）· 正面看人物</div><br><span style="color:#ffd9a0">角色卡</span><br><div id="v8cardpanel" style="font-size:13px;color:#cfc6ff;white-space:pre-wrap">'+cardHtml+'</div><br><span style="color:#ffd9a0">记事NPC</span><br><div style="font-size:13px;color:#cfc6ff">阿澄好感：'+tier.name+' ('+tier.score+') · 走近金环按 E 交谈</div>'+
  '<div data-end="1" style="cursor:pointer;margin-top:8px;color:#ffd28a;text-decoration:underline">结束这局 · 生成「这局梦境回忆」</div>'+
  '<div data-resetmem="1" style="cursor:pointer;margin-top:4px;font-size:12px;color:#9a90c0">清空阿澄记忆（测试用）</div>';
  menu.querySelectorAll('[data-s]').forEach(el=>el.onclick=()=>{toggleMenu(false);goScene(el.dataset.s);});
@@ -966,7 +979,7 @@ if(TOUCH.on){
  mk('上升',gp(0,0),'Space',null,'round');
  mk('下降',gp(1,0),'KeyQ',null,'round');
  mk('溶解',gp(2,0),null,()=>goScene(cur==='A'?'B':'A'),'round');
- mk('交谈',gp(0,1),null,()=>{if(V7_NEAR)v7OpenChat();else if(MGX.near)mgEnter(MGX.near.userData.id);else setSt('走近阿澄金环或地上发光圈后再点交谈');},'hi');
+ mk('交谈',gp(0,1),null,()=>{if(V7_NEAR)v7OpenChat();else if(SHOP.near)shopBuy(SHOP.near.id);else if(MGX.near)mgEnter(MGX.near.userData.id);else setSt('走近阿澄金环、货架或地上发光圈后再点');},'hi');
  mk('飞行',gp(1,1),null,()=>{P.fly=!P.fly;setSt(P.fly?'飞行':'步行');try{if(P.fly)V7.markFlight(V7SESS);}catch(_){}},'round');
  mk('梦境',gp(2,1),null,()=>enterDream(),'round');
  mk('角色',gp(0,2),null,()=>setChar((PL.idx+1)%ROSTER.length),'hi','v8btnChar');
@@ -1064,10 +1077,16 @@ function makeEntranceFacade(kind,color,label){
  const stone=new THREE.MeshStandardMaterial({color:0x8a9098,roughness:0.95,metalness:0.08});
  const dark=new THREE.MeshStandardMaterial({color:0x2a1c14,roughness:1,metalness:0});
  if(kind==='home'){
-  const wall=new THREE.Mesh(new THREE.BoxGeometry(3.4,2.7,0.35),wood);wall.position.set(0,1.35,-0.55);g.add(wall);
+  // v8.7 做旧：斑驳木板墙 · 锈铁门框 · 煤灰台基 · 歪雨棚
+  const O=OLDTEX;
+  const wall=new THREE.Mesh(new THREE.BoxGeometry(3.4,2.7,0.35),O.mat('wood',1.2,1.1,{color:0xb8895a}));wall.position.set(0,1.35,-0.55);g.add(wall);
   const hole=new THREE.Mesh(new THREE.BoxGeometry(1.35,2.15,0.2),dark);hole.position.set(0,1.05,-0.35);g.add(hole);
-  const roof=new THREE.Mesh(new THREE.BoxGeometry(3.8,0.18,1.4),new THREE.MeshStandardMaterial({color:0x8b4a32,roughness:0.9}));
-  roof.position.set(0,2.75,-0.3);roof.rotation.x=-0.18;g.add(roof);
+  for(const x of [-0.72,0.72]){const fr=new THREE.Mesh(new THREE.BoxGeometry(0.1,2.2,0.12),O.mat('rust',0.3,2));fr.position.set(x,1.1,-0.32);g.add(fr);}
+  const lint=new THREE.Mesh(new THREE.BoxGeometry(1.55,0.12,0.12),O.mat('rust',1,0.2));lint.position.set(0,2.2,-0.32);g.add(lint);
+  const roof=new THREE.Mesh(new THREE.BoxGeometry(3.8,0.12,1.5),O.mat('corr',2,0.8,{color:0x8b5a42}));roof.position.set(0,2.78,-0.25);roof.rotation.x=-0.16;roof.rotation.z=0.03;g.add(roof);
+  const base=new THREE.Mesh(new THREE.BoxGeometry(3.6,0.18,1.2),O.mat('coal',2,0.6));base.position.set(0,0.05,-0.2);g.add(base);
+  const sign=new THREE.Mesh(new THREE.PlaneGeometry(1.4,0.45),new THREE.MeshStandardMaterial({map:O.sign('家','老屋'),roughness:1}));sign.position.set(0,2.55,-0.36);g.add(sign);
+  const slat=new THREE.Mesh(new THREE.BoxGeometry(0.12,1.4,0.05),O.mat('wood',0.3,1));slat.position.set(1.35,0.85,-0.5);slat.rotation.z=0.28;g.add(slat);
  }else if(kind==='station'){
   // v8.4 做旧：锈铁柱 · 塌陷波纹铁皮雨棚 · 斑驳木板墙 · 褪色旧站牌 · 歪木条 · 轨道+矿车
   const O=OLDTEX;
@@ -1083,32 +1102,38 @@ function makeEntranceFacade(kind,color,label){
   for(const xx of [-2.45,-3.15]){const r=new THREE.Mesh(new THREE.BoxGeometry(0.09,0.09,3.6),O.mat('rust',0.2,6));r.position.set(xx,0.05,0.2);g.add(r);}
   const cart=O.cart();cart.position.set(-2.8,0,0.4);cart.rotation.y=Math.PI/2+0.05;cart.scale.setScalar(0.9);g.add(cart);
  }else if(kind==='shop'){
-  const wall=new THREE.Mesh(new THREE.BoxGeometry(3.6,2.6,0.3),new THREE.MeshStandardMaterial({color:0xd8c8a8,roughness:0.9}));wall.position.set(0,1.3,-0.55);g.add(wall);
+  // v8.7 做旧：斑驳砖石 · 锈铁雨棚架 · 褪色招牌 · 煤灰门槛
+  const O=OLDTEX;
+  const wall=new THREE.Mesh(new THREE.BoxGeometry(3.6,2.6,0.3),O.mat('brick',1.4,1.1,{color:0xc4b090}));wall.position.set(0,1.3,-0.55);g.add(wall);
   const hole=new THREE.Mesh(new THREE.BoxGeometry(1.35,2.05,0.18),dark);hole.position.set(0,1.0,-0.38);g.add(hole);
-  const awn=new THREE.Mesh(new THREE.BoxGeometry(3.2,0.12,1.0),new THREE.MeshStandardMaterial({color:color||0x4a90c8,roughness:0.7}));
-  awn.position.set(0,2.35,-0.05);awn.rotation.x=-0.25;g.add(awn);
-  const sign=new THREE.Mesh(new THREE.PlaneGeometry(2.2,0.55),new THREE.MeshStandardMaterial({map:OLDTEX.sign('小卖部','烟 酒 糖 汽水'),roughness:1}));sign.position.set(0,2.62,-0.38);g.add(sign);
-  const win=new THREE.Mesh(new THREE.BoxGeometry(0.9,0.8,0.05),new THREE.MeshStandardMaterial({color:0x9ec4d8,roughness:0.2,metalness:0.1}));win.position.set(1.15,1.35,-0.38);g.add(win);
- }else if(kind==='classroom'){ // 校舍门脸：砖墙 + 绿木门 + 「教室」牌
-  const O=OLDTEX;const brick=new THREE.MeshStandardMaterial({color:0xa65a44,roughness:0.95});const white=new THREE.MeshStandardMaterial({color:0xe8e0cc,roughness:0.95});
+  for(const x of [-1.5,1.5]){const p=new THREE.Mesh(new THREE.BoxGeometry(0.12,2.5,0.12),O.mat('rust',0.4,3));p.position.set(x,1.25,-0.2);g.add(p);}
+  const awn=new THREE.Mesh(new THREE.BoxGeometry(3.4,0.08,1.1),O.mat('corr',2,0.6,{color:color||0x5a7a98}));awn.position.set(0,2.4,-0.02);awn.rotation.x=-0.22;awn.rotation.z=-0.04;g.add(awn);
+  const sign=new THREE.Mesh(new THREE.PlaneGeometry(2.2,0.55),new THREE.MeshStandardMaterial({map:O.sign('小卖部','烟 酒 糖 汽水'),roughness:1}));sign.position.set(0,2.68,-0.36);sign.rotation.z=-0.02;g.add(sign);
+  const win=new THREE.Mesh(new THREE.BoxGeometry(0.9,0.8,0.05),new THREE.MeshStandardMaterial({color:0x7a9aab,roughness:0.35,metalness:0.15,map:O.dirt()}));win.position.set(1.15,1.35,-0.38);g.add(win);
+  const base=new THREE.Mesh(new THREE.BoxGeometry(3.7,0.14,0.9),O.mat('coal',2,0.5));base.position.set(0,0.04,-0.15);g.add(base);
+  const crate=new THREE.Mesh(new THREE.BoxGeometry(0.55,0.4,0.45),O.mat('wood',0.5,0.4));crate.position.set(-1.35,0.25,0.15);g.add(crate);
+ }else if(kind==='classroom'){ // v8.7 做旧校舍：OLDTEX 砖 + 锈框 + 煤灰台基
+  const O=OLDTEX;const brick=O.mat('brick',1.2,1.2,{color:0xa65a44});const white=O.mat('wood',1.5,0.5,{color:0xd8d0bc});
   const wall=new THREE.Mesh(new THREE.BoxGeometry(3.0,2.9,0.32),brick);wall.position.set(0,1.45,-0.55);g.add(wall);
   const band=new THREE.Mesh(new THREE.BoxGeometry(3.02,0.9,0.34),white);band.position.set(0,0.45,-0.55);g.add(band);
   const hole=new THREE.Mesh(new THREE.BoxGeometry(1.2,2.1,0.2),dark);hole.position.set(0,1.05,-0.38);g.add(hole);
-  const leaf=new THREE.Mesh(new THREE.BoxGeometry(0.6,2.05,0.05),new THREE.MeshStandardMaterial({color:0x3f7a52,roughness:0.8}));leaf.position.set(-0.85,1.03,-0.12);leaf.rotation.y=-1.1;g.add(leaf);
-  for(const x of [-0.68,0.68]){const fr=new THREE.Mesh(new THREE.BoxGeometry(0.1,2.2,0.1),O.mat('wood',0.3,1));fr.position.set(x,1.1,-0.33);g.add(fr);}
-  const top=new THREE.Mesh(new THREE.BoxGeometry(1.46,0.1,0.1),O.mat('wood',0.5,0.1));top.position.set(0,2.15,-0.33);g.add(top);
+  const leaf=new THREE.Mesh(new THREE.BoxGeometry(0.6,2.05,0.05),O.mat('wood',0.5,1.4,{color:0x3f7a52}));leaf.position.set(-0.85,1.03,-0.12);leaf.rotation.y=-1.1;g.add(leaf);
+  for(const x of [-0.68,0.68]){const fr=new THREE.Mesh(new THREE.BoxGeometry(0.1,2.2,0.1),O.mat('rust',0.3,2));fr.position.set(x,1.1,-0.33);g.add(fr);}
+  const top=new THREE.Mesh(new THREE.BoxGeometry(1.46,0.1,0.1),O.mat('rust',0.8,0.2));top.position.set(0,2.15,-0.33);g.add(top);
   const sign=new THREE.Mesh(new THREE.PlaneGeometry(1.5,0.48),new THREE.MeshStandardMaterial({map:O.sign('教室','初二（3）班'),roughness:1}));sign.position.set(0,2.5,-0.37);g.add(sign);
-  for(const x of [-1.15,1.15]){const w=new THREE.Mesh(new THREE.BoxGeometry(0.55,0.7,0.04),new THREE.MeshStandardMaterial({color:0x8fb0c0,roughness:0.25}));w.position.set(x,1.55,-0.37);g.add(w);}
- }else if(kind==='room'||kind==='exitdoor'){ // 木门 + 门框 + 小段墙（实体房门；出口也用它）
-  const O=OLDTEX;const wallM=new THREE.MeshStandardMaterial({color:kind==='room'?0xcdb48e:0xd8ccb4,roughness:0.95});
+  for(const x of [-1.15,1.15]){const w=new THREE.Mesh(new THREE.BoxGeometry(0.55,0.7,0.04),new THREE.MeshStandardMaterial({color:0x6a8a98,roughness:0.45,map:O.dirt()}));w.position.set(x,1.55,-0.37);g.add(w);}
+  const base=new THREE.Mesh(new THREE.BoxGeometry(3.1,0.14,0.8),O.mat('coal',1.5,0.4));base.position.set(0,0.04,-0.2);g.add(base);
+ }else if(kind==='room'||kind==='exitdoor'){ // v8.7 做旧木门：OLDTEX 木墙 + 锈铰 + 煤灰台阶
+  const O=OLDTEX;const wallM=O.mat('wood',0.8,1.2,{color:kind==='room'?0xcdb48e:0xd8ccb4});
   for(const x of [-1.15,1.15]){const w=new THREE.Mesh(new THREE.BoxGeometry(1.0,2.6,0.22),wallM);w.position.set(x,1.3,-0.5);g.add(w);}
   const lint=new THREE.Mesh(new THREE.BoxGeometry(3.3,0.45,0.22),wallM);lint.position.set(0,2.37,-0.5);g.add(lint);
   const hole=new THREE.Mesh(new THREE.BoxGeometry(1.3,2.15,0.06),new THREE.MeshStandardMaterial({color:kind==='exitdoor'?0xf4e2c0:0x2a1c14,roughness:1,emissive:kind==='exitdoor'?0x6a5232:0x000000,emissiveIntensity:0.35}));hole.position.set(0,1.07,-0.6);g.add(hole);
-  for(const x of [-0.68,0.68]){const fr=new THREE.Mesh(new THREE.BoxGeometry(0.09,2.2,0.28),O.mat('wood',0.3,1));fr.position.set(x,1.1,-0.5);g.add(fr);}
-  const top=new THREE.Mesh(new THREE.BoxGeometry(1.45,0.09,0.28),O.mat('wood',0.5,0.1));top.position.set(0,2.17,-0.5);g.add(top);
+  for(const x of [-0.68,0.68]){const fr=new THREE.Mesh(new THREE.BoxGeometry(0.09,2.2,0.28),O.mat('rust',0.3,2));fr.position.set(x,1.1,-0.5);g.add(fr);}
+  const top=new THREE.Mesh(new THREE.BoxGeometry(1.45,0.09,0.28),O.mat('rust',0.8,0.2));top.position.set(0,2.17,-0.5);g.add(top);
   const leaf=new THREE.Mesh(new THREE.BoxGeometry(1.22,2.08,0.05),O.mat('wood',0.6,1.4,{color:0xd9b48a}));leaf.geometry.translate(0.61,0,0);leaf.position.set(-0.63,1.06,-0.4);leaf.rotation.y=1.25;g.add(leaf);
-  const knob=new THREE.Mesh(new THREE.SphereGeometry(0.035,10,8),new THREE.MeshStandardMaterial({color:0xc8a050,metalness:0.8,roughness:0.3}));knob.position.set(1.12,1.0,0.04);leaf.add(knob);
-  const step=new THREE.Mesh(new THREE.BoxGeometry(1.6,0.08,0.5),new THREE.MeshStandardMaterial({color:0x8a8070,roughness:1}));step.position.set(0,0.04,-0.2);g.add(step);
+  const knob=new THREE.Mesh(new THREE.SphereGeometry(0.035,10,8),new THREE.MeshStandardMaterial({color:0xa08040,metalness:0.7,roughness:0.45}));knob.position.set(1.12,1.0,0.04);leaf.add(knob);
+  const step=new THREE.Mesh(new THREE.BoxGeometry(1.6,0.1,0.55),O.mat('coal',1,0.4,{color:0x6a6058}));step.position.set(0,0.05,-0.2);g.add(step);
+  if(kind==='room'){const sg=new THREE.Mesh(new THREE.PlaneGeometry(1.3,0.4),new THREE.MeshStandardMaterial({map:O.sign('小房间',''),roughness:1}));sg.position.set(0,2.55,-0.38);g.add(sg);}
  }else if(kind==='cave'||kind==='mine'){ // 岩石洞门 + 木支架矿洞口
   const rockM=new THREE.MeshStandardMaterial({color:kind==='mine'?0x6f6558:0x7d776e,roughness:1,flatShading:true});
   const rnd=(()=>{let a=kind==='mine'?11:5;return()=>{a=(a*16807)%2147483647;return a/2147483647;};})();
@@ -1147,6 +1172,66 @@ function makeEntranceFacade(kind,color,label){
  }
  return g;
 }
+
+// ---------------- v8.7 hub density + shop buy + session marks ----------------
+let HUB_DENS=null;
+function placeHubDensity(){
+ if(HUB_DENS){HUB_DENS.parent&&HUB_DENS.parent.remove(HUB_DENS);HUB_DENS=null;}
+ const S=SC.A;if(!S||!S.loaded)return;
+ const O=OLDTEX;const g=new THREE.Group();g.name='hubDensity_v87';
+ const cx=S.off.x+(S.spawn?S.spawn[0]:0),cz=S.off.z+(S.spawn?S.spawn[1]:0);
+ const R=(()=>{let a=17;return()=>{a=(a*16807)%2147483647;return a/2147483647;};})();
+ function lamp(x,z){const p=new THREE.Group();const post=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.08,2.6,8),O.mat('rust',1,3));post.position.y=1.3;p.add(post);
+  const head=new THREE.Mesh(new THREE.BoxGeometry(0.35,0.12,0.35),O.mat('rust',1,1));head.position.y=2.65;p.add(head);
+  const bulb=new THREE.Mesh(new THREE.SphereGeometry(0.08,8,6),new THREE.MeshBasicMaterial({color:0xffd9a0}));bulb.position.y=2.5;p.add(bulb);
+  const pl=new THREE.PointLight(0xffc070,0.35,8);pl.position.y=2.5;p.add(pl);
+  p.position.set(cx+x,groundW('A',cx+x,cz+z),cz+z);g.add(p);}
+ function coalPile(x,z,s){const m=new THREE.Mesh(new THREE.DodecahedronGeometry(0.55*s,0),O.mat('coal',1,1));m.position.set(cx+x,groundW('A',cx+x,cz+z)+0.25*s,cz+z);m.scale.set(1.4,0.7,1.1);m.rotation.set(R(),R(),R());g.add(m);
+  const m2=new THREE.Mesh(new THREE.DodecahedronGeometry(0.35*s,0),O.mat('coal',1,1));m2.position.set(cx+x+0.4*s,groundW('A',cx+x,cz+z)+0.15*s,cz+z-0.2);g.add(m2);}
+ function scrap(x,z){const m=new THREE.Mesh(new THREE.BoxGeometry(0.8+R()*0.6,0.08,0.5+R()*0.3),O.mat('corr',1,0.5));m.position.set(cx+x,groundW('A',cx+x,cz+z)+0.05,cz+z);m.rotation.y=R()*6;m.rotation.z=(R()-0.5)*0.2;g.add(m);
+  const bar=new THREE.Mesh(new THREE.BoxGeometry(0.08,0.08,1.2),O.mat('rust',0.2,2));bar.position.set(cx+x+0.3,groundW('A',cx+x,cz+z)+0.06,cz+z+0.2);bar.rotation.y=R();g.add(bar);}
+ function fenceSeg(x0,z0,x1,z1){const dx=x1-x0,dz=z1-z0,len=Math.hypot(dx,dz),n=Math.max(2,Math.floor(len/1.4));
+  for(let i=0;i<=n;i++){const t=i/n,x=x0+dx*t,z=z0+dz*t;const post=new THREE.Mesh(new THREE.BoxGeometry(0.1,1.15,0.1),O.mat('wood',0.3,1));post.position.set(cx+x,groundW('A',cx+x,cz+z)+0.55,cz+z);post.rotation.z=(R()-0.5)*0.08;g.add(post);}
+  const rail=new THREE.Mesh(new THREE.BoxGeometry(len,0.06,0.06),O.mat('wood',2,0.2));rail.position.set(cx+(x0+x1)/2,groundW('A',cx+(x0+x1)/2,cz+(z0+z1)/2)+0.85,cz+(z0+z1)/2);rail.rotation.y=Math.atan2(dx,dz);g.add(rail);}
+ // lamps
+ for(const [x,z] of [[-6.5,-1],[6.2,-3],[ -1,6.5],[4.5,4],[-7,4],[7.5,1]])lamp(x,z);
+ // coal + scrap
+ for(const [x,z,s] of [[-7.5,-3.5,1.2],[5.5,-6,1],[8,-0.5,0.9],[-8,2.5,1.1],[0.5,9,0.85]])coalPile(x,z,s);
+ for(const [x,z] of [[-4.5,5],[6.5,2.5],[-9,-1],[3.5,-8],[8.5,-4]])scrap(x,z);
+ // short fence arcs around hub edge
+ fenceSeg(-9,-6,-9,4);fenceSeg(-9,4,-4,8);fenceSeg(5,-8,9,-3);fenceSeg(9,-3,9,3);
+ // crates near shop/home
+ for(const [x,z] of [[-6.5,-0.2],[3.2,2.0],[-1.5,-6.5]]){const c=new THREE.Mesh(new THREE.BoxGeometry(0.6,0.45,0.5),O.mat('wood',0.5,0.4));c.position.set(cx+x,groundW('A',cx+x,cz+z)+0.22,cz+z);c.rotation.y=R()*2;g.add(c);}
+ scene.add(g);HUB_DENS=g;window.__hubDens=g.children.length;
+}
+
+const SHOP={near:null,counts:null};
+function shopLoad(){try{return JSON.parse(localStorage.getItem('dream_v87_shop')||'{"soda":0,"bread":0}');}catch(e){return{soda:0,bread:0};}}
+function shopSave(c){try{localStorage.setItem('dream_v87_shop',JSON.stringify(c));}catch(e){}}
+SHOP.counts=shopLoad();
+function shopBuy(id){
+ const names={soda:'汽水',bread:'面包'};
+ if(!names[id])return;
+ SHOP.counts[id]=(SHOP.counts[id]|0)+1;shopSave(SHOP.counts);
+ try{V7.markBuy(V7SESS,id);}catch(_){}
+ setSt('买下了'+names[id]+' · 本机已买汽水'+SHOP.counts.soda+' / 面包'+SHOP.counts.bread);
+ window.__shopLast={id,name:names[id],counts:{...SHOP.counts},t:Date.now()};
+}
+function shopUpdate(){
+ const prev=SHOP.near;SHOP.near=null;
+ if(cur!=='J'){if(prev)MGM.setPrompt(null);return;}
+ const S=SC.J;if(!S||!S.mesh||!S.mesh.userData.shopBuys)return;
+ let best=null,bd=1.6;
+ for(const b of S.mesh.userData.shopBuys){
+  const wx=S.off.x+b.local[0], wz=S.off.z+b.local[1];
+  const d=Math.hypot(P.pos.x-wx,P.pos.z-wz);
+  if(d<bd){bd=d;best=b;}
+ }
+ SHOP.near=best;
+ if(best){MGM.setPrompt((TOUCH.on?'👆 点这里买「':'按 E 买「')+best.name+'」 · 已买 '+(SHOP.counts[best.id]|0)+' 次',()=>shopBuy(best.id));}
+ else if(prev){MGM.setPrompt(null);}
+}
+
 function placeDoors(){
  for(const v of DOOR_VIS){v.parent&&v.parent.remove(v);}DOOR_VIS.length=0;
  for(const door of V8.DOORS){
@@ -1211,7 +1296,7 @@ async function finishDoor(door,kind){
  if(to===cur){place(cur);DOOR_CD=0.6;}
  else await goScene(to);
  setSt(kind==='enter'?('进入：'+SC[to].name):('回到 '+SC[to].name));
- try{V7.markScene(V7SESS,to);}catch(_){}
+ try{V7.markScene(V7SESS,to);}catch(_){}try{V7.markDoor(V7SESS,door.id);}catch(_){}
  try{if(PL.name){V8.appendCharStory(PL.name,'路过 · '+SC[to].name);V8.bumpCharSkill(PL.name,'探索',1);}}catch(_){}
 }
 function doorUpdate(dt){
@@ -1333,11 +1418,11 @@ function mgUpdate(){let best=null,bd=2.0;for(const m of MGX.marks){const k=m.use
   m.userData.ring.material.opacity=0.2+0.07*Math.sin(P.t*3); /* v8.5 地面淡提示 */const d=Math.hypot(m.position.x-P.pos.x,m.position.z-P.pos.z);if(d<bd){bd=d;best=m;}}
  if(V7_NEAR){MGX.near=null;MGM.setPrompt(null);return;} if(best!==MGX.near){MGX.near=best;MGM.setPrompt(best?(TOUCH.on?'👆 点这里进入「'+best.userData.name+'」':'按 E 进入「'+best.userData.name+'」'):null,best?()=>mgEnter(best.userData.id):null);}}
 addEventListener('keydown',e=>{if(MGM.MG.active||CS.on||V7_CHAT)return;
- if(e.code==='KeyE'){if(V7_NEAR){v7OpenChat();return;}if(MGX.near)mgEnter(MGX.near.userData.id);}
+ if(e.code==='KeyE'){if(V7_NEAR){v7OpenChat();return;}if(SHOP.near){shopBuy(SHOP.near.id);return;}if(MGX.near)mgEnter(MGX.near.userData.id);}
  if(e.code==='Escape'&&document.getElementById('v7card').style.display==='flex'){document.getElementById('v7card').style.display='none';}
 });
 // test hooks (headless capture)
-window.__G={DOOR_VIS,PLA,RIDE,doorVisRefresh,toggleClose,FILL,SkeletonUtils,applySceneMood,SCENE_MOOD,HEMI,SUN,get fog(){return scene.fog;},get exposure(){return renderer.toneMappingExposure;},MGM,MGX,mgEnter,mgUpdate,PL,ROSTER,setChar,goScene,V8,DOORS:V8.DOORS,PARKED,placeDoors,placeCommunity,useDoor,COMM_VIS,CAMS,toggleMenu,ORDER,NPCS,CS,playCutscene,enterDream,THREE,P,SC,AV,TR,keys,update,startDissolve,place,makePortal,removePortal,camera,player,body,portals,get cur(){return cur;},set cur(v){cur=v;},groundW,poseAvatar,avatarBones,showTitle,V7,get V7MEM(){return V7MEM;},get V7SESS(){return V7SESS;},v7OpenChat,v7CloseChat,v7EndSession,get V7_NEAR(){return V7_NEAR;}};
+window.__G={DOOR_VIS,PLA,RIDE,doorVisRefresh,toggleClose,FILL,SkeletonUtils,applySceneMood,SCENE_MOOD,HEMI,SUN,get fog(){return scene.fog;},get exposure(){return renderer.toneMappingExposure;},MGM,MGX,mgEnter,mgUpdate,SHOP,shopBuy,placeHubDensity,HUB_DENS,PL,ROSTER,setChar,goScene,V8,DOORS:V8.DOORS,PARKED,placeDoors,placeCommunity,useDoor,COMM_VIS,CAMS,toggleMenu,ORDER,NPCS,CS,playCutscene,enterDream,THREE,P,SC,AV,TR,keys,update,startDissolve,place,makePortal,removePortal,camera,player,body,portals,get cur(){return cur;},set cur(v){cur=v;},groundW,poseAvatar,avatarBones,showTitle,V7,get V7MEM(){return V7MEM;},get V7SESS(){return V7SESS;},v7OpenChat,v7CloseChat,v7EndSession,get V7_NEAR(){return V7_NEAR;}};
 window.__step=(sec,dt=1/30)=>{for(let t=0;t<sec-1e-6;t+=dt)update(dt);};
 
 // ---------------- boot ----------------
@@ -1352,6 +1437,7 @@ window.__step=(sec,dt=1/30)=>{for(let t=0;t<sec-1e-6;t+=dt)update(dt);};
   if(portalOn)makePortal();
   placeDoors();
   placeCommunity();
+  placeHubDensity();
   doorVisRefresh();
   mgPlace();
   loadNPCs();

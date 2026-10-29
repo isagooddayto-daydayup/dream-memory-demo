@@ -36,3 +36,12 @@
 | 角色模型 | Microsoft Rocketbox | MIT | 公开包不变 |
 | Kenney 等 CC0（若沿用） | Kenney | CC0 | 林间等旧场景 |
 公开包：无 YY 脸、无 Renderpeople。
+
+## v8.7 2026-10-29 08:36:31 Asia/Shanghai
+| 项 | 来源 | 许可 | 备注 |
+| --- | --- | --- | --- |
+| OLDTEX 做旧门脸扩展 | 自写 CanvasTexture | 自有 | 家/小卖/教室/小房间 |
+| 枢纽密度道具 | 自写 | 自有 | 路灯煤堆废铁木栏 |
+| 童年小游戏 | minigames.js 既有 | 自有+Rocketbox | 枢纽挂点 |
+| 角色 | Microsoft Rocketbox | MIT | 公开包不变 |
+公开包：无 YY 脸、无 Renderpeople。

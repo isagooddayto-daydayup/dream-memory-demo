@@ -231,6 +231,9 @@ export function newSession() {
     startedAt: Date.now(),
     scenes: new Set(['A']),
     minigames: new Set(),
+    doors: new Set(),
+    chars: new Set(),
+    buys: new Set(),
     talked: false,
     flight: false,
     affinityPeak: 0,
@@ -248,27 +251,52 @@ export function markTalk(sess) {
 export function markFlight(sess) {
   if (sess) sess.flight = true;
 }
+export function markDoor(sess, id) {
+  if (sess && id) sess.doors.add(id);
+}
+export function markChar(sess, name) {
+  if (sess && name) sess.chars.add(name);
+}
+export function markBuy(sess, id) {
+  if (sess && id) sess.buys.add(id);
+}
 
 const SCENE_NAME = {
-  A: '八十年代矿区小镇',
+  A: '矿山小镇枢纽',
   B: '小学矿区校园',
   C: '火星边疆',
   D: '小房间',
   E: 'ARES 火星基地',
   F: '九十年代教室',
+  G: '林间小路',
+  H: '家',
+  I: '矿车站',
+  J: '小卖部',
 };
 const MG_NAME = {
-  hoop: '滚铁环', sandbag: '丢沙包', go: '下棋·五子棋', paper: '打纸片',
+  gunlhuan: '滚铁环', shabao: '丢沙包', wuziqi: '五子棋', paizhipian: '打纸片',
+  mutouren: '一二三木头人', tiaosheng: '跳大绳', caijidan: '踩鸡蛋', moxiazi: '摸瞎子',
+  // legacy aliases
+  hoop: '滚铁环', sandbag: '丢沙包', go: '五子棋', paper: '打纸片',
   statue: '一二三木头人', rope: '跳大绳', egg: '踩鸡蛋', blind: '摸瞎子',
 };
+const DOOR_NAME = {
+  hub_home: '家门口', hub_shop: '小卖部', hub_classroom: '教室', hub_room: '小房间',
+  hub_station: '矿车站', hub_campus: '山洞·校园', hub_forest: '矿洞·林间',
+  cart_mars: '矿车·火星', cart_campus: '矿车·校园',
+};
+const BUY_NAME = { soda: '汽水', bread: '面包' };
 
 function minutesOf(sess) {
   return Math.max(1, Math.round((Date.now() - sess.startedAt) / 60000));
 }
 
 export function buildDreamCard(sess, mem) {
-  const scenes = [...sess.scenes];
-  const mgs = [...sess.minigames];
+  const scenes = [...(sess.scenes || [])];
+  const mgs = [...(sess.minigames || [])];
+  const doors = [...(sess.doors || [])];
+  const chars = [...(sess.chars || [])];
+  const buys = [...(sess.buys || [])];
   const mins = minutesOf(sess);
   const tier = tierOf(mem?.affinity || 0);
   const titles = [
@@ -281,10 +309,21 @@ export function buildDreamCard(sess, mem) {
   const title = pick(titles);
   const lines = [];
   lines.push(`这一局大约走了 ${mins} 分钟。你推开的回忆有：${scenes.map((k) => SCENE_NAME[k] || k).join('、') || '（还没走开）'}。`);
-  if (mgs.length) {
-    lines.push(`童年小游戏里，你试过：${mgs.map((id) => MG_NAME[id] || id).join('、')}。铁环声和跳绳的影子，还留在梦的边缘。`);
+  if (doors.length) {
+    lines.push(`走过的门：${doors.map((id) => DOOR_NAME[id] || id).join('、')}。木门轴吱呀一声，煤灰还沾在鞋底。`);
   } else {
-    lines.push('这一局没有走进发光圈里的小游戏，像只是隔着门口看了一眼操场。');
+    lines.push('这一局你几乎没推开实体门，只在枢纽的雾里来回踱步。');
+  }
+  if (mgs.length) {
+    lines.push(`童年小游戏里，你试过：${mgs.map((id) => MG_NAME[id] || id).join('、')}。铁环声和沙包落地的闷响，还留在梦的边缘。`);
+  } else {
+    lines.push('这一局没有走进地上淡圈里的小游戏，像只是隔着门口看了一眼操场。');
+  }
+  if (chars.length) {
+    lines.push(`换过的身影：${chars.join('、')}。换人时前任留在原地闲逛，像梦里多出来的同伴。`);
+  }
+  if (buys.length) {
+    lines.push(`小卖部柜台上，你买过：${buys.map((id) => BUY_NAME[id] || id).join('、')}。塑料瓶还带着一点凉意。`);
   }
   if (sess.talked) {
     lines.push(`你和梦境守望者阿澄说过话。此刻好感是「${tier.name}」（${tier.score}）。`);
@@ -298,13 +337,13 @@ export function buildDreamCard(sess, mem) {
   if (scenes.length >= 3) lines.push('多段回忆叠在一起，像一本被翻乱的相册，封面却仍写着「矿区」。');
   else if (scenes.length === 1) lines.push('你几乎没离开最初的那一页回忆，梦便把这一页写得很仔细。');
   else lines.push('两段回忆之间有一道淡淡的溶解光，像醒来前的眨眼。');
-  const body = lines.slice(0, 6).join('\n');
+  const body = lines.slice(0, 8).join('\n');
   const card = {
     id: 'c' + Date.now().toString(36),
     title,
     body,
     at: Date.now(),
-    meta: { mins, scenes, minigames: mgs, talked: !!sess.talked, flight: !!sess.flight, affinity: tier.score, tier: tier.name },
+    meta: { mins, scenes, minigames: mgs, doors, chars, buys, talked: !!sess.talked, flight: !!sess.flight, affinity: tier.score, tier: tier.name },
   };
   return card;
 }
