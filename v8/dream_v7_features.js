@@ -41,6 +41,51 @@ export const MAINLINE = [
   { id: 'm4', title: '回忆卡', line: '主线四：结束一局时，梦会写成一张「这局梦境回忆」短笺。' },
 ];
 
+/** v8.10 Acheng mainline quest board (localStorage). */
+export const QUEST_KEY = 'dream_v810_quest';
+export const QUEST_BEATS = [
+  { id: 'buy_soda', title: '去小卖买汽水', hint: '走进小卖部，按 E 买一瓶汽水。', check: 'buy:soda' },
+  { id: 'play_mg', title: '玩一个童年游戏', hint: '走近地上淡圈，完一局小游戏。', check: 'minigame' },
+  { id: 'ride_cart', title: '坐矿车去一站', hint: '进矿车站，走上矿车去火星/校园/ARES。', check: 'ride' },
+  { id: 'report_acheng', title: '回来跟阿澄回话', hint: '回到枢纽找阿澄按 E 交谈，告诉他你回来了。', check: 'talk' },
+];
+export function loadQuest() {
+  const q = loadRaw(QUEST_KEY, null);
+  if (q && q.version === 1 && Array.isArray(q.done)) return q;
+  return { version: 1, done: [], active: 0, completedAt: 0, startedAt: Date.now() };
+}
+export function saveQuest(q) { saveRaw(QUEST_KEY, q); }
+export function questStatus(q) {
+  q = q || loadQuest();
+  const beats = QUEST_BEATS.map((b, i) => ({
+    ...b,
+    state: q.done.includes(b.id) ? 'done' : (i === (q.done.length) ? 'active' : 'locked'),
+  }));
+  const all = q.done.length >= QUEST_BEATS.length;
+  return { beats, active: beats.find((b) => b.state === 'active') || null, all, doneCount: q.done.length };
+}
+export function questAdvance(flag, detail) {
+  const q = loadQuest();
+  if (q.done.length >= QUEST_BEATS.length) return { q, advanced: false, status: questStatus(q) };
+  const next = QUEST_BEATS[q.done.length];
+  let ok = false;
+  if (next.check === 'buy:soda' && flag === 'buy' && detail === 'soda') ok = true;
+  if (next.check === 'minigame' && flag === 'minigame') ok = true;
+  if (next.check === 'ride' && flag === 'ride') ok = true;
+  if (next.check === 'talk' && flag === 'talk') ok = true;
+  if (!ok) return { q, advanced: false, status: questStatus(q), waiting: next };
+  q.done.push(next.id);
+  if (q.done.length >= QUEST_BEATS.length) q.completedAt = Date.now();
+  saveQuest(q);
+  return { q, advanced: true, beat: next, status: questStatus(q), justFinished: q.done.length >= QUEST_BEATS.length };
+}
+export function clearQuest() {
+  const q = { version: 1, done: [], active: 0, completedAt: 0, startedAt: Date.now() };
+  saveQuest(q);
+  return q;
+}
+
+
 const POS_WORDS = ['谢谢', '感谢', '喜欢', '开心', '高兴', '想你', '朋友', '记得', '陪我', '真好', '可爱', '漂亮', '厉害', '爱', '温暖', '安心'];
 const NEG_WORDS = ['讨厌', '滚', '无聊', '傻', '笨', '烦', '走开'];
 const LORE_ASK = ['你是谁', '你叫什么', '这里是', '这是哪', '矿区', '小镇', '学校', '火星', '教室', '梦', '回忆', '传送门', '飞行', '飞船', 'ARES', '机场', '主线'];
@@ -337,9 +382,9 @@ const MG_NAME = {
 const DOOR_NAME = {
   hub_home: '家门口', hub_shop: '小卖部', hub_classroom: '教室', hub_room: '小房间',
   hub_station: '矿车站', hub_campus: '山洞·校园', hub_forest: '矿洞·林间',
-  cart_mars: '矿车·火星', cart_campus: '矿车·校园',
+  cart_mars: '矿车·火星', cart_campus: '矿车·校园', cart_ares: '矿车·ARES', hub_ares: '飞船口·ARES',
 };
-const BUY_NAME = { soda: '汽水', bread: '面包' };
+const BUY_NAME = { soda: '汽水', bread: '面包', candy: '糖豆', gum: '口香糖', radio: '收音机' };
 
 function minutesOf(sess) {
   return Math.max(1, Math.round((Date.now() - sess.startedAt) / 60000));
@@ -376,6 +421,15 @@ export function buildDreamCard(sess, mem) {
   if (chars.length) {
     lines.push(`换过的身影：${chars.join('、')}。换人时前任留在原地闲逛，像梦里多出来的同伴。`);
   }
+  try {
+    const qs = questStatus(loadQuest());
+    if (qs.doneCount) {
+      const names = qs.beats.filter((b) => b.state === 'done').map((b) => b.title);
+      lines.push('阿澄主线任务：已完成 ' + qs.doneCount + '/' + QUEST_BEATS.length + (names.length ? ('（' + names.join(' → ') + '）') : '') + (qs.all ? '。全部完成了。' : '。'));
+    } else {
+      lines.push('阿澄主线任务板还空着，四节拍还没开始。');
+    }
+  } catch (_) {}
   if (buys.length) {
     lines.push(`小卖部柜台上，你买过：${buys.map((id) => BUY_NAME[id] || id).join('、')}。塑料瓶还带着一点凉意。`);
   }

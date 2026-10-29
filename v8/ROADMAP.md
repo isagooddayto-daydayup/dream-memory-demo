@@ -1,3 +1,7 @@
+## v8.10 (done)
+- Indoor2: sleep / clerk / window rain / furniture GLB
+- Quest board 4 beats + timetable + B gunlhuan
+
 # ROADMAP · v8.7 当前
 
 - **当前公开**：v8.7 矿山探索加厚（做旧门脸、童年游戏挂点、NPC 闲逛、小卖可买、局后回忆、枢纽密度）
