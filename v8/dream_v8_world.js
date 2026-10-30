@@ -1,5 +1,5 @@
 /** Dream v8.35 world helpers (魂系气质: fog/camera/cold light): physical entrances (doors / storefronts / cave mouths / station mine carts), char cards. No paid APIs. */
-export const VERSION = 'v8.67';
+export const VERSION = 'v8.68';
 
 /**
  * Hub door definitions (local offsets relative to scene A spawn).
@@ -94,6 +94,8 @@ export const DOORS = [
   { id: 'magnolia_peony', label: '牡丹庭', from: 'BA', to: 'BB', hubLocal: [5.5, -32.0], destLocal: [0, 4.0], destYaw: 0, exitLocal: [0, 7.0], color: 0xd04070, facade: 'home', exitFacade: 'exitdoor', weathered: true },
   // v8.67 牡丹庭 → 玫瑰园: 牡丹庭远端右侧实体木门（scene-local；无光柱）
   { id: 'peony_rose', label: '玫瑰园', from: 'BB', to: 'BC', hubLocal: [5.5, -32.0], destLocal: [0, 4.0], destYaw: 0, exitLocal: [0, 7.0], color: 0xc02840, facade: 'home', exitFacade: 'exitdoor', weathered: true },
+  // v8.68 玫瑰园 → 百合园: 玫瑰园远端右侧实体木门（scene-local；无光柱）
+  { id: 'rose_lily', label: '百合园', from: 'BC', to: 'BD', hubLocal: [5.5, -32.0], destLocal: [0, 4.0], destYaw: 0, exitLocal: [0, 7.0], color: 0xf0e8d0, facade: 'home', exitFacade: 'exitdoor', weathered: true },
   { id: 'hub_library', label: '小学图书室', from: 'A', to: 'X', hubLocal: [4.4, 7.8], destLocal: [0, 2.6], destYaw: 0, exitLocal: [0, 4.3], color: 0xffd890, facade: 'classroom', exitFacade: 'exitdoor' },
   { id: 'hub_cinema', label: '老影院', from: 'A', to: 'U', hubLocal: [-2.2, 7.0], destLocal: [0, 2.4], destYaw: 0, exitLocal: [0, 4.3], color: 0xff9a7a, facade: 'shop', exitFacade: 'exitdoor' },
   { id: 'hub_noodle', label: '街角面馆', from: 'A', to: 'S', hubLocal: [-7.6, -3.2], destLocal: [0, 1.6], destYaw: Math.PI, exitLocal: [0, 4.3], color: 0xffc070, facade: 'shop', exitFacade: 'exitdoor', weathered: true },
