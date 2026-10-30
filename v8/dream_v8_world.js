@@ -24,6 +24,8 @@ export const DOORS = [
   // v8.30 湖边小屋: 湖泊 Q 西岸实体木门（scene-local）
   { id: 'lake_hut', label: '湖边小屋', from: 'Q', to: 'R', hubLocal: [-6.5, 1.5], destLocal: [0, 1.4], destYaw: Math.PI, exitLocal: [0, 4.3], color: 0xbfe0ff, facade: 'home', exitFacade: 'exitdoor' },
   // v8.30 雨夜街角面馆: 枢纽 A 西北角实体门洞（scene-local）
+  // v8.31 矿区后山竹林小径: 枢纽 A 西侧岩石山洞口（scene-local；无光柱）
+  { id: 'hub_bamboo', label: '后山 · 竹林小径', from: 'A', to: 'T', hubLocal: [-6.8, 4.8], destLocal: [0, 2.2], destYaw: 0, exitLocal: [0, 6.0], color: 0xa8e0a0, facade: 'cave', exitFacade: 'cave' },
   { id: 'hub_noodle', label: '街角面馆', from: 'A', to: 'S', hubLocal: [-7.6, -3.2], destLocal: [0, 1.6], destYaw: Math.PI, exitLocal: [0, 4.3], color: 0xffc070, facade: 'shop', exitFacade: 'exitdoor', weathered: true },
   { id: 'hub_dorm', label: '矿工宿舍', from: 'A', to: 'P', hubLocal: [4.6, -6.0], destLocal: [0, 1.6], destYaw: Math.PI, exitLocal: [0, 3.8], color: 0xffb070, facade: 'home', exitFacade: 'exitdoor', weathered: true },
   { id: 'hub_home', label: '家', from: 'A', to: 'H', hubLocal: [2.6, 1.2], destLocal: [0, 2.2], destYaw: Math.PI, exitLocal: [0, 3.9], color: 0xffe08a, facade: 'home', exitFacade: 'exitdoor' },
@@ -39,10 +41,10 @@ export const DOORS = [
   // v8.17 机场候车 L / 火星地表庇护所 M（白盒；勿覆盖 cart_mars→C）
   { id: 'hub_airport', label: '机场候车', from: 'A', to: 'L', hubLocal: [6.8, 5.2], destLocal: [0, 4.2], destYaw: Math.PI, exitLocal: [0, 6.6], color: 0xa8c8ff, facade: 'hangar', exitFacade: 'exitdoor' },
   { id: 'airport_ares', label: '登机口 · ARES', from: 'L', to: 'E', hubLocal: [0.0, -5.2], hubYaw: 0, destLocal: [7, 16], destYaw: Math.PI, exitLocal: [7, 22], color: 0xc8b0ff, facade: 'hangar', exitFacade: 'hangar' },
-  { id: 'airport_mars_shelter', label: '火星地表舱', from: 'L', to: 'M', hubLocal: [5.5, -4.0], destLocal: [0, 2.0], destYaw: Math.PI, exitLocal: [2.3, 3.5], color: 0xff8a6a, facade: 'hangar', exitFacade: 'exitdoor' },
+  { id: 'airport_mars_shelter', label: '火星地表舱', from: 'L', to: 'M', hubLocal: [5.5, -4.0], destLocal: [0, 2.0], destYaw: Math.PI, exitLocal: [-3.0, 3.7], color: 0xff8a6a, facade: 'hangar', exitFacade: 'exitdoor' },
   { id: 'station_airport', label: '联运通道', from: 'I', to: 'L', hubLocal: [-6.5, 2.0], destLocal: [-5.0, 0.0], destYaw: Math.PI/2, exitLocal: [-6.8, 0.0], color: 0xffb07a, facade: 'station', exitFacade: 'exitdoor', weathered: true },
   { id: 'hub_mars_shelter', label: '火星地表舱', from: 'A', to: 'M', hubLocal: [9.2, 3.2], destLocal: [0, 2.0], destYaw: Math.PI, exitLocal: [0, 3.8], color: 0xff8a6a, facade: 'hangar', exitFacade: 'exitdoor' },
-  { id: 'cart_mars_shelter', label: '火星地表舱', from: 'I', to: 'M', hubLocal: [4.8, -0.9], hubYaw: 0, destLocal: [1.2, -2.2], destYaw: Math.PI, exitLocal: [2.0, -3.4], color: 0xff8a6a, facade: 'cart', exitFacade: 'cartstop', ride: true },
+  { id: 'cart_mars_shelter', label: '火星地表舱', from: 'I', to: 'M', hubLocal: [4.8, -0.9], hubYaw: 0, destLocal: [3.3, 0.2], destYaw: Math.PI, exitLocal: [3.3, 2.1], compactStop: true, color: 0xff8a6a, facade: 'cart', exitFacade: 'cartstop', ride: true },
 ];
 
 /** @deprecated v8.3: community hubs are real doors now; kept empty for old callers. */
