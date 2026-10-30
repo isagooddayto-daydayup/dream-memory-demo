@@ -1,5 +1,5 @@
-/** Dream v8.34 world helpers (魂系气质: fog/camera/cold light): physical entrances (doors / storefronts / cave mouths / station mine carts), char cards. No paid APIs. */
-export const VERSION = 'v8.34';
+/** Dream v8.35 world helpers (魂系气质: fog/camera/cold light): physical entrances (doors / storefronts / cave mouths / station mine carts), char cards. No paid APIs. */
+export const VERSION = 'v8.35';
 
 /**
  * Hub door definitions (local offsets relative to scene A spawn).
@@ -14,23 +14,25 @@ export const DOORS = [
   { id: 'hub_room', label: '小房间', from: 'A', to: 'D', hubLocal: [-3.8, 3.2], destLocal: [-3.2, 1.5], destYaw: Math.PI, exitLocal: [-3.6, 0.2], color: 0xa8c8ff, facade: 'room', exitFacade: 'exitdoor' },
   { id: 'hub_campus', label: '山洞 · 矿区校园', from: 'A', to: 'B', hubLocal: [1.5, 8.5], destLocal: [0, 0], destYaw: 0, exitLocal: [0, -2.6], color: 0x9dffc2, facade: 'cave', exitFacade: 'cave' },
   { id: 'hub_forest', label: '矿洞 · 林间小路', from: 'A', to: 'G', hubLocal: [7.2, -2.0], destLocal: [0, 7.5], destYaw: Math.PI, exitLocal: [0, 10.4], color: 0x6dff9a, facade: 'mine', exitFacade: 'mine' },
-  // v8.34 林中木屋: 森林 G 溪谷旁实体木门（scene-local）
+  // v8.35 林中木屋: 森林 G 溪谷旁实体木门（scene-local）
   { id: 'forest_cabin', label: '林中木屋', from: 'G', to: 'N', hubLocal: [-9.0, -1.5], destLocal: [0, 1.4], destYaw: Math.PI, exitLocal: [0, 4.3], color: 0xffc890, facade: 'home', exitFacade: 'exitdoor' },
-  // v8.34 教室内部: 校园 F 草地上的绿色木门 → 教室里（雨夜自习）
+  // v8.35 教室内部: 校园 F 草地上的绿色木门 → 教室里（雨夜自习）
   { id: 'class_inside', label: '教室里', from: 'F', to: 'O', hubLocal: [-3.5, 2.5], destLocal: [0, 1.6], destYaw: Math.PI, exitLocal: [0, 4.3], color: 0xcfe0ff, facade: 'classroom', exitFacade: 'exitdoor' },
-  // v8.34 矿工宿舍: 枢纽 A 东南砖房实体门 → 宿舍内部（雨夜）
-  // v8.34 山洞 → 山间湖泊花海（雾林 G 东侧岩石洞门，scene-local）
+  // v8.35 矿工宿舍: 枢纽 A 东南砖房实体门 → 宿舍内部（雨夜）
+  // v8.35 山洞 → 山间湖泊花海（雾林 G 东侧岩石洞门，scene-local）
   { id: 'forest_lake', label: '山洞 · 湖泊花海', from: 'G', to: 'Q', hubLocal: [9.5, 0.5], destLocal: [0, 2.2], destYaw: 0, exitLocal: [0, 9.0], color: 0x9ad8ff, facade: 'cave', exitFacade: 'cave' },
-  // v8.34 湖边小屋: 湖泊 Q 西岸实体木门（scene-local）
+  // v8.35 湖边小屋: 湖泊 Q 西岸实体木门（scene-local）
   { id: 'lake_hut', label: '湖边小屋', from: 'Q', to: 'R', hubLocal: [-6.5, 1.5], destLocal: [0, 1.4], destYaw: Math.PI, exitLocal: [0, 4.3], color: 0xbfe0ff, facade: 'home', exitFacade: 'exitdoor' },
-  // v8.34 雨夜街角面馆: 枢纽 A 西北角实体门洞（scene-local）
-  // v8.34 矿区后山竹林小径: 枢纽 A 西侧岩石山洞口（scene-local；无光柱）
+  // v8.35 雨夜街角面馆: 枢纽 A 西北角实体门洞（scene-local）
+  // v8.35 矿区后山竹林小径: 枢纽 A 西侧岩石山洞口（scene-local；无光柱）
   { id: 'hub_bamboo', label: '后山 · 竹林小径', from: 'A', to: 'T', hubLocal: [-6.8, 4.8], destLocal: [0, 2.2], destYaw: 0, exitLocal: [0, 6.0], color: 0xa8e0a0, facade: 'cave', exitFacade: 'cave' },
-  // v8.34 矿区老影院: 枢纽 A 北侧实体门洞（scene-local；无光柱）
-  // v8.34 竹林尽头岩石洞门 → 山崖观景台·云海（scene-local；无光柱）
+  // v8.35 矿区老影院: 枢纽 A 北侧实体门洞（scene-local；无光柱）
+  // v8.35 竹林尽头岩石洞门 → 山崖观景台·云海（scene-local；无光柱）
   { id: 'bamboo_cliff', label: '石门 · 山崖云海', from: 'T', to: 'V', hubLocal: [0, -37.5], destLocal: [0, 0.4], destYaw: 0, exitLocal: [0, 6.4], color: 0xffe0b0, facade: 'cave', exitFacade: 'cave' },
-  // v8.34 矿区老理发店: 枢纽 A 西侧实体店门（scene-local；无光柱）
+  // v8.35 矿区老理发店: 枢纽 A 西侧实体店门（scene-local；无光柱）
   { id: 'hub_barber', label: '老理发店', from: 'A', to: 'W', hubLocal: [-9.5, 1.6], destLocal: [0, 0.2], destYaw: 0, exitLocal: [0, 4.3], color: 0xff9090, facade: 'shop', exitFacade: 'exitdoor', weathered: true },
+  // v8.35 矿区小学图书室: 枢纽 A 东北实体门（scene-local；无光柱）
+  { id: 'hub_library', label: '小学图书室', from: 'A', to: 'X', hubLocal: [4.4, 7.8], destLocal: [0, 2.6], destYaw: 0, exitLocal: [0, 4.3], color: 0xffd890, facade: 'classroom', exitFacade: 'exitdoor' },
   { id: 'hub_cinema', label: '老影院', from: 'A', to: 'U', hubLocal: [-2.2, 7.0], destLocal: [0, 2.4], destYaw: 0, exitLocal: [0, 4.3], color: 0xff9a7a, facade: 'shop', exitFacade: 'exitdoor' },
   { id: 'hub_noodle', label: '街角面馆', from: 'A', to: 'S', hubLocal: [-7.6, -3.2], destLocal: [0, 1.6], destYaw: Math.PI, exitLocal: [0, 4.3], color: 0xffc070, facade: 'shop', exitFacade: 'exitdoor', weathered: true },
   { id: 'hub_dorm', label: '矿工宿舍', from: 'A', to: 'P', hubLocal: [4.6, -6.0], destLocal: [0, 1.6], destYaw: Math.PI, exitLocal: [0, 3.8], color: 0xffb070, facade: 'home', exitFacade: 'exitdoor', weathered: true },
