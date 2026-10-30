@@ -4,7 +4,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="梦境矿山">
 <meta name="theme-color" content="#07060c"><link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
-<title>回忆与梦境 · v8.36 矿山世界 · 雾林溪谷·流水</title>
+<title>回忆与梦境 · v8.37 矿山世界 · 雾林溪谷·流水</title>
 <style>
 html,body{margin:0;height:100%;overflow:hidden;background:#0a0e12;font-family:"Microsoft YaHei","PingFang SC",sans-serif}
 canvas{display:block}
@@ -23,7 +23,7 @@ canvas{display:block}
 <script type="importmap">{"imports":{"three":"./lib/three.module.js","three/addons/":"./lib/addons/","@sparkjsdev/spark":"./lib/spark.module.js","@pixiv/three-vrm":"./lib/three-vrm.module.js","MG":"./minigames.js","V7":"./dream_v7_features.js","V8":"./dream_v8_world.js"}}</script>
 </head><body>
 <div id="tint"></div><div id="vig"></div><div id="flash"></div><div id="title"></div><div id="cross"></div>
-<div id="hud"><b>回忆与梦境 · v8.36 矿山世界 · 矿洞→雾林溪谷（流水）</b><br>走进<strong>实体门口</strong>：家 / 小卖部 / 教室 / 小房间 / <strong>飞船口·ARES</strong>，<strong>山洞</strong>（校园）/ <strong>矿洞</strong>（林间），进<strong>矿车站</strong>后走进矿车「上车」去火星边疆 / 矿区校园；返回也走门 / 洞口 / 矿车（数字键仅快进）；手机：左摇杆走、右半屏拖视角、点「角色」换人；<b>E</b> 阿澄交谈；地上淡圈=小游戏<br>
+<div id="hud"><b>回忆与梦境 · v8.37 矿山世界 · 矿洞→雾林溪谷（流水）</b><br>走进<strong>实体门口</strong>：家 / 小卖部 / 教室 / 小房间 / <strong>飞船口·ARES</strong>，<strong>山洞</strong>（校园）/ <strong>矿洞</strong>（林间），进<strong>矿车站</strong>后走进矿车「上车」去火星边疆 / 矿区校园；返回也走门 / 洞口 / 矿车（数字键仅快进）；手机：左摇杆走、右半屏拖视角、点「角色」换人；<b>E</b> 阿澄交谈；地上淡圈=小游戏<br>
 点击画面锁定鼠标 · 鼠标转视角 · <b>WASD</b> 走 · <b>Shift</b> 跑<br>
 <b>空格</b> 按住起飞/上升 · <b>Ctrl/Q</b> 下降 · <b>F</b> 飞行/步行切换<br>
 <b>M</b> 菜单（结束这局→梦境回忆）· <b>G</b> 切换角色（前任留在原地当 NPC · 菜单看角色卡）· <b>1-9</b> 仍可快切场景 · <b>C</b> 镜头 · <b>V</b> 第一人称<br>
@@ -105,6 +105,8 @@ C:{key:'C',name:'回忆三 · 火星边疆',sub:'Marble Mars Frontier（你的 M
     off:new THREE.Vector3(10500,0,0),spawn:[0,1.6],yaw:Math.PI,glow:[1.0,0.9,0.75]},
  P:{key:'P',kind:'mesh',meshPack:'dorm',name:'回忆九 · 矿工宿舍 · 雨夜',sub:'矿区工人宿舍内部：铁架上下铺、煤炉、矿帽头灯、晃动的灯泡、漏雨水桶（实体门洞进出；全程序化）',
     off:new THREE.Vector3(8000,0,0),spawn:[0,1.6],yaw:Math.PI,glow:[1.0,0.75,0.5]},
+ Y:{key:'Y',kind:'mesh',meshPack:'waiting',name:'回忆十八 · 雨夜矿车站候车室',sub:'九十年代矿区车站候车室：长条木椅、售票处、发车时刻牌、挂钟、暖瓶行李、铁炉、闪烁日光灯，大窗外雨夜站台驶过的矿车灯（实体门进出；全程序化）',
+    off:new THREE.Vector3(16000,0,0),spawn:[0,3.0],yaw:0,glow:[1,1,1]},
  X:{key:'X',kind:'mesh',meshPack:'library',name:'回忆十七 · 矿区小学图书室',sub:'矿区小学的图书室：满墙书架、绿罩台灯、借书台与卡片柜、地球仪、「读书角」黑板报、窗外雨夜（实体门进出；全程序化）',
     off:new THREE.Vector3(15000,0,0),spawn:[0,2.6],yaw:0,glow:[1,1,1]},
  W:{key:'W',kind:'mesh',meshPack:'barber',name:'回忆十六 · 矿区老理发店',sub:'九十年代矿区理发店：红皮转椅与镜墙、旋转灯柱、热毛巾箱、价目牌与1996挂历、窗外雨夜（实体店门进出；全程序化）',
@@ -118,7 +120,7 @@ C:{key:'C',name:'回忆三 · 火星边疆',sub:'Marble Mars Frontier（你的 M
  M:{key:'M',kind:'mesh',meshPack:'mars_shelter',name:'火星地表庇护所',sub:'实体气闸门 · 上下铺 · 控制台 · 窗外红色荒原（回枢纽/机场）',
     off:new THREE.Vector3(6000,0,0),spawn:[0,2.2],yaw:Math.PI,glow:[1.05,0.78,0.55]},
 };
-const ORDER=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X'];
+const ORDER=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y'];
 let cur='A';
 
 function fxDyno(S){
@@ -468,14 +470,49 @@ async function loadMeshScene(S){
    for(let i=0;i<5;i++){const t=new THREE.Mesh(new THREE.ConeGeometry(0.5,1.6,8),new THREE.MeshStandardMaterial({color:0x2e5a3a,roughness:0.9}));const a=i*1.3;t.position.set(Math.cos(a)*2.3,1.6,Math.sin(a)*1.6);islet.add(t);}
    islet.position.set(6,0,LZ-4);root.add(islet);S.walk.push(mound);
    const ir=islet.clone();ir.scale.y=-1;ir.position.y=0.12;ir.traverse(o=>{if(o.isMesh){o.material=o.material.clone();o.material.color.multiplyScalar(0.45);}});refl.add(ir);
-   const boat=new THREE.Group();boat.name='rowboat_v835';const bw=new THREE.MeshStandardMaterial({color:0x6a4426,roughness:0.7});
-   const hull=new THREE.Mesh(new THREE.CylinderGeometry(0.55,0.35,2.6,12,1,true,0,Math.PI),bw);hull.rotation.z=Math.PI/2;hull.rotation.y=Math.PI/2;hull.material.side=THREE.DoubleSide;boat.add(hull);
-   const seat=new THREE.Mesh(new THREE.BoxGeometry(0.9,0.05,0.25),bw);seat.position.y=-0.05;boat.add(seat);for(const s of [-1,1]){const oar=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.04,1.8),bw);oar.position.set(s*0.6,0.02,0.2);oar.rotation.y=s*0.3;boat.add(oar);}
+   // v8.37 精细小船：放样曲面船身（船首上翘、木板条纹）、船舷护木、两条坐板、桨架+可划动的桨、桨入水水花、船尾尾迹波纹（全程序化）
+   const boat=new THREE.Group();boat.name='rowboat_v837';
+   const plankT=(()=>{const c=document.createElement('canvas');c.width=256;c.height=64;const g=c.getContext('2d');g.fillStyle='#6e4626';g.fillRect(0,0,256,64);for(let i=0;i<8;i++){g.fillStyle=i%2?'#7a5030':'#62401f';g.fillRect(0,i*8,256,7);g.fillStyle='rgba(30,16,6,.7)';g.fillRect(0,i*8+7,256,1);}for(let i=0;i<300;i++){g.fillStyle='rgba(40,22,8,'+(Math.random()*0.25)+')';g.fillRect(Math.random()*256,Math.random()*64,6+Math.random()*30,1);}for(let i=0;i<24;i++){g.fillStyle='rgba(200,190,170,.6)';g.fillRect(8+i*10.5,Math.random()*60,1.5,1.5);}const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;})();
+   const L=1.45,NX=28,NA=14,hp=[],huv=[],hidx=[];const hw=x=>{const u=Math.abs(x)/L;return 0.62*Math.pow(Math.max(0,1-Math.pow(u,x>0?1.6:2.6)),0.55)+0.02;};const htop=x=>0.16+0.16*Math.pow(x/L,2)+(x>0?0.08*Math.pow(x/L,4):0);const hd=x=>0.34*(1-0.45*Math.pow(Math.abs(x)/L,2));
+   for(let i=0;i<=NX;i++){const x=-L+2*L*i/NX;for(let j=0;j<=NA;j++){const a=Math.PI*j/NA;hp.push(x,htop(x)-hd(x)*Math.sin(a)-0.12*hd(x)*Math.pow(Math.sin(a),6),hw(x)*Math.cos(a));huv.push(i/NX*3,j/NA);}}
+   for(let i=0;i<NX;i++)for(let j=0;j<NA;j++){const a=i*(NA+1)+j,b=a+NA+1;hidx.push(a,b,a+1,b,b+1,a+1);}
+   const hg=new THREE.BufferGeometry();hg.setAttribute('position',new THREE.Float32BufferAttribute(hp,3));hg.setAttribute('uv',new THREE.Float32BufferAttribute(huv,2));hg.setIndex(hidx);hg.computeVertexNormals();
+   const hullM=new THREE.MeshStandardMaterial({map:plankT,roughness:0.72,side:THREE.DoubleSide});const hull=new THREE.Mesh(hg,hullM);hull.name='hull';boat.add(hull);
+   const inner=new THREE.Mesh(new THREE.PlaneGeometry(2*L*0.8,0.7),new THREE.MeshStandardMaterial({color:0x4a2e18,roughness:0.9}));inner.rotation.x=-Math.PI/2;inner.position.y=-0.12;inner.scale.z=1;boat.add(inner);
+   const railM=new THREE.MeshStandardMaterial({color:0x3e2614,roughness:0.6});let railVerts=0;
+   for(const s of [-1,1]){const pts=[];for(let i=0;i<=16;i++){const x=-L+2*L*i/16;pts.push(new THREE.Vector3(x,htop(x)+0.015,s*hw(x)));}const tg=new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),40,0.028,6,false);railVerts+=tg.attributes.position.count;boat.add(new THREE.Mesh(tg,railM));}
+   const stem=new THREE.Mesh(new THREE.BoxGeometry(0.06,0.5,0.05),railM);stem.position.set(L-0.02,htop(L)-0.18,0);stem.rotation.z=-0.35;boat.add(stem);
+   const transom=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.3,0.12),railM);transom.position.set(-L+0.02,htop(-L)-0.12,0);boat.add(transom);
+   const seatM=new THREE.MeshStandardMaterial({color:0x9a6a3c,roughness:0.65});const seats=[];for(const sx of [-0.55,0.35]){const st=new THREE.Mesh(new THREE.BoxGeometry(0.26,0.05,2*hw(sx)-0.06),seatM);st.position.set(sx,htop(sx)-0.12,0);boat.add(st);seats.push(st);}
+   for(let k=0;k<5;k++){const rx=-1.0+k*0.5;const rib=new THREE.Mesh(new THREE.BoxGeometry(0.04,0.03,2*hw(rx)*0.9),railM);rib.position.set(rx,-0.1,0);boat.add(rib);}
+   const oarM=new THREE.MeshStandardMaterial({color:0xc8a070,roughness:0.6});const oars=[];
+   for(const s of [-1,1]){const pv=new THREE.Group();pv.position.set(0.05,htop(0.05)+0.05,s*(hw(0.05)+0.02));const lock=new THREE.Mesh(new THREE.TorusGeometry(0.035,0.01,6,10),railM);pv.add(lock);
+    const arm=new THREE.Group();pv.add(arm);const shaft=new THREE.Mesh(new THREE.CylinderGeometry(0.022,0.022,1.9,8),oarM);shaft.rotation.x=Math.PI/2;shaft.position.z=s*0.55;arm.add(shaft);
+    const blade=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.015,0.42),oarM);blade.position.z=s*1.42;arm.add(blade);const grip=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.16,8),railM);grip.rotation.x=Math.PI/2;grip.position.z=-s*0.36;arm.add(grip);
+    arm.rotation.x=s*0.28;boat.add(pv);oars.push({pv,arm,blade,s});}
+   // splash pool + wake ring pool (lake-local, attached to root)
+   const SPN=90,spP=new Float32Array(SPN*3),spV=new Float32Array(SPN*3),spL=new Float32Array(SPN);for(let i=0;i<SPN;i++)spP[i*3+1]=-50;
+   const spG=new THREE.BufferGeometry();spG.setAttribute('position',new THREE.BufferAttribute(spP,3));const splash=new THREE.Points(spG,new THREE.PointsMaterial({color:0xe8f6ff,size:0.07,transparent:true,opacity:0.9,depthWrite:false}));splash.frustumCulled=false;splash.name='boatSplash_v837';root.add(splash);
+   const ringT=(()=>{const c=document.createElement('canvas');c.width=128;c.height=128;const g=c.getContext('2d');const gr=g.createRadialGradient(64,64,40,64,64,63);gr.addColorStop(0,'rgba(255,255,255,0)');gr.addColorStop(0.6,'rgba(230,245,255,.85)');gr.addColorStop(0.8,'rgba(200,225,240,.35)');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(0,0,128,128);return new THREE.CanvasTexture(c);})();
+   const rings=[];for(let i=0;i<18;i++){const r=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({map:ringT,transparent:true,opacity:0,depthWrite:false,fog:false}));r.rotation.x=-Math.PI/2;r.position.y=0.095;r.visible=false;r.userData={life:0,max:2.6,s0:0.4,grow:1.6,stretch:1};root.add(r);rings.push(r);}
+   const fx={hullVerts:hg.attributes.position.count,railVerts,seats:seats.length,ribs:5,oars:oars.length,splashes:0,wakes:0,strokes:0,ringsLive:0,lastPhase:0};
+   let spI=0,rgI=0,wakeAcc=0,idleAcc=0;const _v=new THREE.Vector3();
+   function emitSplash(wp,n){for(let k=0;k<n;k++){const i=spI++%SPN;spP[i*3]=wp.x+(Math.random()-0.5)*0.15;spP[i*3+1]=0.1;spP[i*3+2]=wp.z+(Math.random()-0.5)*0.15;spV[i*3]=(Math.random()-0.5)*0.8;spV[i*3+1]=0.9+Math.random()*1.2;spV[i*3+2]=(Math.random()-0.5)*0.8;spL[i]=0.9;}fx.splashes+=n;}
+   function emitRing(x,z,s0,grow,max,yaw,stretch){const r=rings[rgI++%rings.length];r.position.x=x;r.position.z=z;r.rotation.z=yaw||0;Object.assign(r.userData,{life:0,max,s0,grow,stretch:stretch||1});r.visible=true;fx.wakes++;}
+   boat.userData.row=function(t,dt,moving){const ph=moving?t*2.4:0;const sw=Math.sin(ph),dip=Math.cos(ph);
+    for(const o of oars){o.arm.rotation.y=o.s*(moving?sw*0.55:0.15);o.arm.rotation.x=o.s*(moving?(dip>0?-0.05:0.32):0.28);}
+    const cyc=Math.floor(ph/(Math.PI*2)+0.25);if(moving&&cyc!==fx.lastPhase){fx.lastPhase=cyc;fx.strokes++;boat.updateMatrixWorld(true);for(const o of oars){o.blade.getWorldPosition(_v);root.worldToLocal(_v);emitSplash(_v,9);emitRing(_v.x,_v.z,0.25,1.3,1.6);}}
+    boat.updateMatrixWorld(true);
+    if(moving){wakeAcc+=dt;if(wakeAcc>0.28){wakeAcc=0;_v.set(-L-0.1,0,0);boat.localToWorld(_v);root.worldToLocal(_v);emitRing(_v.x,_v.z,0.5,1.1,3.0,boat.rotation.y,1.8);}}
+    else{idleAcc+=dt;if(idleAcc>1.6){idleAcc=0;emitRing(boat.position.x,boat.position.z,1.6,0.5,3.2,boat.rotation.y,2.2);}}
+    for(let i=0;i<SPN;i++){if(spL[i]<=0)continue;spL[i]-=dt;spV[i*3+1]-=4.5*dt;spP[i*3]+=spV[i*3]*dt;spP[i*3+1]+=spV[i*3+1]*dt;spP[i*3+2]+=spV[i*3+2]*dt;if(spP[i*3+1]<0.08||spL[i]<=0){spL[i]=0;spP[i*3+1]=-50;}}spG.attributes.position.needsUpdate=true;
+    let live=0;for(const r of rings){if(!r.visible)continue;const u=r.userData;u.life+=dt;const k=u.life/u.max;if(k>=1){r.visible=false;r.material.opacity=0;continue;}live++;const s=u.s0+u.grow*u.life;r.scale.set(s*u.stretch,s,1);r.material.opacity=0.55*(1-k);}fx.ringsLive=live;};
+   window.__boatFx=fx;
    boat.position.set(2.2,0.22,LZ+13.5);boat.rotation.y=0.2;root.add(boat);
    const gc=document.createElement('canvas');gc.width=64;gc.height=256;const gg=gc.getContext('2d');for(let i=0;i<260;i++){gg.fillStyle='rgba(255,236,200,'+(Math.random()*0.5)+')';gg.fillRect(Math.random()*64,Math.random()*256,2+Math.random()*10,1);}const gt=new THREE.CanvasTexture(gc);gt.wrapS=gt.wrapT=THREE.RepeatWrapping;
    const glint=new THREE.Mesh(new THREE.PlaneGeometry(3,26),new THREE.MeshBasicMaterial({map:gt,transparent:true,opacity:0.55,depthWrite:false,blending:THREE.AdditiveBlending,fog:false}));glint.rotation.x=-Math.PI/2;glint.position.set(0,0.08,LZ-2);root.add(glint);
    const deep=new THREE.Mesh(new THREE.CircleGeometry(LR*0.7,64),new THREE.MeshBasicMaterial({color:0x08202a,transparent:true,opacity:0.35,depthWrite:false}));deep.rotation.x=-Math.PI/2;deep.position.set(0,0.065,LZ-2);deep.scale.set(1.5,1,1);root.add(deep);
-   window.__lakePolish={islet:1,pavilion:1,rowboat:1,glint:1,deepCentre:1,isletReflection:1,gt,boat};}
+   window.__lakePolish={islet:1,pavilion:1,rowboat:1,rowboatV:837,glint:1,deepCentre:1,isletReflection:1,gt,boat};}
   window.__lake={t:0,n:0,lake,reflV:'v8.35-stronger',refl:refl.children.length,waterOpacity:lmat.opacity,waterColor:lmat.color.getHexString(),flowers:fl.length*per,trees,mts,pier:true,assets:'procedural + Kenney CC0 trees',update(dt){this.t+=dt;this.n++;ln1.offset.x+=dt*0.012;ln1.offset.y+=dt*0.008;ln2.offset.x-=dt*0.007;ln2.offset.y+=Math.sin(this.t*0.3)*0.0006;foamT.offset.x+=dt*0.01;foam.material.opacity=0.55+0.2*Math.sin(this.t*0.8);
    if(S.brook)S.brook.material.normalMap.offset.x-=dt*0.35;for(let i=0;i<BN;i++){bpos[i*3]+=Math.sin(this.t*2+i)*dt*0.6;bpos[i*3+1]=0.6+Math.abs(Math.sin(this.t*3+i*1.3))*0.9;bpos[i*3+2]+=Math.cos(this.t*1.7+i)*dt*0.5;}bfly.geometry.attributes.position.needsUpdate=true;}};
   scene.add(root);root.updateMatrixWorld(true);
@@ -721,6 +758,58 @@ async function loadMeshScene(S){
   const steamP=new THREE.Points(new THREE.BufferGeometry().setAttribute('position',new THREE.BufferAttribute(sp,3)),new THREE.PointsMaterial({color:0xffffff,size:0.12,transparent:true,opacity:0.3,depthWrite:false}));root.add(steamP);
   window.__barber={t:0,n:0,props:{chairs,mirrors,tools,pole:1,priceBoard:1,calendar:1,basin:1,towelSteamer:1,bench:1,window:1,fan:1,tubes:tubes.length},assets:'procedural-only',poleOff:0,update(dt){this.t+=dt;this.n++;poleT.offset.y=(poleT.offset.y+dt*0.35)%1;this.poleOff=poleT.offset.y;fan.rotation.y+=dt*2.2;
    fl.intensity=1.6+(Math.random()<0.02?-0.9:0);for(let i=0;i<SN;i++){sp[i*3+1]+=dt*0.25;if(sp[i*3+1]>2.7)sp[i*3+1]=1.4;}steamP.geometry.attributes.position.needsUpdate=true;}};
+  scene.add(root);root.updateMatrixWorld(true);
+  S.mesh=root;S.loaded=true;return S;
+ }
+ if(S.meshPack==='waiting'){
+  // v8.37 雨夜车站候车室（全程序化，无外部素材；无光柱）：长条木椅、售票窗口、发车时刻牌、挂钟、搪瓷痰盂/暖瓶、行李、大窗外雨夜站台与驶过的矿车灯
+  const cv=(w,h,f)=>{const c=document.createElement('canvas');c.width=w;c.height=h;f(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.colorSpace=THREE.SRGBColorSpace;return t;};
+  const low=(typeof GFX!=='undefined'&&GFX.low);
+  const dome=new THREE.Mesh(new THREE.SphereGeometry(60,24,12),new THREE.MeshBasicMaterial({color:0x080c10,side:THREE.BackSide,depthWrite:false,fog:false}));root.add(dome);
+  root.add(new THREE.HemisphereLight(0xc8d4dc,0x201a16,0.45));
+  const bx=(w,h,d,m,x,y,z)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);root.add(o);return o;};
+  const floorT=cv(128,128,(g)=>{g.fillStyle='#6a6a62';g.fillRect(0,0,128,128);for(let y=0;y<4;y++)for(let x=0;x<4;x++){g.fillStyle=(x+y)%2?'#8a8478':'#5e5a52';g.fillRect(x*32+1,y*32+1,30,30);}for(let i=0;i<700;i++){g.fillStyle='rgba(20,18,14,.2)';g.fillRect(Math.random()*128,Math.random()*128,2,2);}});floorT.repeat.set(5,7);
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(10,12),new THREE.MeshStandardMaterial({map:floorT,roughness:0.5,metalness:0.05}));ground.rotation.x=-Math.PI/2;ground.position.z=-1;root.add(ground);S.walk=[ground];
+  const wallT=cv(128,256,(g,w,h)=>{g.fillStyle='#d8d4c4';g.fillRect(0,0,w,h*0.6);for(let i=0;i<260;i++){g.fillStyle='rgba(70,60,40,'+(Math.random()*0.16)+')';g.fillRect(Math.random()*w,Math.random()*h*0.6,3+Math.random()*10,1+Math.random()*4);}g.fillStyle='#3e6a5c';g.fillRect(0,h*0.6,w,h*0.4);g.fillStyle='#2a4a40';g.fillRect(0,h*0.59,w,4);for(let i=0;i<40;i++){g.fillStyle='rgba(200,200,180,.15)';g.fillRect(Math.random()*w,h*0.62+Math.random()*h*0.36,4+Math.random()*12,2);}g.fillStyle='rgba(60,40,20,.2)';for(let i=0;i<10;i++)g.fillRect(Math.random()*w,h*0.2+Math.random()*h*0.3,2,20+Math.random()*30);});wallT.repeat.set(4,1);
+  const wallM=new THREE.MeshStandardMaterial({map:wallT,roughness:0.9});
+  bx(0.2,3.6,12,wallM,-5,1.8,-1);bx(0.2,3.6,12,wallM,5,1.8,-1);bx(10,3.6,0.2,wallM,0,1.8,-7);
+  bx(4,3.6,0.2,wallM,-3,1.8,5);bx(4,3.6,0.2,wallM,3,1.8,5);bx(2,1.2,0.2,wallM,0,3.0,5);
+  bx(10,0.12,12,new THREE.MeshStandardMaterial({color:0xc8c4b4,roughness:1}),0,3.6,-1);
+  // big rain window on east wall: platform, rain streaks, passing mine-cart lamp
+  const winT=cv(512,256,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#0a1018');gr.addColorStop(0.6,'#1a2430');gr.addColorStop(1,'#2a3036');g.fillStyle=gr;g.fillRect(0,0,w,h);g.fillStyle='#30343a';g.fillRect(0,h*0.72,w,h*0.28);g.fillStyle='#55504a';g.fillRect(0,h*0.70,w,6);g.fillStyle='rgba(255,200,120,.75)';for(const x of [60,220,400]){g.fillRect(x,40,6,120);g.beginPath();g.arc(x+3,40,14,0,7);g.fill();}g.fillStyle='rgba(255,200,120,.18)';for(const x of [60,220,400]){g.beginPath();g.ellipse(x+3,h*0.74,60,10,0,0,7);g.fill();}});
+  const win=new THREE.Mesh(new THREE.PlaneGeometry(6,1.8),new THREE.MeshBasicMaterial({map:winT}));win.position.set(4.88,1.9,-1.5);win.rotation.y=-Math.PI/2;root.add(win);
+  const frameM=new THREE.MeshStandardMaterial({color:0x2e4a40,roughness:0.6});for(let k=0;k<=4;k++)bx(0.08,1.9,0.07,frameM,4.86,1.9,-4.5+k*1.5);bx(0.08,0.07,6.1,frameM,4.86,2.85,-1.5);bx(0.08,0.07,6.1,frameM,4.86,0.95,-1.5);bx(0.3,0.06,6.2,frameM,4.78,0.92,-1.5);
+  const RN=low?160:420,rp=new Float32Array(RN*3);for(let i=0;i<RN;i++){rp[i*3]=4.95+Math.random()*0.6;rp[i*3+1]=1.0+Math.random()*1.8;rp[i*3+2]=-4.5+Math.random()*6;}
+  const rain=new THREE.Points(new THREE.BufferGeometry().setAttribute('position',new THREE.BufferAttribute(rp,3)),new THREE.PointsMaterial({color:0xa8c0d0,size:0.03,transparent:true,opacity:0.8,depthWrite:false}));root.add(rain);
+  const cartLamp=new THREE.PointLight(0xffd090,0,8,1.6);cartLamp.position.set(6.5,1.2,-6);root.add(cartLamp);
+  const cartGlow=new THREE.Mesh(new THREE.SphereGeometry(0.12,10,8),new THREE.MeshBasicMaterial({color:0xffe0a0}));cartGlow.position.copy(cartLamp.position);root.add(cartGlow);
+  // long wooden benches (3 rows facing north) w/ iron legs
+  const woodM=new THREE.MeshStandardMaterial({color:0x8a5a30,roughness:0.6});const ironM=new THREE.MeshStandardMaterial({color:0x2a2a2c,roughness:0.5,metalness:0.6});let benches=0;
+  for(const z of [-3.6,-1.6,0.4])for(const x of [-2.6,1.4]){const g=new THREE.Group();for(let s=0;s<3;s++){const sl=new THREE.Mesh(new THREE.BoxGeometry(2.6,0.04,0.12),woodM);sl.position.set(0,0.46,-0.14+s*0.14);g.add(sl);}for(let s=0;s<3;s++){const bk=new THREE.Mesh(new THREE.BoxGeometry(2.6,0.1,0.03),woodM);bk.position.set(0,0.62+s*0.15,0.22);bk.rotation.x=-0.12;g.add(bk);}for(const lx of [-1.15,0,1.15]){const lg=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.46,0.36),ironM);lg.position.set(lx,0.23,0);g.add(lg);const ar=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.05,0.4),ironM);ar.position.set(lx,0.66,0.02);g.add(ar);}g.position.set(x,0,z);root.add(g);benches++;}
+  // ticket window on north wall + departure board + clock + slogan
+  const tkT=cv(256,128,(g,w,h)=>{g.fillStyle='#e8e0c8';g.fillRect(0,0,w,h);g.fillStyle='#8a1a14';g.font='bold 40px sans-serif';g.textAlign='center';g.fillText('售 票 处',w/2,52);g.fillStyle='#333';g.font='22px sans-serif';g.fillText('矿区—火星边疆 · 校园 · ARES',w/2,96);});
+  const tk=new THREE.Mesh(new THREE.PlaneGeometry(2.0,1.0),new THREE.MeshStandardMaterial({map:tkT,roughness:0.8}));tk.position.set(-2.6,2.65,-6.88);root.add(tk);
+  const tkWin=bx(1.4,0.8,0.08,new THREE.MeshStandardMaterial({color:0x1e2a2a,roughness:0.2,metalness:0.3,emissive:0x302410,emissiveIntensity:0.6}),-2.6,1.6,-6.88);bx(1.8,0.08,0.4,woodM,-2.6,1.15,-6.75);
+  const brdT=cv(512,256,(g,w,h)=>{g.fillStyle='#101818';g.fillRect(0,0,w,h);g.fillStyle='#ffd070';g.font='bold 30px monospace';g.fillText('车次   开往        时间  状态',16,40);g.fillStyle='#e8e0c8';g.font='26px monospace';const rows=[['K101','火星边疆','21:40','正点'],['K203','矿区校园','21:55','正点'],['K305','ARES基地','22:10','晚点'],['K407','联运机场','22:30','候车']];rows.forEach((r,i)=>{g.fillText(r[0],16,92+i*44);g.fillText(r[1],120,92+i*44);g.fillText(r[2],300,92+i*44);g.fillStyle=r[3]==='晚点'?'#ff6a5a':'#90e0a0';g.fillText(r[3],400,92+i*44);g.fillStyle='#e8e0c8';});});
+  const brd=new THREE.Mesh(new THREE.PlaneGeometry(2.6,1.3),new THREE.MeshStandardMaterial({map:brdT,emissive:0xffffff,emissiveMap:brdT,emissiveIntensity:0.55,roughness:0.5}));brd.position.set(1.6,2.45,-6.88);root.add(brd);
+  const sloT=cv(512,64,(g,w,h)=>{g.fillStyle='#8a1a14';g.fillRect(0,0,w,h);g.fillStyle='#ffe8a0';g.font='bold 38px sans-serif';g.textAlign='center';g.fillText('文明候车  注意安全',w/2,46);});
+  const slo=new THREE.Mesh(new THREE.PlaneGeometry(3.6,0.45),new THREE.MeshStandardMaterial({map:sloT,roughness:0.8}));slo.position.set(-0.4,3.3,-6.88);root.add(slo);
+  const clock=new THREE.Group();const face=new THREE.Mesh(new THREE.CircleGeometry(0.32,32),new THREE.MeshStandardMaterial({color:0xf0ead8,roughness:0.6}));clock.add(face);const rim=new THREE.Mesh(new THREE.TorusGeometry(0.33,0.03,8,32),ironM);clock.add(rim);
+  const hh=new THREE.Mesh(new THREE.BoxGeometry(0.03,0.18,0.01),ironM);hh.geometry.translate(0,0.09,0.01);clock.add(hh);const mh=new THREE.Mesh(new THREE.BoxGeometry(0.02,0.27,0.01),ironM);mh.geometry.translate(0,0.135,0.02);clock.add(mh);clock.position.set(-4.88,2.6,-2.5);clock.rotation.y=Math.PI/2;root.add(clock);
+  // props: thermos bottles, enamel spittoon, luggage, newspaper rack, stove
+  const thermM=[0xc83a2a,0x2a7a5a,0xd8b030].map(c=>new THREE.MeshStandardMaterial({color:c,roughness:0.35,metalness:0.2}));let props=0;
+  [[-2.0,-3.6],[2.2,-1.6],[0.9,0.4]].forEach(([x,z],i)=>{const t=new THREE.Mesh(new THREE.CylinderGeometry(0.08,0.08,0.4,14),thermM[i]);t.position.set(x,0.68,z);root.add(t);props++;});
+  const bagM=[0x5a4a3a,0x3a4a6a,0x7a2a2a].map(c=>new THREE.MeshStandardMaterial({color:c,roughness:0.85}));[[-3.4,-0.9,0.6,0.4,0.3],[0.2,-2.6,0.5,0.35,0.28],[3.0,0.9,0.7,0.45,0.3]].forEach(([x,z,w,h,d],i)=>{bx(w,h,d,bagM[i],x,h/2,z);props++;});
+  const spit=new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.12,0.26,16),new THREE.MeshStandardMaterial({color:0xe8e8e0,roughness:0.3}));spit.position.set(-4.5,0.13,-5.6);root.add(spit);props++;
+  const stove=bx(0.6,0.8,0.6,ironM,4.2,0.4,2.8);const pipe=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,2.8,10),ironM);pipe.position.set(4.2,2.2,2.8);root.add(pipe);
+  const ember=new THREE.PointLight(0xff8040,0.9,5,1.8);ember.position.set(4.0,0.6,2.8);root.add(ember);const emberF=new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.15),new THREE.MeshBasicMaterial({color:0xff7030}));emberF.position.set(3.89,0.4,2.8);emberF.rotation.y=-Math.PI/2;root.add(emberF);props++;
+  // fluorescent tubes (one flickers)
+  const tubes=[];for(const z of [-4.5,-1.5,1.5]){const tb=new THREE.Mesh(new THREE.BoxGeometry(1.4,0.06,0.1),new THREE.MeshStandardMaterial({color:0xf0f8ff,emissive:0xe0f0ff,emissiveIntensity:1.0}));tb.position.set(0,3.5,z);root.add(tb);const pl=new THREE.PointLight(0xdce8f0,low?0.8:1.1,9,1.6);pl.position.set(0,3.2,z);root.add(pl);tubes.push({tb,pl});}
+  window.__waiting={t:0,n:0,carPass:0,props:{benches,ticketWindow:1,board:1,clock:1,slogan:1,window:1,rain:RN,stove:1,tubes:tubes.length,props},assets:'procedural-only',
+   update(dt){this.t+=dt;this.n++;for(let i=0;i<RN;i++){rp[i*3+1]-=dt*5.5;if(rp[i*3+1]<1.0)rp[i*3+1]=2.8;}rain.geometry.attributes.position.needsUpdate=true;
+    const ct=(this.t%14)/14;const on=ct<0.4;cartLamp.position.z=-6+ct/0.4*9;cartGlow.position.z=cartLamp.position.z;cartLamp.intensity=on?1.6:0;cartGlow.visible=on;if(on&&ct<0.02)this.carPass++;
+    const fl=tubes[2];const f=Math.sin(this.t*23)>0.7&&Math.sin(this.t*1.3)>0.3;fl.pl.intensity=f?0.15:(low?0.8:1.1);fl.tb.material.emissiveIntensity=f?0.15:1.0;
+    ember.intensity=0.8+Math.sin(this.t*7)*0.12+Math.sin(this.t*13)*0.06;const m=(this.t/60)%1;mh.rotation.z=-m*Math.PI*2-1.2;hh.rotation.z=-(m/12)*Math.PI*2-2.6;}};
   scene.add(root);root.updateMatrixWorld(true);
   S.mesh=root;S.loaded=true;return S;
  }
@@ -1620,9 +1709,9 @@ scene.add(SUN);scene.add(SUN.target);
  geo.setAttribute('color',new THREE.Float32BufferAttribute(col,3));es.add(new THREE.Mesh(geo,new THREE.MeshBasicMaterial({vertexColors:true,side:THREE.BackSide})));
  const sunb=new THREE.Mesh(new THREE.SphereGeometry(1.0,16,8),new THREE.MeshBasicMaterial({color:new THREE.Color(4.2,4.5,5.0)}));sunb.position.set(5,9,2);es.add(sunb);
  const pm=new THREE.PMREMGenerator(renderer);scene.environment=pm.fromScene(es,0.04).texture;scene.environmentIntensity=0.7;pm.dispose();}
-const SCENE_LIGHT={A:{c:0xc0ccd4,i:1.75,h:0.36},B:{c:0xd0dae0,i:2.0,h:0.48},C:{c:0xe0c8b0,i:2.1,h:0.40},D:{c:0xd8d4cc,i:1.45,h:0.55},E:{c:0xd0d8e0,i:2.0,h:0.45},F:{c:0xd4d8dc,i:1.9,h:0.5},G:{c:0xc8d4c8,i:2.0,h:0.48},H:{c:0xd8d0c4,i:1.55,h:0.5},I:{c:0xb8c0c4,i:1.85,h:0.38},J:{c:0xd0d8e0,i:1.55,h:0.5},K:{c:0xd8d4c8,i:1.7,h:0.52},L:{c:0xd0d8e0,i:1.8,h:0.42},M:{c:0xe8d0b0,i:1.7,h:0.40},N:{c:0xffd8b0,i:1.5,h:0.5},O:{c:0x8a9cb8,i:0.45,h:0.2},P:{c:0xffb070,i:0.75,h:0.2},Q:{c:0xfff4e0,i:1.4,h:0.5},R:{c:0xffe0c0,i:1.0,h:0.5},S:{c:0xffe8c8,i:1.0,h:0.5},T:{c:0xe8f4e0,i:1.3,h:0.5},U:{c:0xffe0c0,i:0.9,h:0.5},V:{c:0xfff0d8,i:1.4,h:0.5},W:{c:0xe8f0e8,i:1.0,h:0.5},X:{c:0xffe8d0,i:0.9,h:0.5}};
+const SCENE_LIGHT={A:{c:0xc0ccd4,i:1.75,h:0.36},B:{c:0xd0dae0,i:2.0,h:0.48},C:{c:0xe0c8b0,i:2.1,h:0.40},D:{c:0xd8d4cc,i:1.45,h:0.55},E:{c:0xd0d8e0,i:2.0,h:0.45},F:{c:0xd4d8dc,i:1.9,h:0.5},G:{c:0xc8d4c8,i:2.0,h:0.48},H:{c:0xd8d0c4,i:1.55,h:0.5},I:{c:0xb8c0c4,i:1.85,h:0.38},J:{c:0xd0d8e0,i:1.55,h:0.5},K:{c:0xd8d4c8,i:1.7,h:0.52},L:{c:0xd0d8e0,i:1.8,h:0.42},M:{c:0xe8d0b0,i:1.7,h:0.40},N:{c:0xffd8b0,i:1.5,h:0.5},O:{c:0x8a9cb8,i:0.45,h:0.2},P:{c:0xffb070,i:0.75,h:0.2},Q:{c:0xfff4e0,i:1.4,h:0.5},R:{c:0xffe0c0,i:1.0,h:0.5},S:{c:0xffe8c8,i:1.0,h:0.5},T:{c:0xe8f4e0,i:1.3,h:0.5},U:{c:0xffe0c0,i:0.9,h:0.5},V:{c:0xfff0d8,i:1.4,h:0.5},W:{c:0xe8f0e8,i:1.0,h:0.5},Y:{c:0xd8e0e8,i:0.8,h:0.45},X:{c:0xffe8d0,i:0.9,h:0.5}};
 // v8.6 魂系雾：冷灰/石青 FogExp2；室内更淡
-const SCENE_MOOD={A:{fog:0x5e6870,dens:0.044,clear:0x4a545c,exp:0.86},B:{fog:0x646e76,dens:0.046,clear:0x505860,exp:0.88},C:{fog:0x7a6a5c,dens:0.028,clear:0x5e564c,exp:0.95},D:{fog:0x5a5e62,dens:0.055,clear:0x3a3e42,exp:0.88},E:{fog:0x5a646c,dens:0.038,clear:0x3e464c,exp:0.88},F:{fog:0x6a7074,dens:0.040,clear:0x4a5054,exp:0.90},G:{fog:0x6a7a72,dens:0.018,clear:0x5a6a64,exp:0.95},H:{fog:0x5c5850,dens:0.050,clear:0x3e3a34,exp:0.88},I:{fog:0x566068,dens:0.050,clear:0x3a4248,exp:0.82},J:{fog:0x586068,dens:0.052,clear:0x3c444a,exp:0.82},K:{fog:0x6a6860,dens:0.042,clear:0x4a4840,exp:0.90},L:{fog:0x5a646c,dens:0.040,clear:0x3e464c,exp:0.86},M:{fog:0x7a6a5c,dens:0.032,clear:0x5e564c,exp:0.90},N:{fog:0x5c5048,dens:0.030,clear:0x3a322c,exp:0.92},O:{fog:0x141a24,dens:0.022,clear:0x080c12,exp:0.62},P:{fog:0x0a0908,dens:0.003,clear:0x050506,exp:0.92},Q:{fog:0xc8d8e0,dens:0.006,clear:0x9cc4e0,exp:1.0},R:{fog:0x1a1814,dens:0.004,clear:0x0c0a08,exp:0.95},S:{fog:0x14161c,dens:0.004,clear:0x08090c,exp:0.95},T:{fog:0xa8bca4,dens:0.016,clear:0x8aa088,exp:1.0},U:{fog:0x0a0808,dens:0.01,clear:0x050406,exp:1.0},V:{fog:0xb8b0b8,dens:0.0032,clear:0xa8a0a8,exp:0.95},W:{fog:0x101418,dens:0.008,clear:0x0c1014,exp:1.0},X:{fog:0x121010,dens:0.006,clear:0x0a0c10,exp:1.0}};
+const SCENE_MOOD={A:{fog:0x5e6870,dens:0.044,clear:0x4a545c,exp:0.86},B:{fog:0x646e76,dens:0.046,clear:0x505860,exp:0.88},C:{fog:0x7a6a5c,dens:0.028,clear:0x5e564c,exp:0.95},D:{fog:0x5a5e62,dens:0.055,clear:0x3a3e42,exp:0.88},E:{fog:0x5a646c,dens:0.038,clear:0x3e464c,exp:0.88},F:{fog:0x6a7074,dens:0.040,clear:0x4a5054,exp:0.90},G:{fog:0x6a7a72,dens:0.018,clear:0x5a6a64,exp:0.95},H:{fog:0x5c5850,dens:0.050,clear:0x3e3a34,exp:0.88},I:{fog:0x566068,dens:0.050,clear:0x3a4248,exp:0.82},J:{fog:0x586068,dens:0.052,clear:0x3c444a,exp:0.82},K:{fog:0x6a6860,dens:0.042,clear:0x4a4840,exp:0.90},L:{fog:0x5a646c,dens:0.040,clear:0x3e464c,exp:0.86},M:{fog:0x7a6a5c,dens:0.032,clear:0x5e564c,exp:0.90},N:{fog:0x5c5048,dens:0.030,clear:0x3a322c,exp:0.92},O:{fog:0x141a24,dens:0.022,clear:0x080c12,exp:0.62},P:{fog:0x0a0908,dens:0.003,clear:0x050506,exp:0.92},Q:{fog:0xc8d8e0,dens:0.006,clear:0x9cc4e0,exp:1.0},R:{fog:0x1a1814,dens:0.004,clear:0x0c0a08,exp:0.95},S:{fog:0x14161c,dens:0.004,clear:0x08090c,exp:0.95},T:{fog:0xa8bca4,dens:0.016,clear:0x8aa088,exp:1.0},U:{fog:0x0a0808,dens:0.01,clear:0x050406,exp:1.0},V:{fog:0xb8b0b8,dens:0.0032,clear:0xa8a0a8,exp:0.95},W:{fog:0x101418,dens:0.008,clear:0x0c1014,exp:1.0},Y:{fog:0x0c1014,dens:0.01,clear:0x080c10,exp:0.95},X:{fog:0x121010,dens:0.006,clear:0x0a0c10,exp:1.0}};
 function applySceneMood(key){const m=SCENE_MOOD[key]||SCENE_MOOD.A;let dens=(typeof GFX!=='undefined'&&GFX.low)?m.dens*0.55:m.dens;try{if(!feelEnabled()&&(key==='A'||key==='B'||key==='I'||key==='J'||key==='G'))dens*=0.78; /* feel off/lowq → 略稀回退 */}catch(_){}
  // v8.11 雨夜林间雾加深
  try{if(key==='G'&&typeof WEATHER!=='undefined'&&WEATHER.forceRain()){dens=Math.min(0.04, dens*1.25);scene.fog=new THREE.FogExp2(0x4a5a52,dens);renderer.setClearColor(0x3a463e,1);renderer.toneMappingExposure=0.86;window.__forestFog={dens,rain:true};return;}}catch(_){}
@@ -2383,6 +2472,7 @@ function rainUpdate(dt){
  try{if(cur==='V'&&window.__cliff)window.__cliff.update(dt);}catch(_){}
  try{if(cur==='W'&&window.__barber)window.__barber.update(dt);}catch(_){}
  try{if(cur==='X'&&window.__library)window.__library.update(dt);}catch(_){}
+ try{if(cur==='Y'&&window.__waiting)window.__waiting.update(dt);}catch(_){}
  try{if(cur==='M'&&window.__marsShelter){const m=window.__marsShelter;m.t+=dt;const lp=P.pos.clone();m.root.worldToLocal(lp);const want=(lp.z>2.2)?1:0;m.open+=(want-m.open)*Math.min(1,dt*3);m.leafL.position.x=-0.45-m.open*0.8;m.leafR.position.x=0.45+m.open*0.8;m.wheel.rotation.z=m.open*Math.PI*2;m.stat.material.color.setHex(m.open>0.5?0xffb030:0x40ff70);m.conL.intensity=0.7+Math.sin(m.t*3)*0.15;}}catch(_){}
  try{if(cur==='S'&&window.__noodle){const h=window.__noodle;h.t+=dt;h.stove.intensity=1.3+Math.sin(h.t*9)*0.2;h.dripT.offset.y-=dt*0.08;for(const sp of h.steam){const k=(h.t*0.35+sp.userData.ph)%1;sp.position.y=1.4+k*1.4;sp.material.opacity=0.5*(1-k);sp.scale.setScalar(0.4+k*0.9);}}}catch(_){}
  try{if(cur==='R'&&window.__lakehut){const h=window.__lakehut;h.t+=dt;h.lamp.intensity=1.9+Math.sin(h.t*7)*0.15+Math.sin(h.t*19)*0.08;}}catch(_){}
@@ -3425,7 +3515,7 @@ function boatUpdate(dt){const lp=window.__lakePolish;if(cur!=='Q'||!lp){boatBtn.
  const S=SC.Q,b=lp.boat;
  if(!BOAT.on){const n=boatNear();boatBtn.style.display=n?'block':'none';boatBtn.textContent=BOAT.phase==='isle'?'🚣 乘船返回':'🚣 上船';
   // park boat at current dock
-  const dk=BOAT.phase==='isle'?BOAT.ISLE_DOCK:BOAT.PIER_DOCK;b.position.x=dk[0];b.position.z=dk[1];
+  const dk=BOAT.phase==='isle'?BOAT.ISLE_DOCK:BOAT.PIER_DOCK;b.position.x=dk[0];b.position.z=dk[1];try{b.userData.row&&b.userData.row(0,dt,false);}catch(_){}
   if(BOAT.phase==='isle'){const lx=P.pos.x-S.off.x,lz=P.pos.z-S.off.z;const dp=Math.hypot(lx-BOAT.PAV[0],lz-BOAT.PAV[1]);
    if(BOAT.lastIsle)BOAT.isleWalked+=Math.hypot(lx-BOAT.lastIsle[0],lz-BOAT.lastIsle[1]);BOAT.lastIsle=[lx,lz];
    if(dp<1.0){if(!BOAT.pavilion){BOAT.pavilion=true;}BOAT.pavilionT+=dt;boatHint.style.display='block';boatHint.textContent='⛩ 湖心亭 · 四面是水和雪山';}else if(!n)boatHint.style.display='none';}
@@ -3434,7 +3524,7 @@ function boatUpdate(dt){const lp=window.__lakePolish;if(cur!=='Q'||!lp){boatBtn.
  const x=(1-e)*(1-e)*a.x+2*(1-e)*e*c.x+e*e*z.x,zz=(1-e)*(1-e)*a.z+2*(1-e)*e*c.z+e*e*z.z;
  const tx=2*(1-e)*(c.x-a.x)+2*e*(z.x-c.x),tz=2*(1-e)*(c.z-a.z)+2*e*(z.z-c.z);const yaw=Math.atan2(-tx,-tz);
  b.position.x=x-S.off.x;b.position.z=zz-S.off.z;b.rotation.y=yaw+Math.PI/2;
- b.children.forEach((o,i)=>{if(i>=2)o.rotation.x=Math.sin(BOAT.t*4)*0.5;});
+ try{b.userData.row&&b.userData.row(BOAT.t,dt,true);}catch(_){}
  P.pos.set(x,S.off.y+0.5+Math.sin(BOAT.t*2.4)*0.03,zz);P.heading=yaw;let d=yaw-P.yaw;d=Math.atan2(Math.sin(d),Math.cos(d));P.yaw+=d*Math.min(1,dt*1.5);P.vel=0;
  if(u>=1){BOAT.on=false;BOAT.rides++;const land=BOAT.dir==='toIsle'?BOAT.ISLE_LAND:BOAT.PIER_LAND;BOAT.phase=BOAT.dir==='toIsle'?'isle':'pier';BOAT.lastIsle=null;
   P.pos.set(S.off.x+land[0],groundW('Q',S.off.x+land[0],S.off.z+land[1]),S.off.z+land[1]);boatHint.textContent=BOAT.phase==='isle'?'⛰ 湖心岛 · 往北走进亭子':'🌼 回到码头';setTimeout(()=>{if(!BOAT.on&&!boatNear())boatHint.style.display='none';},2500);}
