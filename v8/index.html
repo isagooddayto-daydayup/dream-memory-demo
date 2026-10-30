@@ -4,7 +4,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="梦境矿山">
 <meta name="theme-color" content="#07060c"><link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
-<title>回忆与梦境 · v8.21 矿山世界 · HUD开关·跑腿进度·小游戏音效</title>
+<title>回忆与梦境 · v8.22 矿山世界 · 雾林溪谷·流水</title>
 <style>
 html,body{margin:0;height:100%;overflow:hidden;background:#0a0e12;font-family:"Microsoft YaHei","PingFang SC",sans-serif}
 canvas{display:block}
@@ -23,7 +23,7 @@ canvas{display:block}
 <script type="importmap">{"imports":{"three":"./lib/three.module.js","three/addons/":"./lib/addons/","@sparkjsdev/spark":"./lib/spark.module.js","@pixiv/three-vrm":"./lib/three-vrm.module.js","MG":"./minigames.js","V7":"./dream_v7_features.js","V8":"./dream_v8_world.js"}}</script>
 </head><body>
 <div id="tint"></div><div id="vig"></div><div id="flash"></div><div id="title"></div><div id="cross"></div>
-<div id="hud"><b>回忆与梦境 · v8.21 矿山世界 · HUD开关态·跑腿进度·小游戏音效</b><br>走进<strong>实体门口</strong>：家 / 小卖部 / 教室 / 小房间 / <strong>飞船口·ARES</strong>，<strong>山洞</strong>（校园）/ <strong>矿洞</strong>（林间），进<strong>矿车站</strong>后走进矿车「上车」去火星边疆 / 矿区校园；返回也走门 / 洞口 / 矿车（数字键仅快进）；手机：左摇杆走、右半屏拖视角、点「角色」换人；<b>E</b> 阿澄交谈；地上淡圈=小游戏<br>
+<div id="hud"><b>回忆与梦境 · v8.22 矿山世界 · 矿洞→雾林溪谷（流水）</b><br>走进<strong>实体门口</strong>：家 / 小卖部 / 教室 / 小房间 / <strong>飞船口·ARES</strong>，<strong>山洞</strong>（校园）/ <strong>矿洞</strong>（林间），进<strong>矿车站</strong>后走进矿车「上车」去火星边疆 / 矿区校园；返回也走门 / 洞口 / 矿车（数字键仅快进）；手机：左摇杆走、右半屏拖视角、点「角色」换人；<b>E</b> 阿澄交谈；地上淡圈=小游戏<br>
 点击画面锁定鼠标 · 鼠标转视角 · <b>WASD</b> 走 · <b>Shift</b> 跑<br>
 <b>空格</b> 按住起飞/上升 · <b>Ctrl/Q</b> 下降 · <b>F</b> 飞行/步行切换<br>
 <b>M</b> 菜单（结束这局→梦境回忆）· <b>G</b> 切换角色（前任留在原地当 NPC · 菜单看角色卡）· <b>1-9</b> 仍可快切场景 · <b>C</b> 镜头 · <b>V</b> 第一人称<br>
@@ -81,7 +81,7 @@ C:{key:'C',name:'回忆三 · 火星边疆',sub:'Marble Mars Frontier（你的 M
     off:new THREE.Vector3(2000,0,0),spawn:[7,19],yaw:0.354,glow:[1.0,0.6,0.4]},
  F:{key:'F',kind:'mesh',meshPack:'classroom',name:'回忆五 · 九十年代教室',sub:'Grab3D CC0 校舍+教室+滑梯（唯美金晖）',
     off:new THREE.Vector3(2500,0,0),spawn:[2,8],yaw:0,glow:[1.0,0.85,0.55]},
- G:{key:'G',kind:'mesh',meshPack:'forest',name:'回忆六 · 林间小路',sub:'Kenney CC0 树木拼成的可走迷你森林（非 Marble；唯美扩展占位可走）',
+ G:{key:'G',kind:'mesh',meshPack:'forest',name:'回忆六 · 雾林溪谷',sub:'穿过矿洞口进入的雾林：流动小溪、苔石、林间光斑（Kenney CC0 树 + 程序化水面）',
     off:new THREE.Vector3(3000,0,0),spawn:[0,8],yaw:Math.PI,glow:[0.75,1.0,0.7]},
  H:{key:'H',kind:'mesh',meshPack:'home',name:'家 · 小室内',sub:'程序化暖色小房间（可走；非 Marble）',
     off:new THREE.Vector3(3500,0,0),spawn:[0,2.5],yaw:Math.PI,glow:[1.05,0.88,0.55]},
@@ -313,8 +313,43 @@ async function loadMeshScene(S){
   // soft path disk
   const path=new THREE.Mesh(new THREE.CircleGeometry(3.2,40),new THREE.MeshStandardMaterial({color:0xc2b280,roughness:1,metalness:0}));
   path.rotation.x=-Math.PI/2;path.position.y=0.02;root.add(path);
-  const water=new THREE.Mesh(new THREE.CircleGeometry(4.5,40),new THREE.MeshStandardMaterial({color:0x5aa8c8,roughness:0.25,metalness:0.15,transparent:true,opacity:0.85}));
-  water.rotation.x=-Math.PI/2;water.position.set(-10,0.03,-6);root.add(water);
+  // v8.22 flowing stream: ribbon along a meander curve, procedural normal map scrolled along flow (UV.x = along)
+  const FW=(()=>{
+   const S=256,c=document.createElement('canvas');c.width=c.height=S;const g=c.getContext('2d');const id=g.createImageData(S,S);
+   const hgt=(x,y)=>{let v=0;for(const [f,a,p] of [[2,1,0.3],[5,0.5,1.7],[9,0.28,2.9],[17,0.14,4.1]]){v+=a*Math.sin((x*f+Math.sin(y*f*0.7+p)*0.6)*Math.PI*2/S*1)*Math.cos((y*f*0.5+p)*Math.PI*2/S);}return v;};
+   for(let y=0;y<S;y++)for(let x=0;x<S;x++){const dx=hgt(x+1,y)-hgt(x-1,y),dy=hgt(x,y+1)-hgt(x,y-1);let nx=-dx*6,ny=-dy*6,nz=1;const l=Math.hypot(nx,ny,nz);const i=(y*S+x)*4;id.data[i]=(nx/l*0.5+0.5)*255;id.data[i+1]=(ny/l*0.5+0.5)*255;id.data[i+2]=(nz/l*0.5+0.5)*255;id.data[i+3]=255;}
+   g.putImageData(id,0,0);const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;return t;})();
+  const n1=FW,n2=FW.clone();n2.needsUpdate=true;n1.repeat.set(10,1.2);n2.repeat.set(6,0.8);
+  const pts=[[-26,-14],[-18,-9],[-12,-11],[-6,-6],[-1,-7.5],[4,-5],[9,-8],[15,-6],[22,-10],[28,-7]].map(([x,z])=>new THREE.Vector3(x,0,z));
+  const curve=new THREE.CatmullRomCurve3(pts);const SEG=160,HW=1.5;
+  const mkRibbon=(hw,y)=>{const pos=[],uv=[],idx=[];for(let i=0;i<=SEG;i++){const t=i/SEG,p=curve.getPointAt(t),tg=curve.getTangentAt(t);const nx=-tg.z,nz=tg.x;const w=hw*(0.85+0.25*Math.sin(t*19));pos.push(p.x+nx*w,y,p.z+nz*w,p.x-nx*w,y,p.z-nz*w);uv.push(t*12,0,t*12,1);if(i<SEG){const a=i*2;idx.push(a,a+1,a+2,a+1,a+3,a+2);}}const gg=new THREE.BufferGeometry();gg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));gg.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));gg.setIndex(idx);gg.computeVertexNormals();return gg;};
+  const bed=new THREE.Mesh(mkRibbon(HW*1.35,0.012),new THREE.MeshStandardMaterial({color:0x3a3a2a,roughness:1,side:THREE.DoubleSide,map:(()=>{const t=OLDTEX.dirt().clone();t.needsUpdate=true;t.repeat.set(30,2);return t;})()}));root.add(bed);
+  const envC=document.createElement('canvas');envC.width=64;envC.height=32;{const g=envC.getContext('2d');const gr=g.createLinearGradient(0,0,0,32);gr.addColorStop(0,'#cfe4dc');gr.addColorStop(0.5,'#7f9a8c');gr.addColorStop(1,'#26302a');g.fillStyle=gr;g.fillRect(0,0,64,32);}
+  const envT=new THREE.CanvasTexture(envC);envT.mapping=THREE.EquirectangularReflectionMapping;
+  const wmat=new THREE.MeshPhysicalMaterial({color:0x2f5a5c,roughness:0.08,metalness:0.0,clearcoat:1,clearcoatRoughness:0.05,normalMap:n1,normalScale:new THREE.Vector2(0.9,0.9),clearcoatNormalMap:n2,clearcoatNormalScale:new THREE.Vector2(0.6,0.6),envMap:envT,envMapIntensity:1.4,transparent:true,opacity:0.86,side:THREE.DoubleSide});
+  const water=new THREE.Mesh(mkRibbon(HW,0.05),wmat);water.name='forestStream_v822';root.add(water);
+  // foam flecks drifting with flow
+  const FN=90,fpos=new Float32Array(FN*3),ft=new Float32Array(FN);for(let i=0;i<FN;i++){ft[i]=Math.random();}
+  const foam=new THREE.Points(new THREE.BufferGeometry().setAttribute('position',new THREE.BufferAttribute(fpos,3)),new THREE.PointsMaterial({color:0xe8f4f0,size:0.08,transparent:true,opacity:0.7,depthWrite:false}));root.add(foam);
+  // mossy rocks along banks
+  const rockMat=new THREE.MeshStandardMaterial({color:0x5f6a58,roughness:0.95,flatShading:true});const mossMat=new THREE.MeshStandardMaterial({color:0x4f7a3a,roughness:1,flatShading:true});
+  for(let i=0;i<34;i++){const t=(i+0.5)/34,p=curve.getPointAt(t),tg=curve.getTangentAt(t);const side=i%2?1:-1;const off=HW*(1.15+Math.random()*0.6);const r=0.25+Math.random()*0.55;const rk=new THREE.Mesh(new THREE.DodecahedronGeometry(r,0),i%3?rockMat:mossMat);rk.position.set(p.x-tg.z*off*side,r*0.35,p.z+tg.x*off*side);rk.scale.set(1,0.6,1.2);rk.rotation.set(Math.random(),Math.random()*6,0);root.add(rk);}
+  // stepping stones crossing near spawn path
+  for(let i=0;i<4;i++){const st=new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.5,0.16,9),rockMat);const p=curve.getPointAt(0.5);st.position.set(p.x-0.9+i*0.6,0.07,p.z+(i-1.5)*0.75);root.add(st);}
+  // layered ground mist sheets + sun dapples
+  const mistC=document.createElement('canvas');mistC.width=mistC.height=128;{const g=mistC.getContext('2d');const gr=g.createRadialGradient(64,64,4,64,64,64);gr.addColorStop(0,'rgba(220,235,225,0.55)');gr.addColorStop(1,'rgba(220,235,225,0)');g.fillStyle=gr;g.fillRect(0,0,128,128);}
+  const mistT=new THREE.CanvasTexture(mistC);const mists=[];
+  for(let i=0;i<14;i++){const m=new THREE.Mesh(new THREE.PlaneGeometry(14,14),new THREE.MeshBasicMaterial({map:mistT,transparent:true,depthWrite:false,opacity:0.35+Math.random()*0.25,fog:false}));m.rotation.x=-Math.PI/2;m.position.set((Math.random()-0.5)*44,0.4+Math.random()*1.4,(Math.random()-0.5)*44);m.userData.ph=Math.random()*6;root.add(m);mists.push(m);}
+  const dapC=document.createElement('canvas');dapC.width=dapC.height=64;{const g=dapC.getContext('2d');const gr=g.createRadialGradient(32,32,2,32,32,32);gr.addColorStop(0,'rgba(255,240,190,0.7)');gr.addColorStop(1,'rgba(255,240,190,0)');g.fillStyle=gr;g.fillRect(0,0,64,64);}
+  const dapT=new THREE.CanvasTexture(dapC);
+  for(let i=0;i<26;i++){const d=new THREE.Mesh(new THREE.CircleGeometry(0.6+Math.random()*1.1,16),new THREE.MeshBasicMaterial({map:dapT,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0.55}));d.rotation.x=-Math.PI/2;d.position.set((Math.random()-0.5)*26,0.035,(Math.random()-0.5)*26);root.add(d);}
+  // ferns / grass tufts
+  const grassMat=new THREE.MeshStandardMaterial({color:0x5d8a44,roughness:1,side:THREE.DoubleSide});
+  for(let i=0;i<70;i++){const g=new THREE.Mesh(new THREE.ConeGeometry(0.18,0.55+Math.random()*0.4,5),grassMat);const a=Math.random()*6.28,r=4+Math.random()*24;g.position.set(Math.cos(a)*r,0.25,Math.sin(a)*r);root.add(g);}
+  window.__forestWater={t:0,n:0,mesh:water,update(dt){if(!water.parent||!root.visible)return;this.t+=dt;this.n++;n1.offset.x-=dt*0.22;n2.offset.x-=dt*0.13;n2.offset.y=Math.sin(this.t*0.4)*0.05;
+   for(let i=0;i<FN;i++){ft[i]+=dt*0.018;if(ft[i]>1)ft[i]-=1;const p=curve.getPointAt(ft[i]),tg=curve.getTangentAt(ft[i]);const s=((i*37)%10/10-0.5)*HW*1.4;fpos[i*3]=p.x-tg.z*s;fpos[i*3+1]=0.07;fpos[i*3+2]=p.z+tg.x*s;}foam.geometry.attributes.position.needsUpdate=true;
+   for(const m of mists){m.position.x+=Math.sin(this.t*0.1+m.userData.ph)*dt*0.3;m.material.opacity=0.3+0.15*Math.sin(this.t*0.3+m.userData.ph);}}};
+  window.__forestWater.update(0.016);
   const N=120;const pos=new Float32Array(N*3);for(let i=0;i<N;i++){pos[i*3]=(Math.random()-0.5)*30;pos[i*3+1]=0.5+Math.random()*5;pos[i*3+2]=(Math.random()-0.5)*30;}
   root.add(new THREE.Points(new THREE.BufferGeometry().setAttribute('position',new THREE.BufferAttribute(pos,3)),new THREE.PointsMaterial({color:0xc8ffd0,size:0.07,transparent:true,opacity:0.5,depthWrite:false})));
   const files=['tree-large.glb','tree-small.glb','tree-pine-large.glb','tree-pine-small.glb','tree-park-large.glb','tree-park-pine-large.glb','tree-shrub.glb'];
@@ -334,6 +369,8 @@ async function loadMeshScene(S){
    src.traverse(o=>{if(o.isMesh){o.frustumCulled=false;o.castShadow=true;o.receiveShadow=true;}});
    root.add(src);
   }
+  // v8.22 outer dense tree ring (forest walls)
+  for(let i=0;i<46;i++){const a=(i/46)*Math.PI*2+Math.random()*0.1;const r=17+Math.random()*12;const src=gltfs[[0,2,3,4,5][i%5]].scene.clone(true);src.position.set(Math.cos(a)*r,0,Math.sin(a)*r);src.rotation.y=Math.random()*6;src.scale.setScalar(2.2+Math.random()*1.6);src.traverse(o=>{if(o.isMesh){o.frustumCulled=false;}});root.add(src);}
   // low fence ring of shrubs near clearing
   for(let i=0;i<10;i++){
    const a=(i/10)*Math.PI*2;const r=5.2;
@@ -1214,7 +1251,7 @@ function blurbOfRoster(name){try{const m=window.__rosterBlurbsByName;if(m&&m[nam
 function menuRender(){const tier=V7.tierOf(V7MEM.affinity);const card=PL.name?V8.ensureCharCard(PL.name):null;const flavor=blurbOfRoster(PL.name||'');const cardHtml=card?('当前：'+card.name+'\n经历：'+(card.经历||[]).join(' → ')+'\n技能：'+Object.entries(card.技能||{}).map(([k,v])=>k+' '+v).join(' · ')+(flavor?('\n——\n'+flavor):'')):'（切换角色后显示）';menu.innerHTML='<b style="font-size:18px">梦境菜单 (M 关闭)</b><br><span style="color:#ffd9a0">场景 · 数字键</span><br>'+
  ORDER.map((k,i)=>'<div data-s="'+k+'" style="cursor:pointer;'+(k===cur?'color:#ffd28a':'')+'">'+(i+1)+'. '+SC[k].name+(SC[k].loaded?'':' <small style="color:#9a90c0">(首次进入时加载)</small>')+'</div>').join('')+
  '<span style="color:#ffd9a0">角色 · G 切换</span><br>'+ROSTER.map((r,i)=>'<span data-c="'+i+'" style="cursor:pointer;margin-right:14px;'+(i===PL.idx?'color:#ffd28a;text-decoration:underline':'')+'">'+r.name+'</span>').join('')+
- '<br><span style="color:#ffd9a0">v8.21 · HUD开关态一眼可见 · 跑腿进度 · 小游戏win/fail音效</span><br><div style="font-size:13px;color:#cfc6ff">家 / 小卖部 / 教室 / 小房间 走实体门；校园走<b>山洞</b>、林间走<b>矿洞</b>；火星边疆 / 校园也可在<b>矿车站坐矿车</b>。数字键 1–9 快进；手机点「角色」换人</div><div data-close="1" style="cursor:pointer;color:#ffd28a;text-decoration:underline">📷 近景特写（Z）· 正面看人物</div><br><span style="color:#ffd9a0">角色卡</span><br><div id="v8cardpanel" style="font-size:13px;color:#cfc6ff;white-space:pre-wrap">'+cardHtml+'</div><br><span style="color:#ffd9a0">记事NPC</span><br><div style="font-size:13px;color:#cfc6ff">阿澄好感：'+tier.name+' ('+tier.score+') · 走近金环按 E 交谈</div>'+
+ '<br><span style="color:#ffd9a0">v8.22 · 矿洞口进入雾林溪谷：流动小溪·苔石·林间光斑</span><br><div style="font-size:13px;color:#cfc6ff">家 / 小卖部 / 教室 / 小房间 走实体门；校园走<b>山洞</b>、林间走<b>矿洞</b>；火星边疆 / 校园也可在<b>矿车站坐矿车</b>。数字键 1–9 快进；手机点「角色」换人</div><div data-close="1" style="cursor:pointer;color:#ffd28a;text-decoration:underline">📷 近景特写（Z）· 正面看人物</div><br><span style="color:#ffd9a0">角色卡</span><br><div id="v8cardpanel" style="font-size:13px;color:#cfc6ff;white-space:pre-wrap">'+cardHtml+'</div><br><span style="color:#ffd9a0">记事NPC</span><br><div style="font-size:13px;color:#cfc6ff">阿澄好感：'+tier.name+' ('+tier.score+') · 走近金环按 E 交谈</div>'+
  '<div data-quest="1" style="cursor:pointer;margin-top:8px;color:#d8c8ff;text-decoration:underline">阿澄主线任务板 ('+V7.questStatus().doneCount+'/'+V7.QUEST_BEATS.length+')</div>'+
  (function(){try{const er=V7.errandStatus?V7.errandStatus():null;const dn=(er&&er.doneCount)|0;const tot=(er&&er.total)||((V7.ERRAND_BEATS&&V7.ERRAND_BEATS.length)||8);const act=(er&&er.active)||null;const pct=tot?Math.round(100*dn/tot):0;const bar='<div style="margin-top:3px;height:6px;background:#2a3028;border-radius:4px;overflow:hidden;max-width:220px"><div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,#6dbf6a,#c8f0a8)"></div></div>';const sub=act?('<div style="font-size:11px;color:#9ab090;margin-top:2px">▶ 进行中：'+act.title+'</div>'):(er&&er.all?'<div style="font-size:11px;color:#9dffc2;margin-top:2px">✓ 全部完成</div>':'<div style="font-size:11px;color:#7a8870;margin-top:2px">点开任务板查看列表</div>');return '<div data-errand="1" style="cursor:pointer;margin-top:4px;color:#c8e8c0;text-decoration:underline">社区小事 · 跑腿 '+dn+'/'+tot+'（'+pct+'%）</div>'+bar+sub;}catch(_){return '<div data-errand="1" style="cursor:pointer;margin-top:4px;color:#c8e8c0;text-decoration:underline">社区小事</div>';}})()+
  '<div data-questcopy="1" style="cursor:pointer;margin-top:4px;color:#c8e0ff;text-decoration:underline">节拍文案：'+((window.__questCopy&&window.__questCopy.label)||'默认节拍')+'（点切）</div>'+
@@ -1642,6 +1679,7 @@ function placeRain(){
  window.__rain=true;
 }
 function rainUpdate(dt){
+ try{if(cur==='G'&&window.__forestWater)window.__forestWater.update(dt);}catch(_){}
  if(!RAIN)return;
  // rain felt on hub A, and outdoor-feeling mesh scenes H/I (home door / station platform)
  const out=cur==='A'||cur==='I'||cur==='H'||cur==='G';
@@ -2238,7 +2276,7 @@ async function playQuestReward(){
 }
 
 const questPinBtn=(()=>{const b=document.createElement('button');b.id='v8questPin';b.textContent='任务';b.title='钉开/收起阿澄主线任务板';
- b.style.cssText='position:fixed;left:12px;top:12px;z-index:36;background:rgba(40,28,70,.82);color:#e8d8ff;border:1px solid rgba(180,150,255,.45);border-radius:10px;padding:6px 12px;font-size:13px;cursor:pointer;font-family:inherit';
+ b.style.cssText='position:fixed;left:calc(108px + env(safe-area-inset-left,0px));top:12px;z-index:36;background:rgba(40,28,70,.82);color:#e8d8ff;border:1px solid rgba(180,150,255,.45);border-radius:10px;padding:6px 12px;font-size:13px;cursor:pointer;font-family:inherit';
  b.onclick=(e)=>{e.stopPropagation();window.__questPinned=!window.__questPinned;if(window.__questPinned){renderQuestBoard(true);questDiv.style.display='block';setSt('任务板已钉开');}else{questDiv.style.display='none';setSt('任务板已收起');}b.style.borderColor=window.__questPinned?'rgba(255,210,140,.8)':'rgba(180,150,255,.45)';};
  document.body.appendChild(b);return b;})();
 
