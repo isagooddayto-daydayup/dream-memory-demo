@@ -4,7 +4,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="梦境矿山">
 <meta name="theme-color" content="#07060c"><link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
-<title>回忆与梦境 · v8.35 矿山世界 · 雾林溪谷·流水</title>
+<title>回忆与梦境 · v8.36 矿山世界 · 雾林溪谷·流水</title>
 <style>
 html,body{margin:0;height:100%;overflow:hidden;background:#0a0e12;font-family:"Microsoft YaHei","PingFang SC",sans-serif}
 canvas{display:block}
@@ -23,7 +23,7 @@ canvas{display:block}
 <script type="importmap">{"imports":{"three":"./lib/three.module.js","three/addons/":"./lib/addons/","@sparkjsdev/spark":"./lib/spark.module.js","@pixiv/three-vrm":"./lib/three-vrm.module.js","MG":"./minigames.js","V7":"./dream_v7_features.js","V8":"./dream_v8_world.js"}}</script>
 </head><body>
 <div id="tint"></div><div id="vig"></div><div id="flash"></div><div id="title"></div><div id="cross"></div>
-<div id="hud"><b>回忆与梦境 · v8.35 矿山世界 · 矿洞→雾林溪谷（流水）</b><br>走进<strong>实体门口</strong>：家 / 小卖部 / 教室 / 小房间 / <strong>飞船口·ARES</strong>，<strong>山洞</strong>（校园）/ <strong>矿洞</strong>（林间），进<strong>矿车站</strong>后走进矿车「上车」去火星边疆 / 矿区校园；返回也走门 / 洞口 / 矿车（数字键仅快进）；手机：左摇杆走、右半屏拖视角、点「角色」换人；<b>E</b> 阿澄交谈；地上淡圈=小游戏<br>
+<div id="hud"><b>回忆与梦境 · v8.36 矿山世界 · 矿洞→雾林溪谷（流水）</b><br>走进<strong>实体门口</strong>：家 / 小卖部 / 教室 / 小房间 / <strong>飞船口·ARES</strong>，<strong>山洞</strong>（校园）/ <strong>矿洞</strong>（林间），进<strong>矿车站</strong>后走进矿车「上车」去火星边疆 / 矿区校园；返回也走门 / 洞口 / 矿车（数字键仅快进）；手机：左摇杆走、右半屏拖视角、点「角色」换人；<b>E</b> 阿澄交谈；地上淡圈=小游戏<br>
 点击画面锁定鼠标 · 鼠标转视角 · <b>WASD</b> 走 · <b>Shift</b> 跑<br>
 <b>空格</b> 按住起飞/上升 · <b>Ctrl/Q</b> 下降 · <b>F</b> 飞行/步行切换<br>
 <b>M</b> 菜单（结束这局→梦境回忆）· <b>G</b> 切换角色（前任留在原地当 NPC · 菜单看角色卡）· <b>1-9</b> 仍可快切场景 · <b>C</b> 镜头 · <b>V</b> 第一人称<br>
@@ -466,7 +466,7 @@ async function loadMeshScene(S){
    const pv=new THREE.MeshStandardMaterial({color:0x8a2a20,roughness:0.6});for(const [px,pz] of [[-0.8,-0.8],[0.8,-0.8],[-0.8,0.8],[0.8,0.8]]){const c=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,1.6,8),pv);c.position.set(px,1.8,pz);islet.add(c);}
    const roof=new THREE.Mesh(new THREE.ConeGeometry(1.5,0.8,4),new THREE.MeshStandardMaterial({color:0x2a3a3a,roughness:0.7}));roof.position.y=3.0;roof.rotation.y=Math.PI/4;islet.add(roof);
    for(let i=0;i<5;i++){const t=new THREE.Mesh(new THREE.ConeGeometry(0.5,1.6,8),new THREE.MeshStandardMaterial({color:0x2e5a3a,roughness:0.9}));const a=i*1.3;t.position.set(Math.cos(a)*2.3,1.6,Math.sin(a)*1.6);islet.add(t);}
-   islet.position.set(6,0,LZ-4);root.add(islet);
+   islet.position.set(6,0,LZ-4);root.add(islet);S.walk.push(mound);
    const ir=islet.clone();ir.scale.y=-1;ir.position.y=0.12;ir.traverse(o=>{if(o.isMesh){o.material=o.material.clone();o.material.color.multiplyScalar(0.45);}});refl.add(ir);
    const boat=new THREE.Group();boat.name='rowboat_v835';const bw=new THREE.MeshStandardMaterial({color:0x6a4426,roughness:0.7});
    const hull=new THREE.Mesh(new THREE.CylinderGeometry(0.55,0.35,2.6,12,1,true,0,Math.PI),bw);hull.rotation.z=Math.PI/2;hull.rotation.y=Math.PI/2;hull.material.side=THREE.DoubleSide;boat.add(hull);
@@ -3406,6 +3406,44 @@ function rideStart(door,kind,obj){RIDE.on=true;RIDE.t=0;RIDE.phase='board';RIDE.
  rideDiv.innerHTML='🚃 <b>检票上车</b><br><span style="font-size:15px;color:#ffd9a0">开往「'+dest+'」</span><br><div id="v8ridebar" style="margin-top:10px;height:8px;background:rgba(255,255,255,.12);border-radius:6px;overflow:hidden"><div id="v8ridefill" style="height:100%;width:0%;background:linear-gradient(90deg,#ffb070,#ffe08a)"></div></div><div id="v8ridet" style="font-size:13px;color:#cfc6ff;margin-top:6px">车门关闭 · 发车中…</div>';
  rideDiv.style.display='block';
  setSt('上车 → '+dest);window.__rideUI={dest,door:door.id,t0:Date.now()};}
+// ---------------- v8.36 湖 Q 小船可乘：码头上船 → 自动划到湖心岛 → 下船走动/进亭子 → 乘船返回（无光柱） ----------------
+const BOAT={on:false,phase:'pier',t:0,dur:7.5,from:null,to:null,ctrl:null,rides:0,pavilion:false,pavilionT:0,isleWalked:0,lastIsle:null,
+ PIER_DOCK:[2.6,-12.6],PIER_LAND:[4,-11.4],ISLE_DOCK:[5.4,-23.4],ISLE_LAND:[6,-25.2],ISLE:[6,-28],PAV:[6,-28]};
+const boatBtn=(()=>{const b=document.createElement('button');b.id='v8boatBtn';b.type='button';b.textContent='🚣 上船';
+ b.style.cssText='position:fixed;right:calc(18px + env(safe-area-inset-right));bottom:calc(150px + env(safe-area-inset-bottom));z-index:40;display:none;min-width:96px;min-height:52px;font-size:17px;font-weight:700;border-radius:26px;border:2px solid rgba(255,214,140,.9);background:rgba(40,28,14,.86);color:#ffe2a8;touch-action:manipulation;pointer-events:auto;box-shadow:0 2px 10px rgba(0,0,0,.4)';
+ const go=e=>{e.preventDefault();e.stopPropagation();boatBoard();};b.addEventListener('pointerdown',go);b.addEventListener('touchstart',go,{passive:false});b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();});
+ document.body.appendChild(b);return b;})();
+const boatHint=(()=>{const d=document.createElement('div');d.id='v8boatHint';d.style.cssText='position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translateX(-50%);z-index:36;display:none;background:rgba(14,22,30,.8);color:#dff0ff;padding:7px 14px;border-radius:12px;font-size:14px;pointer-events:none';document.body.appendChild(d);return d;})();
+function boatW(l){const S=SC.Q;return new THREE.Vector3(S.off.x+l[0],0,S.off.z+l[1]);}
+function boatNear(){if(cur!=='Q'||!window.__lakePolish||BOAT.on)return null;const S=SC.Q;const lx=P.pos.x-S.off.x,lz=P.pos.z-S.off.z;
+ const dk=BOAT.phase==='isle'?BOAT.ISLE_DOCK:BOAT.PIER_DOCK;const d=Math.hypot(lx-dk[0],lz-dk[1]);return d<3.2?{d,where:BOAT.phase}:null;}
+function boatBoard(){const n=boatNear();if(!n)return false;const toIsle=BOAT.phase!=='isle';
+ BOAT.from=boatW(toIsle?BOAT.PIER_DOCK:BOAT.ISLE_DOCK);BOAT.to=boatW(toIsle?BOAT.ISLE_DOCK:BOAT.PIER_DOCK);
+ const m=BOAT.from.clone().lerp(BOAT.to,0.5);m.x+=toIsle?-3.5:3.5;BOAT.ctrl=m;BOAT.on=true;BOAT.t=0;BOAT.dir=toIsle?'toIsle':'toPier';BOAT.phase='rowing';
+ boatBtn.style.display='none';boatHint.style.display='block';boatHint.textContent=toIsle?'🚣 划向湖心岛 · 水声与桨声':'🚣 划回码头';try{sfxPlay('door');}catch(_){}return true;}
+function boatUpdate(dt){const lp=window.__lakePolish;if(cur!=='Q'||!lp){boatBtn.style.display='none';if(cur!=='Q')boatHint.style.display='none';return false;}
+ const S=SC.Q,b=lp.boat;
+ if(!BOAT.on){const n=boatNear();boatBtn.style.display=n?'block':'none';boatBtn.textContent=BOAT.phase==='isle'?'🚣 乘船返回':'🚣 上船';
+  // park boat at current dock
+  const dk=BOAT.phase==='isle'?BOAT.ISLE_DOCK:BOAT.PIER_DOCK;b.position.x=dk[0];b.position.z=dk[1];
+  if(BOAT.phase==='isle'){const lx=P.pos.x-S.off.x,lz=P.pos.z-S.off.z;const dp=Math.hypot(lx-BOAT.PAV[0],lz-BOAT.PAV[1]);
+   if(BOAT.lastIsle)BOAT.isleWalked+=Math.hypot(lx-BOAT.lastIsle[0],lz-BOAT.lastIsle[1]);BOAT.lastIsle=[lx,lz];
+   if(dp<1.0){if(!BOAT.pavilion){BOAT.pavilion=true;}BOAT.pavilionT+=dt;boatHint.style.display='block';boatHint.textContent='⛩ 湖心亭 · 四面是水和雪山';}else if(!n)boatHint.style.display='none';}
+  return false;}
+ BOAT.t+=dt;const u=Math.min(1,BOAT.t/BOAT.dur),e=u*u*(3-2*u);const a=BOAT.from,c=BOAT.ctrl,z=BOAT.to;
+ const x=(1-e)*(1-e)*a.x+2*(1-e)*e*c.x+e*e*z.x,zz=(1-e)*(1-e)*a.z+2*(1-e)*e*c.z+e*e*z.z;
+ const tx=2*(1-e)*(c.x-a.x)+2*e*(z.x-c.x),tz=2*(1-e)*(c.z-a.z)+2*e*(z.z-c.z);const yaw=Math.atan2(-tx,-tz);
+ b.position.x=x-S.off.x;b.position.z=zz-S.off.z;b.rotation.y=yaw+Math.PI/2;
+ b.children.forEach((o,i)=>{if(i>=2)o.rotation.x=Math.sin(BOAT.t*4)*0.5;});
+ P.pos.set(x,S.off.y+0.5+Math.sin(BOAT.t*2.4)*0.03,zz);P.heading=yaw;let d=yaw-P.yaw;d=Math.atan2(Math.sin(d),Math.cos(d));P.yaw+=d*Math.min(1,dt*1.5);P.vel=0;
+ if(u>=1){BOAT.on=false;BOAT.rides++;const land=BOAT.dir==='toIsle'?BOAT.ISLE_LAND:BOAT.PIER_LAND;BOAT.phase=BOAT.dir==='toIsle'?'isle':'pier';BOAT.lastIsle=null;
+  P.pos.set(S.off.x+land[0],groundW('Q',S.off.x+land[0],S.off.z+land[1]),S.off.z+land[1]);boatHint.textContent=BOAT.phase==='isle'?'⛰ 湖心岛 · 往北走进亭子':'🌼 回到码头';setTimeout(()=>{if(!BOAT.on&&!boatNear())boatHint.style.display='none';},2500);}
+ return true;}
+// lake water blocks walking except pier / islet (boat is the only way across)
+function lakeBlock(prev){if(cur!=='Q'||BOAT.on||P.fly)return;const S=SC.Q;const inW=(x,z)=>{const lx=x-S.off.x,lz=z-S.off.z;
+  if(Math.hypot(lx/1.5,lz+24)>15.2)return false;if(Math.abs(lx-4)<0.95&&lz>-13.4)return false;if(Math.hypot((lx-6)/3.6,(lz+28)/3.0)<1)return false;if(Math.hypot(lx-BOAT.PIER_DOCK[0],lz-BOAT.PIER_DOCK[1])<1.2&&BOAT.phase!=='isle')return false;return true;};
+ if(inW(P.pos.x,P.pos.z)){P.pos.x=prev.x;P.pos.z=prev.z;if(inW(P.pos.x,P.pos.z)&&BOAT.phase==='isle'){P.pos.x=S.off.x+BOAT.ISLE_LAND[0];P.pos.z=S.off.z+BOAT.ISLE_LAND[1];}}}
+window.__boat=BOAT;window.__boatBoard=boatBoard;window.__boatNear=boatNear;
 function rideUpdate(dt){if(!RIDE.on)return false;RIDE.t+=dt;const t=RIDE.t,cart=RIDE.obj.userData.cart;
  const pct=Math.min(1,t/RIDE.dur);const fill=$('v8ridefill'),rt=$('v8ridet');
  if(fill)fill.style.width=(pct*100).toFixed(0)+'%';
@@ -3492,8 +3530,8 @@ function update(dt){if(typeof SIT!=='undefined'&&SIT.on){for(const k in keys)key
  if(keys.Space&&!P.fly){P.fly=true;try{V7.markFlight(V7SESS);}catch(_){}}
  const gy=groundW(cur,P.pos.x,P.pos.z,P.pos.y);
  let sp=(P.fly?(run?11:5.5):(run?RUNV:WALKV))*(tf.touchActive?tf.touchMul:1);
- const riding=rideUpdate(dt);
- if(!riding)P.pos.addScaledVector(_mv,sp*dt);
+ const riding=rideUpdate(dt)||boatUpdate(dt);
+ if(!riding){P.pos.addScaledVector(_mv,sp*dt);lakeBlock(prev);}
  if(P.fly){let vy=0;if(keys.Space)vy+=3.2;if(keys.ControlLeft||keys.KeyQ)vy-=3.2;P.pos.y+=vy*dt;
   if(P.pos.y<gy+0.02){P.pos.y=gy;if(!keys.Space&&P.flyK>0.3&&vy<0)P.fly=false;}
   P.pos.y=Math.min(P.pos.y,gy+60);}
@@ -3564,7 +3602,7 @@ function mgUpdate(){try{rainUpdate(0.016);}catch(_){}try{shopUpdate();}catch(_){
   if(!m.userData.ys&&S.g){m.position.y=groundW(k,m.position.x,m.position.z);m.userData.ys=1;}
   m.userData.ring.material.opacity=0.2+0.07*Math.sin(P.t*3); /* v8.5 地面淡提示 */const d=Math.hypot(m.position.x-P.pos.x,m.position.z-P.pos.z);if(d<bd){bd=d;best=m;}}
  if(V7_NEAR){MGX.near=null;MGM.setPrompt(null);return;} if(best!==MGX.near){MGX.near=best;MGM.setPrompt(best?(TOUCH.on?'👆 点这里进入「'+best.userData.name+'」':'按 E 进入「'+best.userData.name+'」'):null,best?()=>mgEnter(best.userData.id):null);}}
-addEventListener('keydown',e=>{if(MGM.MG.active||CS.on||V7_CHAT)return;
+addEventListener('keydown',e=>{if(MGM.MG.active||CS.on||V7_CHAT)return;if(e.code==='KeyB'&&boatNear()){boatBoard();return;}
  if(e.code==='KeyE'){if(LAMP.near){toggleLamp();return;}if(POSTER.near){readPoster();return;}if(CAL.near){readCalendar();return;}if(window.__homeRadioNear){toggleHomeRadio();return;}if(BED.near){sleepInBed();return;}if(SIT.on||SIT.near){sitToggle();return;}if(CLERK.near){talkClerk();return;}if(V7_NEAR){v7OpenChat();return;}if(BANTER_NEAR.n){talkBanter(BANTER_NEAR.n);return;}if(SHOP.near){shopBuy(SHOP.near.id);return;}if(MGX.near)mgEnter(MGX.near.userData.id);try{if(cur==='K'||cur==='F'){errandHook('interact_chalk_bits');errandHook('interact_deliver_chalk');errandHook('near_chalk_bits');}if(cur==='I'){errandHook('interact_ticket');errandHook('near_ticket');}}catch(_){}}
  if(e.code==='Escape'&&document.getElementById('v7card').style.display==='flex'){document.getElementById('v7card').style.display='none';}
 });
