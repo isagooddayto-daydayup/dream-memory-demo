@@ -1,5 +1,5 @@
 /** Dream v8.35 world helpers (魂系气质: fog/camera/cold light): physical entrances (doors / storefronts / cave mouths / station mine carts), char cards. No paid APIs. */
-export const VERSION = 'v8.40';
+export const VERSION = 'v8.41';
 
 /**
  * Hub door definitions (local offsets relative to scene A spawn).
@@ -40,6 +40,8 @@ export const DOORS = [
   { id: 'hub_watertower', label: '矿区水塔', from: 'A', to: 'AA', hubLocal: [8.6, -6.4], destLocal: [0, 4.6], destYaw: 0, exitLocal: [0, 7.6], color: 0xc8d0d8, facade: 'station', exitFacade: 'exitdoor', weathered: true },
   // v8.40 矿区远处花田风车山坡: 水塔院西侧实体石拱山洞口（scene-local；无光柱）
   { id: 'tower_windmill', label: '山洞 · 花田风车坡', from: 'AA', to: 'AB', hubLocal: [-8.0, 6.0], destLocal: [0, 4.0], destYaw: 0, exitLocal: [0, 8.0], color: 0xffd890, facade: 'cave', exitFacade: 'cave' },
+  // v8.41 花田风车坡 → 风车磨坊内部: 坡道左侧磨坊小屋实体木门（scene-local；无光柱）
+  { id: 'windmill_mill', label: '风车磨坊', from: 'AB', to: 'AC', hubLocal: [-5.5, -1.5], destLocal: [0, 0.2], destYaw: 0, exitLocal: [0, 4.3], color: 0xffc890, facade: 'home', exitFacade: 'exitdoor', weathered: true },
   { id: 'hub_library', label: '小学图书室', from: 'A', to: 'X', hubLocal: [4.4, 7.8], destLocal: [0, 2.6], destYaw: 0, exitLocal: [0, 4.3], color: 0xffd890, facade: 'classroom', exitFacade: 'exitdoor' },
   { id: 'hub_cinema', label: '老影院', from: 'A', to: 'U', hubLocal: [-2.2, 7.0], destLocal: [0, 2.4], destYaw: 0, exitLocal: [0, 4.3], color: 0xff9a7a, facade: 'shop', exitFacade: 'exitdoor' },
   { id: 'hub_noodle', label: '街角面馆', from: 'A', to: 'S', hubLocal: [-7.6, -3.2], destLocal: [0, 1.6], destYaw: Math.PI, exitLocal: [0, 4.3], color: 0xffc070, facade: 'shop', exitFacade: 'exitdoor', weathered: true },
