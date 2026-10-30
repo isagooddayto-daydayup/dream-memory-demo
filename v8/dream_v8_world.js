@@ -1,5 +1,5 @@
 /** Dream v8.35 world helpers (魂系气质: fog/camera/cold light): physical entrances (doors / storefronts / cave mouths / station mine carts), char cards. No paid APIs. */
-export const VERSION = 'v8.50';
+export const VERSION = 'v8.51';
 
 /**
  * Hub door definitions (local offsets relative to scene A spawn).
@@ -60,6 +60,8 @@ export const DOORS = [
   { id: 'bluebell_lavender', label: '薰衣草丘', from: 'AJ', to: 'AK', hubLocal: [-5.5, -28.5], destLocal: [0, 4.0], destYaw: 0, exitLocal: [0, 7.0], color: 0xb090d0, facade: 'home', exitFacade: 'exitdoor', weathered: true },
   // v8.50 薰衣草丘 → 向日葵海: 薰衣草远端右侧实体木门（scene-local；无光柱）
   { id: 'lavender_sunflower', label: '向日葵海', from: 'AK', to: 'AL', hubLocal: [5.5, -32.0], destLocal: [0, 4.0], destYaw: 0, exitLocal: [0, 7.0], color: 0xe8c060, facade: 'home', exitFacade: 'exitdoor', weathered: true },
+  // v8.51 向日葵海 → 晨雾茶园: 向日葵远端右侧实体木门（scene-local；无光柱）
+  { id: 'sunflower_tea', label: '晨雾茶园', from: 'AL', to: 'AM', hubLocal: [5.5, -32.0], destLocal: [0, 4.0], destYaw: 0, exitLocal: [0, 7.0], color: 0xa8c890, facade: 'home', exitFacade: 'exitdoor', weathered: true },
   { id: 'hub_library', label: '小学图书室', from: 'A', to: 'X', hubLocal: [4.4, 7.8], destLocal: [0, 2.6], destYaw: 0, exitLocal: [0, 4.3], color: 0xffd890, facade: 'classroom', exitFacade: 'exitdoor' },
   { id: 'hub_cinema', label: '老影院', from: 'A', to: 'U', hubLocal: [-2.2, 7.0], destLocal: [0, 2.4], destYaw: 0, exitLocal: [0, 4.3], color: 0xff9a7a, facade: 'shop', exitFacade: 'exitdoor' },
   { id: 'hub_noodle', label: '街角面馆', from: 'A', to: 'S', hubLocal: [-7.6, -3.2], destLocal: [0, 1.6], destYaw: Math.PI, exitLocal: [0, 4.3], color: 0xffc070, facade: 'shop', exitFacade: 'exitdoor', weathered: true },
