@@ -1,5 +1,5 @@
-/** Dream v8.22 world helpers (魂系气质: fog/camera/cold light): physical entrances (doors / storefronts / cave mouths / station mine carts), char cards. No paid APIs. */
-export const VERSION = 'v8.22';
+/** Dream v8.23 world helpers (魂系气质: fog/camera/cold light): physical entrances (doors / storefronts / cave mouths / station mine carts), char cards. No paid APIs. */
+export const VERSION = 'v8.23';
 
 /**
  * Hub door definitions (local offsets relative to scene A spawn).
@@ -14,6 +14,8 @@ export const DOORS = [
   { id: 'hub_room', label: '小房间', from: 'A', to: 'D', hubLocal: [-3.8, 3.2], destLocal: [-3.2, 1.5], destYaw: Math.PI, exitLocal: [-3.6, 0.2], color: 0xa8c8ff, facade: 'room', exitFacade: 'exitdoor' },
   { id: 'hub_campus', label: '山洞 · 矿区校园', from: 'A', to: 'B', hubLocal: [1.5, 8.5], destLocal: [0, 0], destYaw: 0, exitLocal: [0, -2.6], color: 0x9dffc2, facade: 'cave', exitFacade: 'cave' },
   { id: 'hub_forest', label: '矿洞 · 林间小路', from: 'A', to: 'G', hubLocal: [7.2, -2.0], destLocal: [0, 7.5], destYaw: Math.PI, exitLocal: [0, 10.4], color: 0x6dff9a, facade: 'mine', exitFacade: 'mine' },
+  // v8.23 林中木屋: 森林 G 溪谷旁实体木门（scene-local）
+  { id: 'forest_cabin', label: '林中木屋', from: 'G', to: 'N', hubLocal: [-9.0, -1.5], destLocal: [0, 1.4], destYaw: Math.PI, exitLocal: [0, 4.3], color: 0xffc890, facade: 'home', exitFacade: 'exitdoor' },
   { id: 'hub_home', label: '家', from: 'A', to: 'H', hubLocal: [2.6, 1.2], destLocal: [0, 2.2], destYaw: Math.PI, exitLocal: [0, 3.9], color: 0xffe08a, facade: 'home', exitFacade: 'exitdoor' },
   { id: 'hub_station', label: '矿车站', from: 'A', to: 'I', hubLocal: [-3.8, -5.0], destLocal: [0, 3.5], destYaw: 0, exitLocal: [0, 7.2], color: 0xffb07a, facade: 'station', exitFacade: 'exitdoor', weathered: true },
   { id: 'hub_shop', label: '小卖部', from: 'A', to: 'J', hubLocal: [-5.8, 0.8], destLocal: [0, 2.0], destYaw: Math.PI, exitLocal: [0, 3.9], color: 0xa8e0ff, facade: 'shop', exitFacade: 'exitdoor' },

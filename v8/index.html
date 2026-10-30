@@ -4,7 +4,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="梦境矿山">
 <meta name="theme-color" content="#07060c"><link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
-<title>回忆与梦境 · v8.22 矿山世界 · 雾林溪谷·流水</title>
+<title>回忆与梦境 · v8.23 矿山世界 · 雾林溪谷·流水</title>
 <style>
 html,body{margin:0;height:100%;overflow:hidden;background:#0a0e12;font-family:"Microsoft YaHei","PingFang SC",sans-serif}
 canvas{display:block}
@@ -23,7 +23,7 @@ canvas{display:block}
 <script type="importmap">{"imports":{"three":"./lib/three.module.js","three/addons/":"./lib/addons/","@sparkjsdev/spark":"./lib/spark.module.js","@pixiv/three-vrm":"./lib/three-vrm.module.js","MG":"./minigames.js","V7":"./dream_v7_features.js","V8":"./dream_v8_world.js"}}</script>
 </head><body>
 <div id="tint"></div><div id="vig"></div><div id="flash"></div><div id="title"></div><div id="cross"></div>
-<div id="hud"><b>回忆与梦境 · v8.22 矿山世界 · 矿洞→雾林溪谷（流水）</b><br>走进<strong>实体门口</strong>：家 / 小卖部 / 教室 / 小房间 / <strong>飞船口·ARES</strong>，<strong>山洞</strong>（校园）/ <strong>矿洞</strong>（林间），进<strong>矿车站</strong>后走进矿车「上车」去火星边疆 / 矿区校园；返回也走门 / 洞口 / 矿车（数字键仅快进）；手机：左摇杆走、右半屏拖视角、点「角色」换人；<b>E</b> 阿澄交谈；地上淡圈=小游戏<br>
+<div id="hud"><b>回忆与梦境 · v8.23 矿山世界 · 矿洞→雾林溪谷（流水）</b><br>走进<strong>实体门口</strong>：家 / 小卖部 / 教室 / 小房间 / <strong>飞船口·ARES</strong>，<strong>山洞</strong>（校园）/ <strong>矿洞</strong>（林间），进<strong>矿车站</strong>后走进矿车「上车」去火星边疆 / 矿区校园；返回也走门 / 洞口 / 矿车（数字键仅快进）；手机：左摇杆走、右半屏拖视角、点「角色」换人；<b>E</b> 阿澄交谈；地上淡圈=小游戏<br>
 点击画面锁定鼠标 · 鼠标转视角 · <b>WASD</b> 走 · <b>Shift</b> 跑<br>
 <b>空格</b> 按住起飞/上升 · <b>Ctrl/Q</b> 下降 · <b>F</b> 飞行/步行切换<br>
 <b>M</b> 菜单（结束这局→梦境回忆）· <b>G</b> 切换角色（前任留在原地当 NPC · 菜单看角色卡）· <b>1-9</b> 仍可快切场景 · <b>C</b> 镜头 · <b>V</b> 第一人称<br>
@@ -93,10 +93,12 @@ C:{key:'C',name:'回忆三 · 火星边疆',sub:'Marble Mars Frontier（你的 M
     off:new THREE.Vector3(5000,0,0),spawn:[0,2.5],yaw:Math.PI,glow:[1.0,0.9,0.7]},
  L:{key:'L',kind:'mesh',meshPack:'airport',name:'机场候车厅 · 白盒',sub:'程序化候机厅 · 枢纽↔ARES/火星换乘（雨夜窗）',
     off:new THREE.Vector3(5500,0,0),spawn:[0,4.5],yaw:Math.PI,glow:[0.85,0.92,1.05]},
+ N:{key:'N',kind:'mesh',meshPack:'cabin',name:'回忆七 · 林中木屋',sub:'溪谷瀑布旁的小木屋（实体木门进出；程序化木纹 · 炉火暖光）',
+    off:new THREE.Vector3(6500,0,0),spawn:[0,2.2],yaw:Math.PI,glow:[1.05,0.85,0.6]},
  M:{key:'M',kind:'mesh',meshPack:'mars_shelter',name:'火星地表庇护所 · 白盒',sub:'锈红舱内 · 可走室内（回枢纽/机场）',
     off:new THREE.Vector3(6000,0,0),spawn:[0,2.2],yaw:Math.PI,glow:[1.05,0.78,0.55]},
 };
-const ORDER=['A','B','C','D','E','F','G','H','I','J','K','L','M'];
+const ORDER=['A','B','C','D','E','F','G','H','I','J','K','L','M','N'];
 let cur='A';
 
 function fxDyno(S){
@@ -303,6 +305,32 @@ async function loadMeshScene(S){
   S.mesh=root;S.loaded=true;return S;
  }
 
+ if(S.meshPack==='cabin'){
+  const dome=new THREE.Mesh(new THREE.SphereGeometry(60,24,12),new THREE.MeshBasicMaterial({color:0x3a3028,side:THREE.BackSide,depthWrite:false,fog:false}));root.add(dome);
+  root.add(new THREE.HemisphereLight(0xffe8d0,0x4a3a2a,0.9));
+  const fire=new THREE.PointLight(0xff9a50,2.2,14);fire.position.set(-2.4,1.0,-2.6);root.add(fire);
+  const lamp=new THREE.PointLight(0xffd8a0,1.0,10);lamp.position.set(1.5,2.3,0.5);root.add(lamp);
+  const wood=(base,stripe)=>{const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d');g.fillStyle=base;g.fillRect(0,0,128,128);for(let y=0;y<128;y+=16){g.fillStyle=stripe;g.fillRect(0,y,128,2);for(let i=0;i<6;i++){g.globalAlpha=0.25;g.fillRect(Math.random()*128,y+3+Math.random()*10,20+Math.random()*40,1);g.globalAlpha=1;}}const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;return t;};
+  const wallT=wood('#7a5434','#4a3020');wallT.repeat.set(3,2);const floorT=wood('#8a6440','#553a22');floorT.repeat.set(4,4);
+  const wallM=new THREE.MeshStandardMaterial({map:wallT,roughness:0.9});const floorM=new THREE.MeshStandardMaterial({map:floorT,roughness:0.85});
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(9,9),floorM);ground.rotation.x=-Math.PI/2;root.add(ground);S.walk=[ground];
+  const bx=(w,h,d,m,x,y,z)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);root.add(o);return o;};
+  bx(9,3.2,0.2,wallM,0,1.6,-4.5);bx(0.2,3.2,9,wallM,-4.5,1.6,0);bx(0.2,3.2,9,wallM,4.5,1.6,0);
+  bx(3.4,3.2,0.2,wallM,-2.8,1.6,4.5);bx(3.4,3.2,0.2,wallM,2.8,1.6,4.5);bx(2.2,0.9,0.2,wallM,0,2.75,4.5);
+  const roofM=new THREE.MeshStandardMaterial({color:0x4a3020,roughness:1});const r1=bx(5.2,0.15,9.4,roofM,-2.2,3.9,0);r1.rotation.z=0.45;const r2=bx(5.2,0.15,9.4,roofM,2.2,3.9,0);r2.rotation.z=-0.45;
+  for(const x of [-3,-1,1,3]){bx(0.18,0.18,9,roofM,x,3.2,0);}
+  const win=new THREE.Mesh(new THREE.PlaneGeometry(1.6,1.1),new THREE.MeshBasicMaterial({color:0x8ab0a0}));win.position.set(4.38,1.7,-0.8);win.rotation.y=-Math.PI/2;root.add(win);
+  const stone=new THREE.MeshStandardMaterial({color:0x6a665e,roughness:1,flatShading:true});bx(2.0,1.2,0.9,stone,-2.4,0.6,-3.9);bx(0.9,2.2,0.7,stone,-2.4,2.3,-4.0);
+  const flame=new THREE.Mesh(new THREE.ConeGeometry(0.3,0.6,8),new THREE.MeshBasicMaterial({color:0xffa040}));flame.position.set(-2.4,0.45,-3.4);root.add(flame);
+  const tableM=new THREE.MeshStandardMaterial({map:floorT,roughness:0.8});bx(1.6,0.08,0.9,tableM,1.4,0.78,-0.6);for(const [dx,dz] of [[-0.7,-0.38],[0.7,-0.38],[-0.7,0.38],[0.7,0.38]])bx(0.08,0.76,0.08,tableM,1.4+dx,0.38,-0.6+dz);
+  bx(1.6,0.45,0.35,tableM,1.4,0.22,0.3);bx(1.0,0.5,2.0,tableM,3.4,0.25,-3.2);bx(0.9,0.12,1.8,new THREE.MeshStandardMaterial({color:0xc8b8a0}),3.4,0.56,-3.2);
+  bx(0.3,1.6,1.4,tableM,-4.2,0.8,1.6);
+  const mug=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.05,0.12,10),new THREE.MeshStandardMaterial({color:0xe8e0d0}));mug.position.set(1.2,0.88,-0.6);root.add(mug);
+  window.__cabin={fire,flame,t:0};
+  scene.add(root);root.updateMatrixWorld(true);
+  S.mesh=root;S.loaded=true;return S;
+ }
+
  if(S.meshPack==='forest'){
   const skyMat=new THREE.MeshBasicMaterial({color:0x6a7880,side:THREE.BackSide,depthWrite:false,fog:false});
   const dome=new THREE.Mesh(new THREE.SphereGeometry(160,32,16),skyMat);dome.renderOrder=-5;root.add(dome);
@@ -313,7 +341,7 @@ async function loadMeshScene(S){
   // soft path disk
   const path=new THREE.Mesh(new THREE.CircleGeometry(3.2,40),new THREE.MeshStandardMaterial({color:0xc2b280,roughness:1,metalness:0}));
   path.rotation.x=-Math.PI/2;path.position.y=0.02;root.add(path);
-  // v8.22 flowing stream: ribbon along a meander curve, procedural normal map scrolled along flow (UV.x = along)
+  // v8.23 flowing stream: ribbon along a meander curve, procedural normal map scrolled along flow (UV.x = along)
   const FW=(()=>{
    const S=256,c=document.createElement('canvas');c.width=c.height=S;const g=c.getContext('2d');const id=g.createImageData(S,S);
    const hgt=(x,y)=>{let v=0;for(const [f,a,p] of [[2,1,0.3],[5,0.5,1.7],[9,0.28,2.9],[17,0.14,4.1]]){v+=a*Math.sin((x*f+Math.sin(y*f*0.7+p)*0.6)*Math.PI*2/S*1)*Math.cos((y*f*0.5+p)*Math.PI*2/S);}return v;};
@@ -324,9 +352,9 @@ async function loadMeshScene(S){
   const curve=new THREE.CatmullRomCurve3(pts);const SEG=160,HW=1.5;
   const mkRibbon=(hw,y)=>{const pos=[],uv=[],idx=[];for(let i=0;i<=SEG;i++){const t=i/SEG,p=curve.getPointAt(t),tg=curve.getTangentAt(t);const nx=-tg.z,nz=tg.x;const w=hw*(0.85+0.25*Math.sin(t*19));pos.push(p.x+nx*w,y,p.z+nz*w,p.x-nx*w,y,p.z-nz*w);uv.push(t*12,0,t*12,1);if(i<SEG){const a=i*2;idx.push(a,a+1,a+2,a+1,a+3,a+2);}}const gg=new THREE.BufferGeometry();gg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));gg.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));gg.setIndex(idx);gg.computeVertexNormals();return gg;};
   const bed=new THREE.Mesh(mkRibbon(HW*1.35,0.012),new THREE.MeshStandardMaterial({color:0x3a3a2a,roughness:1,side:THREE.DoubleSide,map:(()=>{const t=OLDTEX.dirt().clone();t.needsUpdate=true;t.repeat.set(30,2);return t;})()}));root.add(bed);
-  const envC=document.createElement('canvas');envC.width=64;envC.height=32;{const g=envC.getContext('2d');const gr=g.createLinearGradient(0,0,0,32);gr.addColorStop(0,'#cfe4dc');gr.addColorStop(0.5,'#7f9a8c');gr.addColorStop(1,'#26302a');g.fillStyle=gr;g.fillRect(0,0,64,32);}
+  const envC=document.createElement('canvas');envC.width=256;envC.height=128;{const g=envC.getContext('2d');const gr=g.createLinearGradient(0,0,0,32);gr.addColorStop(0,'#f4fbff');gr.addColorStop(0.42,'#bfe0e4');gr.addColorStop(0.5,'#4f6a52');gr.addColorStop(1,'#2a3a2e');g.fillStyle=gr;g.fillRect(0,0,256,128);g.fillStyle='#2f4a34';for(let x=0;x<256;x+=6){const h=10+((x*37)%23);g.beginPath();g.moveTo(x-5,64);g.lineTo(x,64-h);g.lineTo(x+5,64);g.fill();}const sg=g.createRadialGradient(70,30,1,70,30,22);sg.addColorStop(0,'rgba(255,250,225,1)');sg.addColorStop(1,'rgba(255,250,225,0)');g.fillStyle=sg;g.fillRect(40,0,60,60);}
   const envT=new THREE.CanvasTexture(envC);envT.mapping=THREE.EquirectangularReflectionMapping;
-  const wmat=new THREE.MeshPhysicalMaterial({color:0x2f5a5c,roughness:0.08,metalness:0.0,clearcoat:1,clearcoatRoughness:0.05,normalMap:n1,normalScale:new THREE.Vector2(0.9,0.9),clearcoatNormalMap:n2,clearcoatNormalScale:new THREE.Vector2(0.6,0.6),envMap:envT,envMapIntensity:1.4,transparent:true,opacity:0.86,side:THREE.DoubleSide});
+  const wmat=new THREE.MeshPhysicalMaterial({color:0x5f9aa0,roughness:0.03,metalness:0.1,clearcoat:1,clearcoatRoughness:0.02,ior:1.33,specularIntensity:1,normalMap:n1,normalScale:new THREE.Vector2(0.55,0.55),clearcoatNormalMap:n2,clearcoatNormalScale:new THREE.Vector2(0.35,0.35),envMap:envT,envMapIntensity:2.6,emissive:0x16302e,emissiveIntensity:0.35,transparent:true,opacity:0.9,side:THREE.DoubleSide});
   const water=new THREE.Mesh(mkRibbon(HW,0.05),wmat);water.name='forestStream_v822';root.add(water);
   // foam flecks drifting with flow
   const FN=90,fpos=new Float32Array(FN*3),ft=new Float32Array(FN);for(let i=0;i<FN;i++){ft[i]=Math.random();}
@@ -339,16 +367,27 @@ async function loadMeshScene(S){
   // layered ground mist sheets + sun dapples
   const mistC=document.createElement('canvas');mistC.width=mistC.height=128;{const g=mistC.getContext('2d');const gr=g.createRadialGradient(64,64,4,64,64,64);gr.addColorStop(0,'rgba(220,235,225,0.55)');gr.addColorStop(1,'rgba(220,235,225,0)');g.fillStyle=gr;g.fillRect(0,0,128,128);}
   const mistT=new THREE.CanvasTexture(mistC);const mists=[];
-  for(let i=0;i<14;i++){const m=new THREE.Mesh(new THREE.PlaneGeometry(14,14),new THREE.MeshBasicMaterial({map:mistT,transparent:true,depthWrite:false,opacity:0.35+Math.random()*0.25,fog:false}));m.rotation.x=-Math.PI/2;m.position.set((Math.random()-0.5)*44,0.4+Math.random()*1.4,(Math.random()-0.5)*44);m.userData.ph=Math.random()*6;root.add(m);mists.push(m);}
+  for(let i=0;i<6;i++){const m=new THREE.Mesh(new THREE.PlaneGeometry(14,14),new THREE.MeshBasicMaterial({map:mistT,transparent:true,depthWrite:false,opacity:0.12+Math.random()*0.08,fog:false}));m.rotation.x=-Math.PI/2;m.position.set((Math.random()-0.5)*44,0.15+Math.random()*0.3,(Math.random()-0.5)*44);m.userData.ph=Math.random()*6;root.add(m);mists.push(m);}
   const dapC=document.createElement('canvas');dapC.width=dapC.height=64;{const g=dapC.getContext('2d');const gr=g.createRadialGradient(32,32,2,32,32,32);gr.addColorStop(0,'rgba(255,240,190,0.7)');gr.addColorStop(1,'rgba(255,240,190,0)');g.fillStyle=gr;g.fillRect(0,0,64,64);}
   const dapT=new THREE.CanvasTexture(dapC);
   for(let i=0;i<26;i++){const d=new THREE.Mesh(new THREE.CircleGeometry(0.6+Math.random()*1.1,16),new THREE.MeshBasicMaterial({map:dapT,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0.55}));d.rotation.x=-Math.PI/2;d.position.set((Math.random()-0.5)*26,0.035,(Math.random()-0.5)*26);root.add(d);}
   // ferns / grass tufts
   const grassMat=new THREE.MeshStandardMaterial({color:0x5d8a44,roughness:1,side:THREE.DoubleSide});
   for(let i=0;i<70;i++){const g=new THREE.Mesh(new THREE.ConeGeometry(0.18,0.55+Math.random()*0.4,5),grassMat);const a=Math.random()*6.28,r=4+Math.random()*24;g.position.set(Math.cos(a)*r,0.25,Math.sin(a)*r);root.add(g);}
+  // v8.23 溪谷瀑布: cliff + falling sheet + splash at stream head
+  const WF=(()=>{const c=document.createElement('canvas');c.width=64;c.height=256;const g=c.getContext('2d');g.fillStyle='rgba(210,235,240,0.55)';g.fillRect(0,0,64,256);for(let i=0;i<70;i++){g.fillStyle='rgba(255,255,255,'+(0.3+Math.random()*0.6)+')';g.fillRect(Math.random()*64,Math.random()*256,1+Math.random()*2,20+Math.random()*60);}const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(3,1);return t;})();
+  const cliffM=new THREE.MeshStandardMaterial({color:0x6a6e64,roughness:0.92,flatShading:true});
+  const fallG=new THREE.Group();fallG.name='waterfall_v823';const hp=curve.getPointAt(0.2);fallG.position.set(hp.x,0,hp.z);fallG.rotation.y=Math.atan2(curve.getTangentAt(0).x,curve.getTangentAt(0).z)+Math.PI;root.add(fallG);
+  for(const [x,y,z,sx,sy,sz] of [[-3.4,2.6,0,2.6,5.4,2.4],[3.4,2.4,0,2.6,5,2.4],[0,5.8,-0.6,4.6,1.6,2.6],[-6,1.6,0.5,2.4,3.2,2],[6,1.4,0.5,2.4,2.8,2]]){const r=new THREE.Mesh(new THREE.DodecahedronGeometry(1,1),cliffM);r.position.set(x,y,z);r.scale.set(sx,sy,sz);fallG.add(r);}
+  const sheet=new THREE.Mesh(new THREE.PlaneGeometry(2.6,5.4,1,8),new THREE.MeshBasicMaterial({map:WF,transparent:true,depthWrite:false,side:THREE.DoubleSide,opacity:0.92}));sheet.position.set(0,2.7,0.9);fallG.add(sheet);
+  const pool=new THREE.Mesh(new THREE.CircleGeometry(2.6,32),wmat);pool.rotation.x=-Math.PI/2;pool.position.set(0,0.055,1.8);fallG.add(pool);
+  const SPN=60,spos=new Float32Array(SPN*3),sv=new Float32Array(SPN*3);const splash=new THREE.Points(new THREE.BufferGeometry().setAttribute('position',new THREE.BufferAttribute(spos,3)),new THREE.PointsMaterial({color:0xf0fbff,size:0.12,transparent:true,opacity:0.8,depthWrite:false}));splash.position.set(0,0,1.2);fallG.add(splash);
+  window.__waterfall={sheet,tex:WF,splash,group:fallG};
+  window.__forestDOF={enabled:false,sharpen:true,fogMul:1.25,note:'v8.23: no DOF pass; fog/mist reduced; pixelRatio boost in G'};
   window.__forestWater={t:0,n:0,mesh:water,update(dt){if(!water.parent||!root.visible)return;this.t+=dt;this.n++;n1.offset.x-=dt*0.22;n2.offset.x-=dt*0.13;n2.offset.y=Math.sin(this.t*0.4)*0.05;
    for(let i=0;i<FN;i++){ft[i]+=dt*0.018;if(ft[i]>1)ft[i]-=1;const p=curve.getPointAt(ft[i]),tg=curve.getTangentAt(ft[i]);const s=((i*37)%10/10-0.5)*HW*1.4;fpos[i*3]=p.x-tg.z*s;fpos[i*3+1]=0.07;fpos[i*3+2]=p.z+tg.x*s;}foam.geometry.attributes.position.needsUpdate=true;
-   for(const m of mists){m.position.x+=Math.sin(this.t*0.1+m.userData.ph)*dt*0.3;m.material.opacity=0.3+0.15*Math.sin(this.t*0.3+m.userData.ph);}}};
+   WF.offset.y+=dt*1.6;for(let i=0;i<SPN;i++){const k=i*3;if(spos[k+1]<=0){spos[k]=(Math.random()-0.5)*2.2;spos[k+1]=0.05;spos[k+2]=(Math.random()-0.5)*0.8;sv[k]=(Math.random()-0.5)*1.2;sv[k+1]=1+Math.random()*1.8;sv[k+2]=Math.random()*1.2;}spos[k]+=sv[k]*dt;spos[k+1]+=sv[k+1]*dt;spos[k+2]+=sv[k+2]*dt;sv[k+1]-=6*dt;}splash.geometry.attributes.position.needsUpdate=true;
+   for(const m of mists){m.position.x+=Math.sin(this.t*0.1+m.userData.ph)*dt*0.3;m.material.opacity=0.12+0.05*Math.sin(this.t*0.3+m.userData.ph);}}};
   window.__forestWater.update(0.016);
   const N=120;const pos=new Float32Array(N*3);for(let i=0;i<N;i++){pos[i*3]=(Math.random()-0.5)*30;pos[i*3+1]=0.5+Math.random()*5;pos[i*3+2]=(Math.random()-0.5)*30;}
   root.add(new THREE.Points(new THREE.BufferGeometry().setAttribute('position',new THREE.BufferAttribute(pos,3)),new THREE.PointsMaterial({color:0xc8ffd0,size:0.07,transparent:true,opacity:0.5,depthWrite:false})));
@@ -369,7 +408,7 @@ async function loadMeshScene(S){
    src.traverse(o=>{if(o.isMesh){o.frustumCulled=false;o.castShadow=true;o.receiveShadow=true;}});
    root.add(src);
   }
-  // v8.22 outer dense tree ring (forest walls)
+  // v8.23 outer dense tree ring (forest walls)
   for(let i=0;i<46;i++){const a=(i/46)*Math.PI*2+Math.random()*0.1;const r=17+Math.random()*12;const src=gltfs[[0,2,3,4,5][i%5]].scene.clone(true);src.position.set(Math.cos(a)*r,0,Math.sin(a)*r);src.rotation.y=Math.random()*6;src.scale.setScalar(2.2+Math.random()*1.6);src.traverse(o=>{if(o.isMesh){o.frustumCulled=false;}});root.add(src);}
   // low fence ring of shrubs near clearing
   for(let i=0;i<10;i++){
@@ -930,12 +969,12 @@ scene.add(SUN);scene.add(SUN.target);
  geo.setAttribute('color',new THREE.Float32BufferAttribute(col,3));es.add(new THREE.Mesh(geo,new THREE.MeshBasicMaterial({vertexColors:true,side:THREE.BackSide})));
  const sunb=new THREE.Mesh(new THREE.SphereGeometry(1.0,16,8),new THREE.MeshBasicMaterial({color:new THREE.Color(4.2,4.5,5.0)}));sunb.position.set(5,9,2);es.add(sunb);
  const pm=new THREE.PMREMGenerator(renderer);scene.environment=pm.fromScene(es,0.04).texture;scene.environmentIntensity=0.7;pm.dispose();}
-const SCENE_LIGHT={A:{c:0xc0ccd4,i:1.75,h:0.36},B:{c:0xd0dae0,i:2.0,h:0.48},C:{c:0xe0c8b0,i:2.1,h:0.40},D:{c:0xd8d4cc,i:1.45,h:0.55},E:{c:0xd0d8e0,i:2.0,h:0.45},F:{c:0xd4d8dc,i:1.9,h:0.5},G:{c:0xc8d4c8,i:2.0,h:0.48},H:{c:0xd8d0c4,i:1.55,h:0.5},I:{c:0xb8c0c4,i:1.85,h:0.38},J:{c:0xd0d8e0,i:1.55,h:0.5},K:{c:0xd8d4c8,i:1.7,h:0.52},L:{c:0xd0d8e0,i:1.8,h:0.42},M:{c:0xe8d0b0,i:1.7,h:0.40}};
+const SCENE_LIGHT={A:{c:0xc0ccd4,i:1.75,h:0.36},B:{c:0xd0dae0,i:2.0,h:0.48},C:{c:0xe0c8b0,i:2.1,h:0.40},D:{c:0xd8d4cc,i:1.45,h:0.55},E:{c:0xd0d8e0,i:2.0,h:0.45},F:{c:0xd4d8dc,i:1.9,h:0.5},G:{c:0xc8d4c8,i:2.0,h:0.48},H:{c:0xd8d0c4,i:1.55,h:0.5},I:{c:0xb8c0c4,i:1.85,h:0.38},J:{c:0xd0d8e0,i:1.55,h:0.5},K:{c:0xd8d4c8,i:1.7,h:0.52},L:{c:0xd0d8e0,i:1.8,h:0.42},M:{c:0xe8d0b0,i:1.7,h:0.40},N:{c:0xffd8b0,i:1.5,h:0.5}};
 // v8.6 魂系雾：冷灰/石青 FogExp2；室内更淡
-const SCENE_MOOD={A:{fog:0x5e6870,dens:0.044,clear:0x4a545c,exp:0.86},B:{fog:0x646e76,dens:0.046,clear:0x505860,exp:0.88},C:{fog:0x7a6a5c,dens:0.028,clear:0x5e564c,exp:0.95},D:{fog:0x5a5e62,dens:0.055,clear:0x3a3e42,exp:0.88},E:{fog:0x5a646c,dens:0.038,clear:0x3e464c,exp:0.88},F:{fog:0x6a7074,dens:0.040,clear:0x4a5054,exp:0.90},G:{fog:0x5a6860,dens:0.044,clear:0x465048,exp:0.88},H:{fog:0x5c5850,dens:0.050,clear:0x3e3a34,exp:0.88},I:{fog:0x566068,dens:0.050,clear:0x3a4248,exp:0.82},J:{fog:0x586068,dens:0.052,clear:0x3c444a,exp:0.82},K:{fog:0x6a6860,dens:0.042,clear:0x4a4840,exp:0.90},L:{fog:0x5a646c,dens:0.040,clear:0x3e464c,exp:0.86},M:{fog:0x7a6a5c,dens:0.032,clear:0x5e564c,exp:0.90}};
+const SCENE_MOOD={A:{fog:0x5e6870,dens:0.044,clear:0x4a545c,exp:0.86},B:{fog:0x646e76,dens:0.046,clear:0x505860,exp:0.88},C:{fog:0x7a6a5c,dens:0.028,clear:0x5e564c,exp:0.95},D:{fog:0x5a5e62,dens:0.055,clear:0x3a3e42,exp:0.88},E:{fog:0x5a646c,dens:0.038,clear:0x3e464c,exp:0.88},F:{fog:0x6a7074,dens:0.040,clear:0x4a5054,exp:0.90},G:{fog:0x6a7a72,dens:0.018,clear:0x5a6a64,exp:0.95},H:{fog:0x5c5850,dens:0.050,clear:0x3e3a34,exp:0.88},I:{fog:0x566068,dens:0.050,clear:0x3a4248,exp:0.82},J:{fog:0x586068,dens:0.052,clear:0x3c444a,exp:0.82},K:{fog:0x6a6860,dens:0.042,clear:0x4a4840,exp:0.90},L:{fog:0x5a646c,dens:0.040,clear:0x3e464c,exp:0.86},M:{fog:0x7a6a5c,dens:0.032,clear:0x5e564c,exp:0.90},N:{fog:0x5c5048,dens:0.030,clear:0x3a322c,exp:0.92}};
 function applySceneMood(key){const m=SCENE_MOOD[key]||SCENE_MOOD.A;let dens=(typeof GFX!=='undefined'&&GFX.low)?m.dens*0.55:m.dens;try{if(!feelEnabled()&&(key==='A'||key==='B'||key==='I'||key==='J'||key==='G'))dens*=0.78; /* feel off/lowq → 略稀回退 */}catch(_){}
  // v8.11 雨夜林间雾加深
- try{if(key==='G'&&typeof WEATHER!=='undefined'&&WEATHER.forceRain()){dens=Math.min(0.12, dens*2.15);scene.fog=new THREE.FogExp2(0x3a4840,dens);renderer.setClearColor(0x2a322c,1);renderer.toneMappingExposure=0.72;window.__forestFog={dens,rain:true};return;}}catch(_){}
+ try{if(key==='G'&&typeof WEATHER!=='undefined'&&WEATHER.forceRain()){dens=Math.min(0.04, dens*1.25);scene.fog=new THREE.FogExp2(0x4a5a52,dens);renderer.setClearColor(0x3a463e,1);renderer.toneMappingExposure=0.86;window.__forestFog={dens,rain:true};return;}}catch(_){}
  scene.fog=new THREE.FogExp2(m.fog,dens);renderer.setClearColor(m.clear,1);renderer.toneMappingExposure=m.exp;try{if(feelEnabled()&&(key==='A'||key==='L')&&scene.fog){scene.fog.color.setHex(FEEL.coolGray||0x5a646c);}}catch(_){}window.__forestFog={dens,rain:false,key};}
 applySceneMood('A');
 function realify(o){if(!o.isMesh)return;o.castShadow=!LOWQ;o.receiveShadow=false;
@@ -1251,7 +1290,7 @@ function blurbOfRoster(name){try{const m=window.__rosterBlurbsByName;if(m&&m[nam
 function menuRender(){const tier=V7.tierOf(V7MEM.affinity);const card=PL.name?V8.ensureCharCard(PL.name):null;const flavor=blurbOfRoster(PL.name||'');const cardHtml=card?('当前：'+card.name+'\n经历：'+(card.经历||[]).join(' → ')+'\n技能：'+Object.entries(card.技能||{}).map(([k,v])=>k+' '+v).join(' · ')+(flavor?('\n——\n'+flavor):'')):'（切换角色后显示）';menu.innerHTML='<b style="font-size:18px">梦境菜单 (M 关闭)</b><br><span style="color:#ffd9a0">场景 · 数字键</span><br>'+
  ORDER.map((k,i)=>'<div data-s="'+k+'" style="cursor:pointer;'+(k===cur?'color:#ffd28a':'')+'">'+(i+1)+'. '+SC[k].name+(SC[k].loaded?'':' <small style="color:#9a90c0">(首次进入时加载)</small>')+'</div>').join('')+
  '<span style="color:#ffd9a0">角色 · G 切换</span><br>'+ROSTER.map((r,i)=>'<span data-c="'+i+'" style="cursor:pointer;margin-right:14px;'+(i===PL.idx?'color:#ffd28a;text-decoration:underline':'')+'">'+r.name+'</span>').join('')+
- '<br><span style="color:#ffd9a0">v8.22 · 矿洞口进入雾林溪谷：流动小溪·苔石·林间光斑</span><br><div style="font-size:13px;color:#cfc6ff">家 / 小卖部 / 教室 / 小房间 走实体门；校园走<b>山洞</b>、林间走<b>矿洞</b>；火星边疆 / 校园也可在<b>矿车站坐矿车</b>。数字键 1–9 快进；手机点「角色」换人</div><div data-close="1" style="cursor:pointer;color:#ffd28a;text-decoration:underline">📷 近景特写（Z）· 正面看人物</div><br><span style="color:#ffd9a0">角色卡</span><br><div id="v8cardpanel" style="font-size:13px;color:#cfc6ff;white-space:pre-wrap">'+cardHtml+'</div><br><span style="color:#ffd9a0">记事NPC</span><br><div style="font-size:13px;color:#cfc6ff">阿澄好感：'+tier.name+' ('+tier.score+') · 走近金环按 E 交谈</div>'+
+ '<br><span style="color:#ffd9a0">v8.23 · 矿洞口进入雾林溪谷：流动小溪·苔石·林间光斑</span><br><div style="font-size:13px;color:#cfc6ff">家 / 小卖部 / 教室 / 小房间 走实体门；校园走<b>山洞</b>、林间走<b>矿洞</b>；火星边疆 / 校园也可在<b>矿车站坐矿车</b>。数字键 1–9 快进；手机点「角色」换人</div><div data-close="1" style="cursor:pointer;color:#ffd28a;text-decoration:underline">📷 近景特写（Z）· 正面看人物</div><br><span style="color:#ffd9a0">角色卡</span><br><div id="v8cardpanel" style="font-size:13px;color:#cfc6ff;white-space:pre-wrap">'+cardHtml+'</div><br><span style="color:#ffd9a0">记事NPC</span><br><div style="font-size:13px;color:#cfc6ff">阿澄好感：'+tier.name+' ('+tier.score+') · 走近金环按 E 交谈</div>'+
  '<div data-quest="1" style="cursor:pointer;margin-top:8px;color:#d8c8ff;text-decoration:underline">阿澄主线任务板 ('+V7.questStatus().doneCount+'/'+V7.QUEST_BEATS.length+')</div>'+
  (function(){try{const er=V7.errandStatus?V7.errandStatus():null;const dn=(er&&er.doneCount)|0;const tot=(er&&er.total)||((V7.ERRAND_BEATS&&V7.ERRAND_BEATS.length)||8);const act=(er&&er.active)||null;const pct=tot?Math.round(100*dn/tot):0;const bar='<div style="margin-top:3px;height:6px;background:#2a3028;border-radius:4px;overflow:hidden;max-width:220px"><div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,#6dbf6a,#c8f0a8)"></div></div>';const sub=act?('<div style="font-size:11px;color:#9ab090;margin-top:2px">▶ 进行中：'+act.title+'</div>'):(er&&er.all?'<div style="font-size:11px;color:#9dffc2;margin-top:2px">✓ 全部完成</div>':'<div style="font-size:11px;color:#7a8870;margin-top:2px">点开任务板查看列表</div>');return '<div data-errand="1" style="cursor:pointer;margin-top:4px;color:#c8e8c0;text-decoration:underline">社区小事 · 跑腿 '+dn+'/'+tot+'（'+pct+'%）</div>'+bar+sub;}catch(_){return '<div data-errand="1" style="cursor:pointer;margin-top:4px;color:#c8e8c0;text-decoration:underline">社区小事</div>';}})()+
  '<div data-questcopy="1" style="cursor:pointer;margin-top:4px;color:#c8e0ff;text-decoration:underline">节拍文案：'+((window.__questCopy&&window.__questCopy.label)||'默认节拍')+'（点切）</div>'+
@@ -1680,6 +1719,8 @@ function placeRain(){
 }
 function rainUpdate(dt){
  try{if(cur==='G'&&window.__forestWater)window.__forestWater.update(dt);}catch(_){}
+ try{if(!Q.has('emu')&&!TEST){const want=cur==='G'?Math.min(devicePixelRatio,TOUCH.on?1.5:2):null;if(want&&renderer.getPixelRatio()!==want){window.__prBeforeG=window.__prBeforeG||renderer.getPixelRatio();renderer.setPixelRatio(want);}else if(!want&&window.__prBeforeG){renderer.setPixelRatio(window.__prBeforeG);window.__prBeforeG=null;}}}catch(_){}
+ try{if(cur==='N'&&window.__cabin){const c=window.__cabin;c.t+=dt;c.fire.intensity=2.0+Math.sin(c.t*9)*0.25+Math.sin(c.t*23)*0.15;c.flame.scale.y=1+Math.sin(c.t*11)*0.15;}}catch(_){}
  if(!RAIN)return;
  // rain felt on hub A, and outdoor-feeling mesh scenes H/I (home door / station platform)
  const out=cur==='A'||cur==='I'||cur==='H'||cur==='G';
@@ -1703,7 +1744,7 @@ function applyNightLights(){
    SUN.intensity=Math.min(SUN.intensity, cur==='I'?0.72:0.78);SUN.color.setHex(0x7a8a9a);
    HEMI.intensity=cur==='I'?0.22:0.26;HEMI.color.setHex(cur==='I'?0x5e6e7e:0x6a7888);
   }else{SUN.intensity=Math.min(SUN.intensity,0.85);SUN.color.setHex(0x8a9aaa);HEMI.intensity=0.28;HEMI.color.setHex(0x6a7888);}
-  try{const m=SCENE_MOOD[cur]||SCENE_MOOD.A;if(scene.fog){if(cur==='G'){scene.fog.color.setHex(0x3a4840);scene.fog.density=(GFX&&GFX.low)?m.dens*1.2:m.dens*2.2;renderer.setClearColor(0x2a322c,1);renderer.toneMappingExposure=0.70;window.__forestFog={dens:scene.fog.density,rain:true};}
+  try{const m=SCENE_MOOD[cur]||SCENE_MOOD.A;if(scene.fog){if(cur==='G'){scene.fog.color.setHex(0x4a5a52);scene.fog.density=(GFX&&GFX.low)?m.dens*0.9:m.dens*1.25;renderer.setClearColor(0x3a463e,1);renderer.toneMappingExposure=0.84;window.__forestFog={dens:scene.fog.density,rain:true};}
    else if(deep&&cur==='I'){scene.fog.color.setHex(0x3e4850);scene.fog.density=(GFX&&GFX.low)?m.dens*0.85:m.dens*1.55;renderer.setClearColor(0x262e34,1);renderer.toneMappingExposure=0.66;}
    else if(deep&&cur==='A'){scene.fog.color.setHex(0x424c54);scene.fog.density=(GFX&&GFX.low)?m.dens*0.8:m.dens*1.50;renderer.setClearColor(0x2a3238,1);renderer.toneMappingExposure=0.68;}
    else{scene.fog.color.setHex(0x4a545c);scene.fog.density=(GFX&&GFX.low)?m.dens*0.7:m.dens*1.35;renderer.setClearColor(0x2e363c,1);renderer.toneMappingExposure=0.78;}}}catch(_){}
