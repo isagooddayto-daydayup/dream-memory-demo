@@ -1,5 +1,5 @@
 /** Dream v8.35 world helpers (魂系气质: fog/camera/cold light): physical entrances (doors / storefronts / cave mouths / station mine carts), char cards. No paid APIs. */
-export const VERSION = 'v8.54';
+export const VERSION = 'v8.55';
 
 /**
  * Hub door definitions (local offsets relative to scene A spawn).
@@ -68,6 +68,8 @@ export const DOORS = [
   { id: 'hydrangea_moss', label: '苔藓蕨谷', from: 'AN', to: 'AO', hubLocal: [5.5, -32.0], destLocal: [0, 4.0], destYaw: 0, exitLocal: [0, 7.0], color: 0x78a888, facade: 'home', exitFacade: 'exitdoor', weathered: true },
   // v8.54 苔藓蕨谷 → 芒草夕照: 苔藓远端右侧实体木门（scene-local；无光柱）
   { id: 'moss_miscanthus', label: '芒草夕照', from: 'AO', to: 'AP', hubLocal: [5.5, -32.0], destLocal: [0, 4.0], destYaw: 0, exitLocal: [0, 7.0], color: 0xd0a060, facade: 'home', exitFacade: 'exitdoor', weathered: true },
+  // v8.55 芒草夕照 → 油菜花田: 芒草远端右侧实体木门（scene-local；无光柱）
+  { id: 'miscanthus_canola', label: '油菜花田', from: 'AP', to: 'AQ', hubLocal: [5.5, -32.0], destLocal: [0, 4.0], destYaw: 0, exitLocal: [0, 7.0], color: 0xd0c050, facade: 'home', exitFacade: 'exitdoor', weathered: true },
   { id: 'hub_library', label: '小学图书室', from: 'A', to: 'X', hubLocal: [4.4, 7.8], destLocal: [0, 2.6], destYaw: 0, exitLocal: [0, 4.3], color: 0xffd890, facade: 'classroom', exitFacade: 'exitdoor' },
   { id: 'hub_cinema', label: '老影院', from: 'A', to: 'U', hubLocal: [-2.2, 7.0], destLocal: [0, 2.4], destYaw: 0, exitLocal: [0, 4.3], color: 0xff9a7a, facade: 'shop', exitFacade: 'exitdoor' },
   { id: 'hub_noodle', label: '街角面馆', from: 'A', to: 'S', hubLocal: [-7.6, -3.2], destLocal: [0, 1.6], destYaw: Math.PI, exitLocal: [0, 4.3], color: 0xffc070, facade: 'shop', exitFacade: 'exitdoor', weathered: true },
