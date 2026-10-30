@@ -45,3 +45,4 @@
 | 童年小游戏 | minigames.js 既有 | 自有+Rocketbox | 枢纽挂点 |
 | 角色 | Microsoft Rocketbox | MIT | 公开包不变 |
 公开包：无 YY 脸、无 Renderpeople。
+- v8.29 雨夜街角面馆 S：全部 canvas/几何程序化生成，无外部素材。
