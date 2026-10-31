@@ -46,3 +46,8 @@
 | 角色 | Microsoft Rocketbox | MIT | 公开包不变 |
 公开包：无 YY 脸、无 Renderpeople。
 - v8.29 雨夜街角面馆 S：全部 canvas/几何程序化生成，无外部素材。
+
+## v8.83 (2026-10-31) mobile hotfix
+- Mill explode: bind touchstart+pointerdown (root cause: pointer-only missed on some mobile WebViews); move button bottom-right; 交谈 also toggles when near; portrait OK.
+- Quest board: default collapsed; 「任务」 toggles; panel × closes; no longer force-open every tick on scene A (was blocking left half).
+- Fullscreen: try requestFullscreen/webkit on documentElement/body/canvas; iOS fallback immersive CSS + visualViewport; tip is non-modal bottom toast (auto 6.5s / × / blank), never locks screen.

@@ -6,7 +6,9 @@
 <link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
 <title>回忆与梦境 · v8.41 矿山世界 · 雾林溪谷·流水</title>
 <style>
-html,body{margin:0;height:100%;overflow:hidden;background:#0a0e12;font-family:"Microsoft YaHei","PingFang SC",sans-serif}
+html,body{margin:0;height:100%;height:100dvh;overflow:hidden;background:#0a0e12;font-family:"Microsoft YaHei","PingFang SC",sans-serif}
+html.v8immersive,body.v8immersive{height:100%;height:var(--v8vh,100dvh);width:100%;overflow:hidden;overscroll-behavior:none;touch-action:none}
+html.v8immersive #v8fsmodal{pointer-events:auto}
 canvas{display:block}
 #hud{position:fixed;left:12px;top:10px;color:#f3ecff;font-size:13px;line-height:1.55;text-shadow:0 0 4px #000,0 0 2px #000;pointer-events:none;max-width:46vw}
 #hud b{color:#ffd9a0}
@@ -1069,7 +1071,7 @@ async function loadMeshScene(S){
   const dust=new THREE.Points(dg,new THREE.PointsMaterial({color:0xfff0d0,size:0.03,transparent:true,opacity:0.6,depthWrite:false}));root.add(dust);
   window.__mill={t:0,n:0,turns:0,gearY:3.3,gearR:1.0,mechZ:-3.2,beamY:4.45,ceilY:4.65,rearBeamZ:-5.2,props:{shaft:1,crownCogs:cogs,millstones:2,hopper:1,sacks,barrels:2,ladder:1,window:1,lantern:1,dust:DN,beamClear:1},assets:'procedural-only',
    update(dt){const _now=performance.now();if(!this._last||_now-this._last>1500){this.aim=(this.aim|0)+1;try{const G=window.__G,o=G.SC.AC.off,gx=o.x,gz=o.z-3.2;G.P.yaw=Math.atan2(-(gx-G.P.pos.x),-(gz-G.P.pos.z));G.P.heading=G.P.yaw;G.P.pitch=0.22;G.P.camD=Math.min(G.P.camD,2.4);this.aimYaw=G.P.yaw;this.arr={x:G.P.pos.x,z:G.P.pos.z,on:true,t0:this.t};}catch(e){}}this._last=_now;this.t+=dt;this.n++;if(this.arr&&this.arr.on&&this.t-this.arr.t0<0.8){try{const P=window.__G.P;this.arr.x=P.pos.x;this.arr.z=P.pos.z;}catch(e){}}rot.rotation.y+=dt*0.55;this.turns=rot.rotation.y/(Math.PI*2);const a=dg.attributes.position;for(let i=0;i<DN;i++){let y=a.getY(i)+dt*0.04;if(y>3.4)y=0.6;a.setY(i,y);}a.needsUpdate=true;}};
-  // v8.82 设备结构科普：石磨齿轮爆炸视图（程序化；走近点「拆解」→ 部件沿立轴分离+中文标签+原理讲解，再点合回）
+  // v8.82/v8.83 设备结构科普：石磨齿轮爆炸视图；v8.83 手机触屏：touchstart+pointerdown、右下大按钮、竖屏可用、交谈可拆解
   {const XP=[{o:vat,dy:0,n:'承粉槽',d:'接住磨好的面粉'},{o:bed,dy:0.35,n:'下磨盘（底石）',d:'固定不动'},{o:runner,dy:0.9,n:'上磨盘（转石）',d:'随立轴转动'},{o:hopper,dy:1.15,n:'料斗',d:'麦粒从这里漏进磨眼'},{o:crown,dy:0.32,n:'冠齿轮',d:'接收风车传来的动力'},{o:shaft,dy:0,n:'立轴',d:'把转动传到石磨'}];
    for(const p of XP){p.y0=p.o.position.y;}const crownParts=[];rot.children.forEach(c=>{if(c!==shaft&&c!==runner&&c!==crown)crownParts.push({o:c,y0:c.position.y});});
    const lblT=(t,s)=>{const c=document.createElement('canvas');c.width=512;c.height=128;const g=c.getContext('2d');g.fillStyle='rgba(30,20,10,.82)';g.fillRect(0,0,512,128);g.strokeStyle='#ffd68c';g.lineWidth=4;g.strokeRect(2,2,508,124);g.fillStyle='#ffe2a8';g.font='bold 46px sans-serif';g.fillText(t,20,56);g.fillStyle='#e8d8c0';g.font='32px sans-serif';g.fillText(s,20,104);const tx=new THREE.CanvasTexture(c);tx.colorSpace=THREE.SRGBColorSpace;return tx;};
@@ -1077,16 +1079,18 @@ async function loadMeshScene(S){
    const LX=[1.6,-1.6,1.65,-1.65,1.7,-1.5];
    const st=window.__millX||(window.__millX={});Object.assign(st,{k:0,target:0,explodes:0,assembles:0,errors:0,parts:XP.length,labels:XP.length,near:false,
     toggle(){this.target=this.target>0.5?0:1;if(this.target)this.explodes++;else this.assembles++;try{sfxPlay&&sfxPlay('door');}catch(_){}this.sync();return this.target;},
-    sync(){const b=this.btn,pn=this.panel;if(!b)return;b.textContent=this.target?'🔧 合回 (X)':'🔧 拆解 (X)';pn.style.display=this.target?'block':'none';},
+    sync(){const b=this.btn,pn=this.panel;if(!b)return;b.textContent=this.target?'🔧 合回':'🔧 拆解';pn.style.display=this.target?'block':'none';},
     step(dt){try{const k0=this.k;this.k+=(this.target-this.k)*Math.min(1,dt*3.2);if(Math.abs(this.target-this.k)<0.002)this.k=this.target;const e=this.k*this.k*(3-2*this.k);
      for(let i=0;i<XP.length;i++){const p=XP[i];p.o.position.y=p.y0+p.dy*e;const wp=new THREE.Vector3();p.o.getWorldPosition(wp);root.worldToLocal(wp);p.lbl.position.set(LX[i],(i===5?2.3:wp.y+0.12),-3.2+0.3);p.lbl.material.opacity=0;p.lbl.visible=false;}
      for(const c of crownParts)c.o.position.y=c.y0+0.32*e;this.e=e;}catch(err){this.errors++;this.lastErr=String(err);}}});
-   if(!st.btn){const b=document.createElement('button');b.id='v8millXBtn';b.type='button';b.textContent='🔧 拆解 (X)';
-    b.style.cssText='position:fixed;right:calc(18px + env(safe-area-inset-right));top:calc(74px + env(safe-area-inset-top));z-index:40;display:none;min-width:96px;min-height:52px;font-size:17px;font-weight:700;border-radius:26px;border:2px solid rgba(255,214,140,.9);background:rgba(40,28,14,.86);color:#ffe2a8;touch-action:manipulation;pointer-events:auto;box-shadow:0 2px 10px rgba(0,0,0,.4)';
-    const go=e=>{e.preventDefault();e.stopPropagation();if(st.near)st.toggle();};b.addEventListener('pointerdown',go);b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();});document.body.appendChild(b);st.btn=b;
+   if(!st.btn){const b=document.createElement('button');b.id='v8millXBtn';b.type='button';b.className='v8uiBtn';b.textContent='🔧 拆解';
+    /* v8.83: bottom-right like boat (above gp), 44px+ touch, touchstart+pointerdown; not only KeyX */
+    b.style.cssText='position:fixed;right:calc(18px + env(safe-area-inset-right));bottom:calc(150px + env(safe-area-inset-bottom));z-index:45;display:none;min-width:104px;min-height:52px;padding:0 14px;font-size:17px;font-weight:700;border-radius:26px;border:2px solid rgba(255,214,140,.9);background:rgba(40,28,14,.86);color:#ffe2a8;touch-action:manipulation;pointer-events:auto;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;box-shadow:0 2px 10px rgba(0,0,0,.4)';
+    let _lf=0;const go=e=>{e.preventDefault();e.stopPropagation();const n=performance.now();if(n-_lf<200)return;_lf=n;if(st.near)st.toggle();};
+    b.addEventListener('pointerdown',go,{passive:false});b.addEventListener('touchstart',go,{passive:false});b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();});document.body.appendChild(b);st.btn=b;
     const pn=document.createElement('div');pn.id='v8millXPanel';pn.style.cssText='position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:36;display:none;max-width:min(560px,70vw);background:rgba(30,20,10,.86);color:#ffe8c0;padding:8px 14px;border-radius:12px;font-size:14px;line-height:1.45;pointer-events:none;border:1px solid rgba(255,214,140,.6)';
     pn.textContent='⚙️ 原理：风吹动风车，冠齿轮把横向转动拨成竖直立轴的转动；立轴带着上磨盘在不动的下磨盘上旋转，麦粒从料斗落进磨眼，被两盘间的磨纹碾碎成粉，向外甩进承粉槽。';document.body.appendChild(pn);st.panel=pn;
-    const hint=document.createElement('div');hint.id='v8millXHint';hint.style.cssText='position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translateX(-50%);z-index:36;display:none;background:rgba(30,20,10,.8);color:#ffe2a8;padding:7px 14px;border-radius:12px;font-size:14px;pointer-events:none';hint.textContent='🔧 走近石磨：点「拆解」看看它里面怎么转';document.body.appendChild(hint);st.hint=hint;
+    const hint=document.createElement('div');hint.id='v8millXHint';hint.style.cssText='position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translateX(-50%);z-index:46;display:none;max-width:min(92vw,420px);text-align:center;background:rgba(30,20,10,.8);color:#ffe2a8;padding:7px 14px;border-radius:12px;font-size:14px;pointer-events:none';hint.textContent='🔧 走近石磨 · 点右下「拆解」（竖屏也能用）';document.body.appendChild(hint);st.hint=hint;
     addEventListener('keydown',e=>{if(e.code==='KeyX'&&st.near){st.toggle();}});}
    st.XP=XP;for(const q of XP){let el=document.getElementById('v8millXL'+XP.indexOf(q));if(!el){el=document.createElement('div');el.id='v8millXL'+XP.indexOf(q);el.className='v8millXL';el.style.cssText='position:fixed;z-index:35;display:none;pointer-events:none;background:rgba(30,20,10,.85);border:1px solid rgba(255,214,140,.8);border-radius:8px;padding:3px 8px;color:#ffe2a8;font-size:13px;line-height:1.3;white-space:nowrap;text-shadow:0 1px 2px #000';el.innerHTML='<b>'+q.n+'</b><br><span style="color:#e8d8c0;font-size:11px">'+q.d+'</span>';document.body.appendChild(el);}q.dom=el;}
    st.tick=function(cur,dt){try{const G=window.__G;const on=cur==='AC';let near=false;if(on&&G&&G.P){const o=G.SC.AC.off;near=Math.hypot(G.P.pos.x-o.x,G.P.pos.z-(o.z-3.2))<3.4;}this.near=near;this.btn.style.display=near?'block':'none';this.hint.style.display=(near&&!this.target)?'block':'none';if(!on||!(this.e>0.02)){for(const q of XP)if(q.dom)q.dom.style.display='none';}if(!on){this.panel.style.display='none';}else{this.sync();if(!near)this.panel.style.display='none';this.step(dt||1/30);}}catch(err){this.errors++;this.lastErr=String(err);}};
@@ -5625,23 +5629,59 @@ function camHud(){if(CAMS[P.cam]==='close'&&!camHud.wasClose)P.closeBase=P.yaw;c
 window.__fsLast=null;
 function v8IsStandalone(){return (matchMedia&&matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches)||navigator.standalone===true;}
 function v8FsElement(){return document.fullscreenElement||document.webkitFullscreenElement||null;}
+function v8DismissFsTip(){const m=document.getElementById('v8fsmodal');if(m){m.style.display='none';m.style.pointerEvents='none';m.setAttribute('aria-hidden','true');}clearTimeout(window.__fsTipTimer);window.__fsTipOpen=false;}window.v8DismissFsTip=v8DismissFsTip;
+function v8EnterImmersiveCss(){try{document.documentElement.classList.add('v8immersive');document.body.classList.add('v8immersive');
+ const vv=window.visualViewport;const apply=()=>{const h=(vv&&vv.height)||innerHeight;document.documentElement.style.setProperty('--v8vh',h+'px');};
+ apply();if(vv){vv.addEventListener('resize',apply);vv.addEventListener('scroll',apply);}window.__v8immersive=true;
+ /* scroll lock: keep page at 0 so iOS chrome collapses when possible */
+ try{window.scrollTo(0,0);document.body.style.position='fixed';document.body.style.inset='0';document.body.style.width='100%';}catch(_){}
+ return true;}catch(_){return false;}}
 function v8IosTip(reason){
+ /* v8.83: non-modal toast — never locks the whole screen; auto-hide; tap × / 知道了 / blank closes */
  let m=document.getElementById('v8fsmodal');
- if(!m){m=document.createElement('div');m.id='v8fsmodal';m.style.cssText='position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:70;background:rgba(14,10,28,.95);color:#f3ecff;padding:18px 20px;border-radius:16px;border:1px solid rgba(255,210,140,.6);font-size:15px;line-height:1.7;max-width:min(440px,88vw);text-align:left;pointer-events:auto';document.body.appendChild(m);}
- m.innerHTML='<b style="color:#ffd9a0;font-size:17px">这个浏览器不支持网页全屏</b><br>iPhone Safari：点底部<b>分享</b> <span style="font-size:18px">⎋</span> → <b>添加到主屏幕</b>，以后<b>从主屏图标打开</b>就是全屏、无地址栏。<br>安卓 Chrome：菜单 ⋮ → 添加到主屏幕 / 安装应用。<div id="v8fsok" style="margin-top:12px;text-align:center;background:rgba(255,190,120,.25);border-radius:12px;min-height:44px;line-height:44px;cursor:pointer;font-weight:700">知道了</div>';
- m.style.display='block';const ok=m.querySelector('#v8fsok');const close=e=>{e.preventDefault();e.stopPropagation();m.style.display='none';};ok.addEventListener('pointerdown',close);ok.addEventListener('click',close);
- window.__fsLast={ok:false,reason:reason||'unsupported',tip:true};
+ if(!m){m=document.createElement('div');m.id='v8fsmodal';document.body.appendChild(m);}
+ m.className='v8uiBtn';m.style.cssText='position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:55;background:rgba(14,10,28,.92);color:#f3ecff;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,210,140,.55);font-size:13px;line-height:1.55;max-width:min(420px,92vw);text-align:left;pointer-events:auto;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+ const ios=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+ const title=ios?'全屏提示 · iPhone/iPad':'全屏提示';
+ const body=ios
+  ?('已尽量沉浸显示。要去掉地址栏：点底部分享 → <b>添加到主屏幕</b>，再从桌面图标打开。')
+  :('可点浏览器菜单 ⋮ → <b>添加到主屏幕 / 安装应用</b>，无地址栏更好玩。');
+ m.innerHTML='<div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><b style="color:#ffd9a0;font-size:15px">'+title+'</b><button type="button" id="v8fsx" style="min-width:44px;min-height:44px;border:0;border-radius:10px;background:rgba(255,255,255,.08);color:#ffe9c4;font-size:20px;cursor:pointer">×</button></div><div style="margin-top:4px">'+body+'</div><div id="v8fsok" style="margin-top:10px;text-align:center;background:rgba(255,190,120,.25);border-radius:12px;min-height:44px;line-height:44px;cursor:pointer;font-weight:700">知道了</div>';
+ m.style.display='block';window.__fsTipOpen=true;
+ const close=e=>{if(e){e.preventDefault();e.stopPropagation();}v8DismissFsTip();};
+ m.querySelector('#v8fsok').addEventListener('pointerdown',close,{passive:false});
+ m.querySelector('#v8fsx').addEventListener('pointerdown',close,{passive:false});
+ m.querySelector('#v8fsok').addEventListener('touchstart',close,{passive:false});
+ m.querySelector('#v8fsx').addEventListener('touchstart',close,{passive:false});
+ clearTimeout(window.__fsTipTimer);window.__fsTipTimer=setTimeout(v8DismissFsTip,6500);
+ /* click blank (not the tip) closes — capture on document, tip stopsPropagation */
+ const blank=e=>{if(!window.__fsTipOpen)return;if(e.target&&e.target.closest&&e.target.closest('#v8fsmodal'))return;v8DismissFsTip();document.removeEventListener('pointerdown',blank,true);};
+ setTimeout(()=>document.addEventListener('pointerdown',blank,true),0);
+ m.addEventListener('pointerdown',e=>e.stopPropagation());
+ window.__fsLast={ok:false,reason:reason||'unsupported',tip:true,blocking:false};
 }
 async function v8Fullscreen(){
  try{
-  if(v8IsStandalone()){setSt('已是主屏全屏模式');window.__fsLast={ok:true,reason:'standalone'};return;}
-  if(v8FsElement()){const ex=document.exitFullscreen||document.webkitExitFullscreen;if(ex)await ex.call(document);window.__fsLast={ok:true,reason:'exit'};return;}
-  const el=document.documentElement;const req=el.requestFullscreen||el.webkitRequestFullscreen||el.webkitRequestFullScreen;
-  if(!req){v8IosTip('no-api');return;}
-  try{const r=req.call(el,{navigationUI:'hide'});if(r&&r.then)await r;}catch(err){v8IosTip('rejected:'+(err&&err.name||err));return;}
-  let lock='n/a';try{if(screen.orientation&&screen.orientation.lock){await screen.orientation.lock('landscape');lock='ok';}}catch(err){lock='fail:'+(err&&err.name||err);}
-  window.__fsLast={ok:true,reason:'entered',lock,fs:!!v8FsElement()};setSt('已全屏');
- }catch(err){console.warn('fullscreen',err);window.__fsLast={ok:false,reason:'error:'+err};}
+  if(v8IsStandalone()){v8EnterImmersiveCss();setSt('已是主屏全屏模式');window.__fsLast={ok:true,reason:'standalone',fs:true};return;}
+  if(v8FsElement()){const ex=document.exitFullscreen||document.webkitExitFullscreen;if(ex)await ex.call(document);document.documentElement.classList.remove('v8immersive');document.body.classList.remove('v8immersive');window.__fsLast={ok:true,reason:'exit'};return;}
+  if(window.__v8immersive&&!v8FsElement()){/* toggle immersive css off */document.documentElement.classList.remove('v8immersive');document.body.classList.remove('v8immersive');try{document.body.style.position='';document.body.style.inset='';document.body.style.width='';}catch(_){}window.__v8immersive=false;v8DismissFsTip();setSt('已退出沉浸');window.__fsLast={ok:true,reason:'exit-immersive'};return;}
+  const cands=[document.documentElement,document.body,document.getElementById('game')||document.querySelector('canvas')].filter(Boolean);
+  let entered=false, lastErr=null, used=null;
+  for(const el of cands){
+   const req=el.requestFullscreen||el.webkitRequestFullscreen||el.webkitRequestFullScreen;
+   if(!req)continue;
+   try{let r; try{r=req.call(el,{navigationUI:'hide'});}catch(optErr){r=req.call(el);} if(r&&r.then)await r; if(v8FsElement()){entered=true;used=el.tagName;break;} }catch(err){lastErr=err; try{const r2=req.call(el); if(r2&&r2.then)await r2; if(v8FsElement()){entered=true;used=el.tagName;break;}}catch(err2){lastErr=err2;} }
+  }
+  if(entered){
+   let lock='n/a';try{if(screen.orientation&&screen.orientation.lock){await screen.orientation.lock('landscape');lock='ok';}}catch(err){lock='fail:'+(err&&err.name||err);}
+   v8EnterImmersiveCss();window.__fsLast={ok:true,reason:'entered',lock,fs:true,el:used};setSt('已全屏');v8DismissFsTip();return;
+  }
+  /* API missing or rejected (typical iOS Safari): CSS immersive + non-blocking tip */
+  v8EnterImmersiveCss();
+  const why=lastErr?('rejected:'+(lastErr.name||lastErr)):('no-api');
+  v8IosTip(why);setSt('已沉浸显示 · 可关提示');
+  window.__fsLast={ok:true,reason:'immersive-fallback',detail:why,fs:!!v8FsElement(),immersive:true,blocking:false};
+ }catch(err){console.warn('fullscreen',err);v8EnterImmersiveCss();v8IosTip('error:'+err);window.__fsLast={ok:true,reason:'immersive-fallback',detail:String(err),blocking:false};}
 }
 window.v8Fullscreen=v8Fullscreen;
 addEventListener('fullscreenchange',()=>{const b=document.getElementById('v8btnFS');if(b)b.textContent=v8FsElement()?'退出全屏':'⛶ 全屏';});
@@ -5752,7 +5792,7 @@ if(TOUCH.on){
  mkGp('上升',0,0,'Space',null,'round');
  mkGp('下降',1,0,'KeyQ',null,'round');
  mkGp('溶解',2,0,null,()=>goScene(cur==='A'?'B':'A'),'round');
- mkGp('交谈',0,1,null,()=>{if(LAMP.near)toggleLamp();else if(POSTER.near)readPoster();else if(CAL.near)readCalendar();else if(window.__homeRadioNear)toggleHomeRadio();else if(BED.near)sleepInBed();else if(SIT.on||SIT.near)sitToggle();else if(CLERK.near)talkClerk();else if(V7_NEAR)v7OpenChat();else if(BANTER_NEAR.n)talkBanter(BANTER_NEAR.n);else if(SHOP.near)shopBuy(SHOP.near.id);else if(MGX.near)mgEnter(MGX.near.userData.id);else setSt('走近阿澄、闲聊NPC、货架、老板娘、日历/油灯、收音机、床/椅或发光圈后再点');},'hi');
+ mkGp('交谈',0,1,null,()=>{if(window.__millX&&window.__millX.near){window.__millX.toggle();return;}if(LAMP.near)toggleLamp();else if(POSTER.near)readPoster();else if(CAL.near)readCalendar();else if(window.__homeRadioNear)toggleHomeRadio();else if(BED.near)sleepInBed();else if(SIT.on||SIT.near)sitToggle();else if(CLERK.near)talkClerk();else if(V7_NEAR)v7OpenChat();else if(BANTER_NEAR.n)talkBanter(BANTER_NEAR.n);else if(SHOP.near)shopBuy(SHOP.near.id);else if(MGX.near)mgEnter(MGX.near.userData.id);else setSt('走近阿澄、闲聊NPC、货架、老板娘、日历/油灯、收音机、床/椅或发光圈后再点');},'hi');
  mkGp('飞行',1,1,null,()=>{P.fly=!P.fly;setSt(P.fly?'飞行':'步行');try{if(P.fly)V7.markFlight(V7SESS);}catch(_){}},'round');
  mkGp('梦境',2,1,null,()=>enterDream(),'round');
  mkGp('角色',0,2,null,()=>setChar((PL.idx+1)%ROSTER.length),'hi','v8btnChar');
@@ -5791,7 +5831,7 @@ if(TOUCH.on){
 
  const joy=$('joy'),knob=$('knob');
  const setKnob=()=>{const base=isLand()?38:45;const tr=knobTravel();knob.style.left=(base+TOUCH.jx*tr)+'px';knob.style.top=(base+TOUCH.jy*tr)+'px';};
- function isUITarget(el){return el&&(el.closest&&(el.closest('.tb')||el.closest('#v7chat')||el.closest('#menu')||el.closest('#v7card')||el.closest('#v7prompt')||el.closest('#v8fsmodal')));}
+ function isUITarget(el){return el&&(el.closest&&(el.closest('.tb')||el.closest('.v8uiBtn')||el.closest('#v8millXBtn')||el.closest('#v8boatBtn')||el.closest('#v8questPin')||el.closest('#v8quest')||el.closest('#v7chat')||el.closest('#menu')||el.closest('#v7card')||el.closest('#v7prompt')||el.closest('#v8fsmodal')||el.closest('#v8fstip')));}
  function beginStick(id,x,y){
   TOUCH.jid=id;const r=joy.getBoundingClientRect();TOUCH.jcx=r.left+r.width/2;TOUCH.jcy=r.top+r.height/2;
   if(Math.hypot(x-TOUCH.jcx,y-TOUCH.jcy)>100){TOUCH.jcx=x;TOUCH.jcy=y;}
@@ -5850,7 +5890,7 @@ if(TOUCH.on){
  // keep talk button highlight when near
  const talkBtn=[...tc.querySelectorAll('.tb')].find(b=>b.textContent==='交谈');
  window.__touchSetKnob=setKnob;
- function touchFeelTalkDim(){if(!talkBtn)return;const near=!!(V7_NEAR||(BANTER_NEAR&&BANTER_NEAR.n)||(MGX&&MGX.near)||(SHOP&&SHOP.near)||(CLERK&&CLERK.near)||(LAMP&&LAMP.near)||(BED&&BED.near)||(SIT&&(SIT.on||SIT.near))||(CAL&&CAL.near)||(POSTER&&POSTER.near)||(window.__homeRadioNear));if(near){talkBtn.classList.remove('dim');talkBtn.classList.add('hi');}else{talkBtn.classList.add('dim');talkBtn.classList.remove('hi');}}
+ function touchFeelTalkDim(){if(!talkBtn)return;const near=!!(V7_NEAR||(BANTER_NEAR&&BANTER_NEAR.n)||(MGX&&MGX.near)||(SHOP&&SHOP.near)||(CLERK&&CLERK.near)||(LAMP&&LAMP.near)||(BED&&BED.near)||(SIT&&(SIT.on||SIT.near))||(CAL&&CAL.near)||(POSTER&&POSTER.near)||(window.__homeRadioNear)||(window.__millX&&window.__millX.near));if(near){talkBtn.classList.remove('dim');talkBtn.classList.add('hi');}else{talkBtn.classList.add('dim');talkBtn.classList.remove('hi');}}
  const _v7NearPrev=v7NearUpdate;
  v7NearUpdate=function(){_v7NearPrev();touchFeelTalkDim();};
 
@@ -6664,10 +6704,12 @@ async function playQuestReward(){
  window.__questRewardPlaying=false;
 }
 
-const questPinBtn=(()=>{const b=document.createElement('button');b.id='v8questPin';b.textContent='任务';b.title='钉开/收起阿澄主线任务板';
- b.style.cssText='position:fixed;left:calc(108px + env(safe-area-inset-left,0px));top:12px;z-index:36;background:rgba(40,28,70,.82);color:#e8d8ff;border:1px solid rgba(180,150,255,.45);border-radius:10px;padding:6px 12px;font-size:13px;cursor:pointer;font-family:inherit';
- b.onclick=(e)=>{e.stopPropagation();window.__questPinned=!window.__questPinned;if(window.__questPinned){renderQuestBoard(true);questDiv.style.display='block';setSt('任务板已钉开');}else{questDiv.style.display='none';setSt('任务板已收起');}b.style.borderColor=window.__questPinned?'rgba(255,210,140,.8)':'rgba(180,150,255,.45)';};
- document.body.appendChild(b);return b;})();
+window.__questPinned=false; /* v8.83 default collapsed so left half stays free on phone */
+const questPinBtn=(()=>{const b=document.createElement('button');b.id='v8questPin';b.className='v8uiBtn';b.type='button';b.textContent='任务';b.title='打开/收起阿澄主线任务板';
+ b.style.cssText='position:fixed;left:calc(108px + env(safe-area-inset-left,0px));top:calc(12px + env(safe-area-inset-top,0px));z-index:46;background:rgba(40,28,70,.82);color:#e8d8ff;border:1px solid rgba(180,150,255,.45);border-radius:10px;padding:8px 14px;font-size:14px;min-height:44px;min-width:56px;cursor:pointer;font-family:inherit;touch-action:manipulation;pointer-events:auto;-webkit-user-select:none;user-select:none';
+ let _lf=0;const toggle=(e)=>{if(e){e.preventDefault();e.stopPropagation();}const n=performance.now();if(n-_lf<200)return;_lf=n;window.__questPinned=!window.__questPinned;if(window.__questPinned){renderQuestBoard(true);setSt('任务板已打开 · 再点「任务」或 × 收起');}else{questDiv.style.display='none';questDiv.style.pointerEvents='none';setSt('任务板已收起');}b.style.borderColor=window.__questPinned?'rgba(255,210,140,.8)':'rgba(180,150,255,.45)';b.setAttribute('aria-pressed',window.__questPinned?'true':'false');};
+ b.addEventListener('pointerdown',toggle,{passive:false});b.addEventListener('touchstart',toggle,{passive:false});b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();});
+ window.__questToggle=toggle;document.body.appendChild(b);return b;})();
 
 
 
@@ -6703,13 +6745,13 @@ function renderTimetable(){
  window.__timetable={period:per,label:lab,rows:rows.map(t=>({id:t.id,st:t.st})),t:Date.now()};
 }
 
-const questDiv=(()=>{const d=document.createElement('div');d.id='v8quest';d.style.cssText='position:fixed;left:12px;top:70px;display:none;z-index:34;background:rgba(14,10,28,.84);color:#e8e0ff;padding:12px 14px;border-radius:12px;border:1px solid rgba(180,150,255,.35);font-size:13px;line-height:1.5;min-width:220px;max-width:280px';document.body.appendChild(d);return d;})();
+const questDiv=(()=>{const d=document.createElement('div');d.id='v8quest';d.style.cssText='position:fixed;left:calc(12px + env(safe-area-inset-left,0px));top:calc(64px + env(safe-area-inset-top,0px));display:none;z-index:44;background:rgba(14,10,28,.92);color:#e8e0ff;padding:12px 14px;border-radius:12px;border:1px solid rgba(180,150,255,.35);font-size:13px;line-height:1.5;min-width:200px;max-width:min(280px,78vw);max-height:min(58vh,420px);overflow:auto;pointer-events:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch';document.body.appendChild(d);return d;})();
 function renderQuestBoard(force){
  const st=V7.questStatus();
  const sx=V7.questStatusExt?V7.questStatusExt():{doneCount:0,beats:[],all:false,active:null};
  const show=force||(cur==='A')||!!st.active||!!(sx&&sx.active);
  if(!show&&!force){/* keep if open via menu */}
- let html='<b style="color:#ffd28a">阿澄 · 主线任务板</b> <span style="color:#9a90c0">'+st.doneCount+'/'+st.beats.length+'</span><br>';
+ let html=''; /* title+close injected at end (v8.83) */
  html+=st.beats.map(b=>{
   const mark=b.state==='done'?'✓':(b.state==='active'?'▶':'·');
   const col=b.state==='done'?'#9dffc2':(b.state==='active'?'#ffe08a':'#6a6280');
@@ -6741,14 +6783,24 @@ function renderQuestBoard(force){
    window.__errands=er;
   }
  }catch(_){}
+ html='<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px">'
+  +'<div><b style="color:#ffd28a">阿澄 · 主线任务板</b> <span style="color:#9a90c0">'+st.doneCount+'/'+st.beats.length+'</span></div>'
+  +'<button type="button" id="v8questClose" class="v8uiBtn" aria-label="收起任务板" style="min-width:44px;min-height:44px;border-radius:12px;border:1px solid rgba(255,210,140,.55);background:rgba(40,28,70,.9);color:#ffe9c4;font-size:20px;font-weight:700;cursor:pointer;touch-action:manipulation">×</button></div>'
+  +html;
  questDiv.innerHTML=html;
- if(force||cur==='A')questDiv.style.display='block';
+ const close=questDiv.querySelector('#v8questClose');
+ if(close){const hide=e=>{e.preventDefault();e.stopPropagation();window.__questPinned=false;questDiv.style.display='none';questDiv.style.pointerEvents='none';try{questPinBtn.style.borderColor='rgba(180,150,255,.45)';}catch(_){}setSt('任务板已收起');};
+  close.addEventListener('pointerdown',hide,{passive:false});close.addEventListener('touchstart',hide,{passive:false});close.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();});}
+ /* v8.83: never auto-force open on scene A; only when pinned (or force+pinned intent) */
+ if(window.__questPinned){questDiv.style.display='block';questDiv.style.pointerEvents='auto';}
+ else{questDiv.style.display='none';questDiv.style.pointerEvents='none';}
  window.__quest=st;window.__questExt=sx;
 }
 function questHook(flag, detail){
  const r=V7.questAdvance(flag, detail);
  if(r.advanced){
   setSt('任务进度：'+r.beat.title+' ✓'+(r.justFinished?' · 主线完成！':''));
+  window.__questPinned=true;try{questPinBtn.style.borderColor='rgba(255,210,140,.8)';}catch(_){}
   renderQuestBoard(true);
   if(r.justFinished){
    try{
@@ -7093,7 +7145,7 @@ function rideStart(door,kind,obj){RIDE.on=true;RIDE.t=0;RIDE.phase='board';RIDE.
 // ---------------- v8.36 湖 Q 小船可乘：码头上船 → 自动划到湖心岛 → 下船走动/进亭子 → 乘船返回（无光柱） ----------------
 const BOAT={on:false,phase:'pier',t:0,dur:7.5,from:null,to:null,ctrl:null,rides:0,pavilion:false,pavilionT:0,isleWalked:0,lastIsle:null,
  PIER_DOCK:[2.6,-12.6],PIER_LAND:[4,-11.4],ISLE_DOCK:[5.4,-23.4],ISLE_LAND:[6,-25.2],ISLE:[6,-28],PAV:[6,-28]};
-const boatBtn=(()=>{const b=document.createElement('button');b.id='v8boatBtn';b.type='button';b.textContent='🚣 上船';
+const boatBtn=(()=>{const b=document.createElement('button');b.id='v8boatBtn';b.type='button';b.className='v8uiBtn';b.textContent='🚣 上船';
  b.style.cssText='position:fixed;right:calc(18px + env(safe-area-inset-right));bottom:calc(150px + env(safe-area-inset-bottom));z-index:40;display:none;min-width:96px;min-height:52px;font-size:17px;font-weight:700;border-radius:26px;border:2px solid rgba(255,214,140,.9);background:rgba(40,28,14,.86);color:#ffe2a8;touch-action:manipulation;pointer-events:auto;box-shadow:0 2px 10px rgba(0,0,0,.4)';
  const go=e=>{e.preventDefault();e.stopPropagation();boatBoard();};b.addEventListener('pointerdown',go);b.addEventListener('touchstart',go,{passive:false});b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();});
  document.body.appendChild(b);return b;})();
