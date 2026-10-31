@@ -1,5 +1,5 @@
-/** Dream v8.35 world helpers (魂系气质: fog/camera/cold light): physical entrances (doors / storefronts / cave mouths / station mine carts), char cards. No paid APIs. */
-export const VERSION = 'v8.83';
+/** Dream v8.84 portal spacing + v8.35 world helpers (魂系气质: fog/camera/cold light): physical entrances (doors / storefronts / cave mouths / station mine carts), char cards. No paid APIs. */
+export const VERSION = 'v8.84';
 
 /**
  * Hub door definitions (local offsets relative to scene A spawn).
@@ -8,36 +8,36 @@ export const VERSION = 'v8.83';
 export const DOORS = [
   // v8.5: no floating glow frames. Every door is a physical entrance model; exits are physical too.
   // hubLocal: splat 'from' scene → relative to its spawn; mesh 'from' scene → scene-local.
-  { id: 'hub_classroom', label: '教室', from: 'A', to: 'F', hubLocal: [0.8, -7.2], destLocal: [2.0, 6.5], destYaw: Math.PI, exitLocal: [2.0, 9.4], color: 0xffd28a, facade: 'classroom', exitFacade: 'exitdoor' },
-  { id: 'hub_nursery', label: '育儿所', from: 'A', to: 'K', hubLocal: [-1.8, -7.5], destLocal: [0, 2.8], destYaw: Math.PI, exitLocal: [0, 4.6], color: 0xffe0a8, facade: 'classroom', exitFacade: 'exitdoor' },
-  { id: 'classroom_nursery', label: '隔壁育儿所', from: 'F', to: 'K', hubLocal: [-6.5, 2.0], destLocal: [2.5, 2.0], destYaw: Math.PI/2, exitLocal: [4.2, 2.0], color: 0xffe0a8, facade: 'room', exitFacade: 'exitdoor' },
-  { id: 'hub_room', label: '小房间', from: 'A', to: 'D', hubLocal: [-3.8, 3.2], destLocal: [-3.2, 1.5], destYaw: Math.PI, exitLocal: [-3.6, 0.2], color: 0xa8c8ff, facade: 'room', exitFacade: 'exitdoor' },
-  { id: 'hub_campus', label: '山洞 · 矿区校园', from: 'A', to: 'B', hubLocal: [1.5, 8.5], destLocal: [0, 0], destYaw: 0, exitLocal: [0, -2.6], color: 0x9dffc2, facade: 'cave', exitFacade: 'cave' },
-  { id: 'hub_forest', label: '矿洞 · 林间小路', from: 'A', to: 'G', hubLocal: [7.2, -2.0], destLocal: [0, 7.5], destYaw: Math.PI, exitLocal: [0, 10.4], color: 0x6dff9a, facade: 'mine', exitFacade: 'mine' },
+  { id: 'hub_classroom', label: '教室', from: 'A', to: 'F', hubLocal: [-0.9, -11.7], destLocal: [2.0, 6.5], destYaw: Math.PI, exitLocal: [2.0, 9.4], color: 0xffd28a, facade: 'classroom', exitFacade: 'exitdoor' },
+  { id: 'hub_nursery', label: '育儿所', from: 'A', to: 'K', hubLocal: [-7.2, -11.4], destLocal: [0, 2.8], destYaw: Math.PI, exitLocal: [0, 4.6], color: 0xffe0a8, facade: 'classroom', exitFacade: 'exitdoor' },
+  { id: 'classroom_nursery', label: '隔壁育儿所', from: 'F', to: 'K', hubLocal: [-8.0, 2.0], destLocal: [2.5, 2.0], destYaw: Math.PI/2, exitLocal: [4.2, 2.0], color: 0xffe0a8, facade: 'room', exitFacade: 'exitdoor' },
+  { id: 'hub_room', label: '小房间', from: 'A', to: 'D', hubLocal: [1.2, 8.0], destLocal: [-3.2, 1.5], destYaw: Math.PI, exitLocal: [-3.6, 0.2], color: 0xa8c8ff, facade: 'room', exitFacade: 'exitdoor' },
+  { id: 'hub_campus', label: '山洞 · 矿区校园', from: 'A', to: 'B', hubLocal: [2.5, 14.2], destLocal: [0, 0], destYaw: 0, exitLocal: [0, -2.6], color: 0x9dffc2, facade: 'cave', exitFacade: 'cave' },
+  { id: 'hub_forest', label: '矿洞 · 林间小路', from: 'A', to: 'G', hubLocal: [11.4, -3.8], destLocal: [0, 7.5], destYaw: Math.PI, exitLocal: [0, 10.4], color: 0x6dff9a, facade: 'mine', exitFacade: 'mine' },
   // v8.35 林中木屋: 森林 G 溪谷旁实体木门（scene-local）
-  { id: 'forest_cabin', label: '林中木屋', from: 'G', to: 'N', hubLocal: [-9.0, -1.5], destLocal: [0, 1.4], destYaw: Math.PI, exitLocal: [0, 4.3], color: 0xffc890, facade: 'home', exitFacade: 'exitdoor' },
+  { id: 'forest_cabin', label: '林中木屋', from: 'G', to: 'N', hubLocal: [-10.5, -2.5], destLocal: [0, 1.4], destYaw: Math.PI, exitLocal: [0, 4.3], color: 0xffc890, facade: 'home', exitFacade: 'exitdoor' },
   // v8.35 教室内部: 校园 F 草地上的绿色木门 → 教室里（雨夜自习）
-  { id: 'class_inside', label: '教室里', from: 'F', to: 'O', hubLocal: [-3.5, 2.5], destLocal: [0, 1.6], destYaw: Math.PI, exitLocal: [0, 4.3], color: 0xcfe0ff, facade: 'classroom', exitFacade: 'exitdoor' },
+  { id: 'class_inside', label: '教室里', from: 'F', to: 'O', hubLocal: [-1.5, 3.0], destLocal: [0, 1.6], destYaw: Math.PI, exitLocal: [0, 4.3], color: 0xcfe0ff, facade: 'classroom', exitFacade: 'exitdoor' },
   // v8.35 矿工宿舍: 枢纽 A 东南砖房实体门 → 宿舍内部（雨夜）
   // v8.35 山洞 → 山间湖泊花海（雾林 G 东侧岩石洞门，scene-local）
-  { id: 'forest_lake', label: '山洞 · 湖泊花海', from: 'G', to: 'Q', hubLocal: [9.5, 0.5], destLocal: [0, 2.2], destYaw: 0, exitLocal: [0, 9.0], color: 0x9ad8ff, facade: 'cave', exitFacade: 'cave' },
+  { id: 'forest_lake', label: '山洞 · 湖泊花海', from: 'G', to: 'Q', hubLocal: [11.5, 1.0], destLocal: [0, 2.2], destYaw: 0, exitLocal: [0, 9.0], color: 0x9ad8ff, facade: 'cave', exitFacade: 'cave' },
   // v8.35 湖边小屋: 湖泊 Q 西岸实体木门（scene-local）
   { id: 'lake_hut', label: '湖边小屋', from: 'Q', to: 'R', hubLocal: [-6.5, 1.5], destLocal: [0, 1.4], destYaw: Math.PI, exitLocal: [0, 4.3], color: 0xbfe0ff, facade: 'home', exitFacade: 'exitdoor' },
   // v8.35 雨夜街角面馆: 枢纽 A 西北角实体门洞（scene-local）
   // v8.35 矿区后山竹林小径: 枢纽 A 西侧岩石山洞口（scene-local；无光柱）
-  { id: 'hub_bamboo', label: '后山 · 竹林小径', from: 'A', to: 'T', hubLocal: [-6.8, 4.8], destLocal: [0, 2.2], destYaw: 0, exitLocal: [0, 6.0], color: 0xa8e0a0, facade: 'cave', exitFacade: 'cave' },
+  { id: 'hub_bamboo', label: '后山 · 竹林小径', from: 'A', to: 'T', hubLocal: [-9.3, 9.5], destLocal: [0, 2.2], destYaw: 0, exitLocal: [0, 6.0], color: 0xa8e0a0, facade: 'cave', exitFacade: 'cave' },
   // v8.35 矿区老影院: 枢纽 A 北侧实体门洞（scene-local；无光柱）
   // v8.35 竹林尽头岩石洞门 → 山崖观景台·云海（scene-local；无光柱）
   { id: 'bamboo_cliff', label: '石门 · 山崖云海', from: 'T', to: 'V', hubLocal: [0, -37.5], destLocal: [0, 0.4], destYaw: 0, exitLocal: [0, 6.4], color: 0xffe0b0, facade: 'cave', exitFacade: 'cave' },
   // v8.35 矿区老理发店: 枢纽 A 西侧实体店门（scene-local；无光柱）
-  { id: 'hub_barber', label: '老理发店', from: 'A', to: 'W', hubLocal: [-9.5, 1.6], destLocal: [0, 0.2], destYaw: 0, exitLocal: [0, 4.3], color: 0xff9090, facade: 'shop', exitFacade: 'exitdoor', weathered: true },
+  { id: 'hub_barber', label: '老理发店', from: 'A', to: 'W', hubLocal: [-13.5, 4.8], destLocal: [0, 0.2], destYaw: 0, exitLocal: [0, 4.3], color: 0xff9090, facade: 'shop', exitFacade: 'exitdoor', weathered: true },
   // v8.35 矿区小学图书室: 枢纽 A 东北实体门（scene-local；无光柱）
   // v8.37 雨夜车站候车室: 矿车站 I 东侧实体门（scene-local；无光柱）
-  { id: 'station_waiting', label: '候车室', from: 'I', to: 'Y', hubLocal: [7.0, 4.0], destLocal: [0, 3.0], destYaw: 0, exitLocal: [0, 4.8], color: 0xffd080, facade: 'station', exitFacade: 'exitdoor', weathered: true },
+  { id: 'station_waiting', label: '候车室', from: 'I', to: 'Y', hubLocal: [9.5, 5.0], destLocal: [0, 3.0], destYaw: 0, exitLocal: [0, 4.8], color: 0xffd080, facade: 'station', exitFacade: 'exitdoor', weathered: true },
   // v8.38 林中萤火虫河滩: 雾林 G 西南实体山洞口（scene-local；无光柱）
-  { id: 'forest_firefly', label: '山洞 · 萤火虫河滩', from: 'G', to: 'Z', hubLocal: [-5.0, -7.0], destLocal: [0, 2.4], destYaw: 0, exitLocal: [0, 6.2], color: 0xd0ff90, facade: 'cave', exitFacade: 'cave' },
+  { id: 'forest_firefly', label: '山洞 · 萤火虫河滩', from: 'G', to: 'Z', hubLocal: [-6.0, -11.0], destLocal: [0, 2.4], destYaw: 0, exitLocal: [0, 6.2], color: 0xd0ff90, facade: 'cave', exitFacade: 'cave' },
   // v8.39 矿区水塔: 枢纽东南实体铁门进塔院，经实体斜铁梯爬上塔顶平台（scene-local；无光柱）
-  { id: 'hub_watertower', label: '矿区水塔', from: 'A', to: 'AA', hubLocal: [8.6, -6.4], destLocal: [0, 4.6], destYaw: 0, exitLocal: [0, 7.6], color: 0xc8d0d8, facade: 'station', exitFacade: 'exitdoor', weathered: true },
+  { id: 'hub_watertower', label: '矿区水塔', from: 'A', to: 'AA', hubLocal: [11.5, -10.1], destLocal: [0, 4.6], destYaw: 0, exitLocal: [0, 7.6], color: 0xc8d0d8, facade: 'station', exitFacade: 'exitdoor', weathered: true },
   // v8.40 矿区远处花田风车山坡: 水塔院西侧实体石拱山洞口（scene-local；无光柱）
   { id: 'tower_windmill', label: '山洞 · 花田风车坡', from: 'AA', to: 'AB', hubLocal: [-8.0, 6.0], destLocal: [0, 4.0], destYaw: 0, exitLocal: [0, 8.0], color: 0xffd890, facade: 'cave', exitFacade: 'cave' },
   // v8.41 花田风车坡 → 风车磨坊内部: 坡道左侧磨坊小屋实体木门（scene-local；无光柱）
@@ -122,27 +122,27 @@ export const DOORS = [
   { id: 'frangipani_albizia', label: '合欢花庭', from: 'BO', to: 'BP', hubLocal: [5.5, -32.0], destLocal: [0, 4.0], destYaw: 0, exitLocal: [0, 7.0], color: 0xf0a0c0, facade: 'home', exitFacade: 'exitdoor', weathered: true },
   // v8.81 合欢花庭 → 凤凰木庭: 合欢花庭远端右侧实体木门（scene-local；无光柱）
   { id: 'albizia_flame', label: '凤凰木庭', from: 'BP', to: 'BQ', hubLocal: [5.5, -32.0], destLocal: [0, 4.0], destYaw: 0, exitLocal: [0, 7.0], color: 0xe05030, facade: 'home', exitFacade: 'exitdoor', weathered: true },
-  { id: 'hub_library', label: '小学图书室', from: 'A', to: 'X', hubLocal: [4.4, 7.8], destLocal: [0, 2.6], destYaw: 0, exitLocal: [0, 4.3], color: 0xffd890, facade: 'classroom', exitFacade: 'exitdoor' },
-  { id: 'hub_cinema', label: '老影院', from: 'A', to: 'U', hubLocal: [-2.2, 7.0], destLocal: [0, 2.4], destYaw: 0, exitLocal: [0, 4.3], color: 0xff9a7a, facade: 'shop', exitFacade: 'exitdoor' },
-  { id: 'hub_noodle', label: '街角面馆', from: 'A', to: 'S', hubLocal: [-7.6, -3.2], destLocal: [0, 1.6], destYaw: Math.PI, exitLocal: [0, 4.3], color: 0xffc070, facade: 'shop', exitFacade: 'exitdoor', weathered: true },
-  { id: 'hub_dorm', label: '矿工宿舍', from: 'A', to: 'P', hubLocal: [4.6, -6.0], destLocal: [0, 1.6], destYaw: Math.PI, exitLocal: [0, 3.8], color: 0xffb070, facade: 'home', exitFacade: 'exitdoor', weathered: true },
-  { id: 'hub_home', label: '家', from: 'A', to: 'H', hubLocal: [2.6, 1.2], destLocal: [0, 2.2], destYaw: Math.PI, exitLocal: [0, 3.9], color: 0xffe08a, facade: 'home', exitFacade: 'exitdoor' },
-  { id: 'hub_station', label: '矿车站', from: 'A', to: 'I', hubLocal: [-3.8, -5.0], destLocal: [0, 3.5], destYaw: 0, exitLocal: [0, 7.2], color: 0xffb07a, facade: 'station', exitFacade: 'exitdoor', weathered: true },
-  { id: 'hub_shop', label: '小卖部', from: 'A', to: 'J', hubLocal: [-5.8, 0.8], destLocal: [0, 2.0], destYaw: Math.PI, exitLocal: [0, 3.9], color: 0xa8e0ff, facade: 'shop', exitFacade: 'exitdoor' },
+  { id: 'hub_library', label: '小学图书室', from: 'A', to: 'X', hubLocal: [7.8, 10.7], destLocal: [0, 2.6], destYaw: 0, exitLocal: [0, 4.3], color: 0xffd890, facade: 'classroom', exitFacade: 'exitdoor' },
+  { id: 'hub_cinema', label: '老影院', from: 'A', to: 'U', hubLocal: [-3.6, 12.2], destLocal: [0, 2.4], destYaw: 0, exitLocal: [0, 4.3], color: 0xff9a7a, facade: 'shop', exitFacade: 'exitdoor' },
+  { id: 'hub_noodle', label: '街角面馆', from: 'A', to: 'S', hubLocal: [-12.2, -7.4], destLocal: [0, 1.6], destYaw: Math.PI, exitLocal: [0, 4.3], color: 0xffc070, facade: 'shop', exitFacade: 'exitdoor', weathered: true },
+  { id: 'hub_dorm', label: '矿工宿舍', from: 'A', to: 'P', hubLocal: [5.3, -10.6], destLocal: [0, 1.6], destYaw: Math.PI, exitLocal: [0, 3.8], color: 0xffb070, facade: 'home', exitFacade: 'exitdoor', weathered: true },
+  { id: 'hub_home', label: '家', from: 'A', to: 'H', hubLocal: [3.0, 1.5], destLocal: [0, 2.2], destYaw: Math.PI, exitLocal: [0, 3.9], color: 0xffe08a, facade: 'home', exitFacade: 'exitdoor' },
+  { id: 'hub_station', label: '矿车站', from: 'A', to: 'I', hubLocal: [-6.5, -5.2], destLocal: [0, 3.5], destYaw: 0, exitLocal: [0, 7.2], color: 0xffb07a, facade: 'station', exitFacade: 'exitdoor', weathered: true },
+  { id: 'hub_shop', label: '小卖部', from: 'A', to: 'J', hubLocal: [-11.4, -1.1], destLocal: [0, 2.0], destYaw: Math.PI, exitLocal: [0, 3.9], color: 0xa8e0ff, facade: 'shop', exitFacade: 'exitdoor' },
   // v8.8 飞船/机场连通：枢纽实体机库门 → ARES 火星基地
-  { id: 'hub_ares', label: '飞船口 · ARES', from: 'A', to: 'E', hubLocal: [8.5, 4.5], destLocal: [7, 16], destYaw: Math.PI, exitLocal: [7, 22], color: 0xc8b0ff, facade: 'hangar', exitFacade: 'hangar' },
+  { id: 'hub_ares', label: '飞船口 · ARES', from: 'A', to: 'E', hubLocal: [13.7, 8.1], destLocal: [7, 16], destYaw: Math.PI, exitLocal: [7, 22], color: 0xc8b0ff, facade: 'hangar', exitFacade: 'hangar' },
   // 矿车站也可发车去 ARES（短乘车过场）
-  { id: 'cart_ares', label: 'ARES 基地', from: 'I', to: 'E', hubLocal: [0.0, -0.9], hubYaw: 0, destLocal: [5.0, 18], destYaw: 0, exitLocal: [9.0, 18], color: 0xc8b0ff, facade: 'cart', exitFacade: 'cartstop', ride: true },
+  { id: 'cart_ares', label: 'ARES 基地', from: 'I', to: 'E', hubLocal: [-1.5, -0.9], hubYaw: 0, destLocal: [5.0, 18], destYaw: 0, exitLocal: [9.0, 18], color: 0xc8b0ff, facade: 'cart', exitFacade: 'cartstop', ride: true },
   // 矿车站里的矿车：走进矿车 = 上车 → 短过场 → 远处场景；那边的矿车停靠点坐回来
-  { id: 'cart_mars', label: '火星边疆', from: 'I', to: 'C', hubLocal: [3.2, -0.9], hubYaw: 0, destLocal: [1.5, 0], destYaw: Math.PI, exitLocal: [4.6, 0], color: 0xff8a6a, facade: 'cart', exitFacade: 'cartstop', ride: true },
-  { id: 'cart_campus', label: '矿区校园', from: 'I', to: 'B', hubLocal: [-3.6, -0.9], hubYaw: 0, destLocal: [2.4, 1.0], destYaw: 0, exitLocal: [4.4, 2.6], color: 0x9dffc2, facade: 'cart', exitFacade: 'cartstop', ride: true },
+  { id: 'cart_mars', label: '火星边疆', from: 'I', to: 'C', hubLocal: [3.5, -0.9], hubYaw: 0, destLocal: [1.5, 0], destYaw: Math.PI, exitLocal: [4.6, 0], color: 0xff8a6a, facade: 'cart', exitFacade: 'cartstop', ride: true },
+  { id: 'cart_campus', label: '矿区校园', from: 'I', to: 'B', hubLocal: [-6.5, -0.9], hubYaw: 0, destLocal: [2.4, 1.0], destYaw: 0, exitLocal: [4.4, 2.6], color: 0x9dffc2, facade: 'cart', exitFacade: 'cartstop', ride: true },
   // v8.17 机场候车 L / 火星地表庇护所 M（白盒；勿覆盖 cart_mars→C）
-  { id: 'hub_airport', label: '机场候车', from: 'A', to: 'L', hubLocal: [6.8, 5.2], destLocal: [0, 4.2], destYaw: Math.PI, exitLocal: [0, 6.6], color: 0xa8c8ff, facade: 'hangar', exitFacade: 'exitdoor' },
-  { id: 'airport_ares', label: '登机口 · ARES', from: 'L', to: 'E', hubLocal: [0.0, -5.2], hubYaw: 0, destLocal: [7, 16], destYaw: Math.PI, exitLocal: [7, 22], color: 0xc8b0ff, facade: 'hangar', exitFacade: 'hangar' },
-  { id: 'airport_mars_shelter', label: '火星地表舱', from: 'L', to: 'M', hubLocal: [5.5, -4.0], destLocal: [0, 2.0], destYaw: Math.PI, exitLocal: [-3.0, 3.7], color: 0xff8a6a, facade: 'hangar', exitFacade: 'exitdoor' },
-  { id: 'station_airport', label: '联运通道', from: 'I', to: 'L', hubLocal: [-6.5, 2.0], destLocal: [-5.0, 0.0], destYaw: Math.PI/2, exitLocal: [-6.8, 0.0], color: 0xffb07a, facade: 'station', exitFacade: 'exitdoor', weathered: true },
-  { id: 'hub_mars_shelter', label: '火星地表舱', from: 'A', to: 'M', hubLocal: [9.2, 3.2], destLocal: [0, 2.0], destYaw: Math.PI, exitLocal: [0, 3.8], color: 0xff8a6a, facade: 'hangar', exitFacade: 'exitdoor' },
-  { id: 'cart_mars_shelter', label: '火星地表舱', from: 'I', to: 'M', hubLocal: [4.8, -0.9], hubYaw: 0, destLocal: [3.3, 0.2], destYaw: Math.PI, exitLocal: [3.3, 2.1], compactStop: true, color: 0xff8a6a, facade: 'cart', exitFacade: 'cartstop', ride: true },
+  { id: 'hub_airport', label: '机场候车', from: 'A', to: 'L', hubLocal: [8.8, 4.3], destLocal: [0, 4.2], destYaw: Math.PI, exitLocal: [0, 6.6], color: 0xa8c8ff, facade: 'hangar', exitFacade: 'exitdoor' },
+  { id: 'airport_ares', label: '登机口 · ARES', from: 'L', to: 'E', hubLocal: [0.0, -7.0], hubYaw: 0, destLocal: [7, 16], destYaw: Math.PI, exitLocal: [7, 22], color: 0xc8b0ff, facade: 'hangar', exitFacade: 'hangar' },
+  { id: 'airport_mars_shelter', label: '火星地表舱', from: 'L', to: 'M', hubLocal: [8.0, -4.0], destLocal: [0, 2.0], destYaw: Math.PI, exitLocal: [-3.0, 3.7], color: 0xff8a6a, facade: 'hangar', exitFacade: 'exitdoor' },
+  { id: 'station_airport', label: '联运通道', from: 'I', to: 'L', hubLocal: [-9.0, 3.0], destLocal: [-5.0, 0.0], destYaw: Math.PI/2, exitLocal: [-6.8, 0.0], color: 0xffb07a, facade: 'station', exitFacade: 'exitdoor', weathered: true },
+  { id: 'hub_mars_shelter', label: '火星地表舱', from: 'A', to: 'M', hubLocal: [14.5, 1.7], destLocal: [0, 2.0], destYaw: Math.PI, exitLocal: [0, 3.8], color: 0xff8a6a, facade: 'hangar', exitFacade: 'exitdoor' },
+  { id: 'cart_mars_shelter', label: '火星地表舱', from: 'I', to: 'M', hubLocal: [8.0, -0.9], hubYaw: 0, destLocal: [3.3, 0.2], destYaw: Math.PI, exitLocal: [3.3, 2.1], compactStop: true, color: 0xff8a6a, facade: 'cart', exitFacade: 'cartstop', ride: true },
 ];
 
 /** @deprecated v8.3: community hubs are real doors now; kept empty for old callers. */

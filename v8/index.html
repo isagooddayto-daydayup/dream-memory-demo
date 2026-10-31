@@ -5376,7 +5376,8 @@ const CLOCK={mode:'local',
    if(h>=5&&h<11)return 'morning';if(h>=11&&h<17)return 'noon';return 'evening';},
   label(){return {morning:'早晨',noon:'午后',evening:'夜色'}[this.period()];}
 };
-const HUB_POI={home:[2.6,1.2],shop:[-5.8,0.8],station:[-3.8,-5.0],plaza:[0.5,-1.0],ares:[8.5,4.5],airport:[6.8,5.2],mars_shelter:[9.2,3.2]};
+/* v8.84: HUB_POI tracks spread doors */
+const HUB_POI={home:[3.0,1.5],shop:[-11.4,-1.1],station:[-6.5,-5.2],plaza:[0.5,-1.0],ares:[13.7,8.1],airport:[8.8,4.3],mars_shelter:[14.5,1.7]};
 const SCHED={
   '晓雨':{morning:'shop',noon:'plaza',evening:'home'},
   '小悦':{morning:'home',noon:'shop',evening:'station'},
